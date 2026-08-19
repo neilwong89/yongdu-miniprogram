@@ -1,86 +1,103 @@
+<!-- 成本详情页 - 设计稿还原 -->
 <view class="page" wx:if="{{item}}">
 
-  <!-- 头部：图标 + 名称 + 标签 -->
-  <view class="header">
-    <view class="icon-wrap">
-      <text class="icon">{{item.icon}}</text>
-    </view>
-    <view class="title-row">
-      <text class="name">{{item.name}}</text>
-      <view class="tags">
-        <text class="tag category">{{item.categoryName}}</text>
-        <text class="tag status" style="background:{{statusInfo.color}}">{{statusInfo.label}}</text>
+  <!-- 主内容（可滚动） -->
+  <scroll-view class="detail-scroll" scroll-y>
+    <view class="detail-content">
+
+      <!-- 顶部导航 -->
+      <view class="detail-header">
+        <view class="back-btn" bindtap="goBack">
+          <text class="back-icon">←</text>
+        </view>
+        <text class="header-title-text">成本详情</text>
+        <view class="edit-btn" bindtap="onEdit">
+          <text>编辑</text>
+        </view>
       </view>
-    </view>
-  </view>
 
-  <!-- 成本卡片 -->
-  <view class="cost-card">
-    <view class="cost-main">
-      <text class="cost-label">单次/日均成本</text>
-      <text class="cost-value">¥{{costPerUnit}}</text>
-      <text class="cost-unit">元/{{unitLabel}}</text>
-    </view>
-    <view class="cost-divider"></view>
-    <view class="cost-sub">
-      <view class="cost-item">
-        <text class="ci-label">总花费</text>
-        <text class="ci-value">¥{{totalAmount}}</text>
+      <!-- 图片/图表区域 -->
+      <view class="media-card">
+        <view class="media-inner" wx:if="{{item.imageUrl}}">
+          <image class="card-img" src="{{item.imageUrl}}" mode="aspectFill"/>
+          <view class="media-overlay"></view>
+        </view>
+        <view class="media-placeholder" wx:else>
+          <text class="placeholder-emoji">{{item.icon}}</text>
+        </view>
+        <view class="media-bottom">
+          <view class="media-tags">
+            <text class="media-cat-tag">{{item.categoryName}}</text>
+          </view>
+        </view>
       </view>
-      <view class="cost-item">
-        <text class="ci-label">已用</text>
-        <text class="ci-value">{{item.unit === 'day' ? usedDays + '天' : usedCount + '次'}}</text>
+
+      <!-- 物品标题卡片 -->
+      <view class="title-card">
+        <view class="title-row">
+          <text class="item-name">{{item.name}}</text>
+          <text class="status-pill {{item.statusClass}}">{{item.statusLabel}}</text>
+        </view>
+        <text class="item-remark" wx:if="{{item.remark}}">{{item.remark}}</text>
       </view>
+
+      <!-- 成本展示卡片 -->
+      <view class="cost-display-card">
+        <text class="cost-display-label">当前每日成本</text>
+        <view class="cost-display-main">
+          <text class="cost-display-value">¥ {{costPerUnit}}</text>
+          <text class="cost-display-unit">/ {{unitLabel}}</text>
+        </view>
+        <!-- 进度条 -->
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
+        </view>
+        <view class="progress-labels">
+          <text class="progress-label">已陪伴 {{usedDays}} 天</text>
+          <text class="progress-label" wx:if="{{item.expectedDays}}">预计使用 {{item.expectedDays}} 天</text>
+        </view>
+      </view>
+
+      <!-- 明细列表 -->
+      <view class="detail-list">
+        <view class="detail-item">
+          <text class="di-key">购买价格</text>
+          <text class="di-val">¥ {{itemPriceDisplay}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="di-key">购买日期</text>
+          <text class="di-val">{{purchaseDateStr}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{item.otherFees > 0}}">
+          <text class="di-key">其他费用</text>
+          <text class="di-val">¥ {{otherFeesDisplay}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="di-key">成本方式</text>
+          <text class="di-val">{{item.unit === 'day' ? '按天分摊' : '按次使用'}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{item.expectedDays}}">
+          <text class="di-key">预期使用时长</text>
+          <text class="di-val">{{item.expectedDays}} 天</text>
+        </view>
+        <view class="detail-item" wx:if="{{item.remark}}">
+          <text class="di-key">备注</text>
+          <text class="di-val di-val-remark">{{item.remark}}</text>
+        </view>
+        <!-- 卖出信息 -->
+        <view class="detail-item" wx:if="{{item.status === 'retired' && soldDateStr}}">
+          <text class="di-key">卖出信息</text>
+          <text class="di-val">{{soldDateStr}}</text>
+        </view>
+      </view>
+
     </view>
-  </view>
+  </scroll-view>
 
-  <!-- 明细列表 -->
-  <view class="detail-list">
-
-    <view class="detail-item">
-      <text class="di-key">购买日期</text>
-      <text class="di-val">{{purchaseDateStr}}</text>
-    </view>
-
-    <view class="detail-item">
-      <text class="di-key">购买单价</text>
-      <text class="di-val">¥{{itemPriceDisplay}}</text>
-    </view>
-
-    <view class="detail-item" wx:if="{{item.otherFees > 0}}">
-      <text class="di-key">其他费用</text>
-      <text class="di-val">¥{{otherFeesDisplay}}</text>
-    </view>
-
-    <view class="detail-item">
-      <text class="di-key">计量方式</text>
-      <text class="di-val">{{item.unit === 'day' ? '按天摊分' : '按次计费'}}</text>
-    </view>
-
-    <view class="detail-item" wx:if="{{item.remark}}">
-      <text class="di-key">备注</text>
-      <text class="di-val remark">{{item.remark}}</text>
-    </view>
-
-    <!-- 卖出信息（已报废） -->
-    <view class="detail-item sold" wx:if="{{item.status === 'retired' && soldDateStr}}">
-      <text class="di-key">卖出信息</text>
-      <text class="di-val">{{soldDateStr}}</text>
-    </view>
-
-  </view>
-
-  <!-- 底部操作 -->
+  <!-- 底部操作栏 -->
   <view class="bottom-bar">
-    <!-- 按次物品的 +1 按钮 -->
-    <button
-      wx:if="{{item.unit === 'count'}}"
-      class="btn-use"
-      bindtap="onUseOnce"
-    >+1 次</button>
-
-    <button class="btn-edit" bindtap="onEdit">编辑</button>
-    <button class="btn-delete" bindtap="onDelete">删除</button>
+    <view class="bar-edit-btn" bindtap="onEdit">编辑成本</view>
+    <view class="bar-delete-btn" bindtap="onDelete">删除</view>
   </view>
 
 </view>

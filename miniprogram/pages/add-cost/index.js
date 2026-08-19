@@ -28,13 +28,7 @@ const PRESET_CATEGORIES = [
 const STATUS_OPTIONS = [
   { value: 'using', label: '使用中' },
   { value: 'paused', label: '已暂停' },
-  { value: 'retired', label: '已报废' },
-];
-
-// 单位选项
-const UNIT_OPTIONS = [
-  { value: 'day', label: '按天' },
-  { value: 'count', label: '按次' },
+  { value: 'retired', label: '已卖出' },
 ];
 
 Page({
@@ -50,13 +44,15 @@ Page({
     categoryName: PRESET_CATEGORIES[0].name,
     customCategoryName: '',
     status: 'using',
+    statusLabel: '使用中',
     purchaseDate: today(),
     price: '',
     otherFees: '',
     unit: 'day',
     remark: '',
+    expectedDays: '',
 
-    // 卖出信息（仅已报废状态显示）
+    // 卖出信息（仅已卖出状态显示）
     soldPrice: '',
     soldDate: today(),
 
@@ -64,11 +60,13 @@ Page({
     emojis: EMOJIS,
     categories: PRESET_CATEGORIES,
     statusOptions: STATUS_OPTIONS,
-    unitOptions: UNIT_OPTIONS,
 
     // 分类选择器
     showCategoryPicker: false,
     categoryList: [],
+
+    // 状态选择器
+    showStatusPicker: false,
 
     // 自定义分类输入
     showCustomCategoryInput: false,
@@ -92,6 +90,11 @@ Page({
   /** 空事件（用于阻止冒泡） */
   noop() {},
 
+  /** 返回上一页 */
+  goBack() {
+    wx.navigateBack();
+  },
+
   /** 构建分类选择器列表（预置 + 自定义） */
   buildCategoryList() {
     const state = AppStore.getState();
@@ -107,17 +110,20 @@ Page({
       setTimeout(() => wx.navigateBack(), 1500);
       return;
     }
+    const statusOption = STATUS_OPTIONS.find(s => s.value === item.status) || STATUS_OPTIONS[0];
     this.setData({
       icon: item.icon || EMOJIS[0],
       name: item.name || '',
       categoryId: item.categoryId || PRESET_CATEGORIES[0].id,
       categoryName: item.categoryName || PRESET_CATEGORIES[0].name,
       status: item.status || 'using',
+      statusLabel: statusOption.label,
       purchaseDate: item.purchaseDate || today(),
       price: item.price != null ? String(item.price / 100) : '',
       otherFees: item.otherFees != null ? String(item.otherFees / 100) : '',
       unit: item.unit || 'day',
       remark: item.remark || '',
+      expectedDays: item.expectedDays ? String(item.expectedDays) : '',
       soldPrice: item.soldPrice != null ? String(item.soldPrice / 100) : '',
       soldDate: item.soldDate || today(),
     });
@@ -183,9 +189,25 @@ Page({
     this.setData({ showCustomCategoryInput: false, customCategoryName: '' });
   },
 
-  // ---------- 状态选择 ----------
-  onStatusChange(e) {
-    this.setData({ status: e.detail.value });
+  // ---------- 状态选择（picker） ----------
+  onStatusTap() {
+    this.setData({ showStatusPicker: true });
+  },
+
+  onStatusPickerChange(e) {
+    const idx = parseInt(e.detail.value, 10);
+    const option = this.data.statusOptions[idx];
+    if (option) {
+      this.setData({
+        showStatusPicker: false,
+        status: option.value,
+        statusLabel: option.label,
+      });
+    }
+  },
+
+  onStatusPickerCancel() {
+    this.setData({ showStatusPicker: false });
   },
 
   // ---------- 日期选择 ----------
@@ -206,9 +228,15 @@ Page({
     this.setData({ otherFees: e.detail.value });
   },
 
-  // ---------- 单位选择 ----------
+  // ---------- 单位选择（卡片式切换） ----------
   onUnitChange(e) {
-    this.setData({ unit: e.detail.value });
+    const unit = e.currentTarget.dataset.unit;
+    this.setData({ unit });
+  },
+
+  // ---------- 预期使用天数 ----------
+  onExpectedDaysInput(e) {
+    this.setData({ expectedDays: e.detail.value });
   },
 
   // ---------- 备注输入 ----------
@@ -223,7 +251,7 @@ Page({
 
   // ---------- 保存 ----------
   onSave() {
-    const { name, price, purchaseDate, isEdit, editId, icon, categoryId, categoryName, status, otherFees, unit, remark, soldPrice, soldDate } = this.data;
+    const { name, price, purchaseDate, isEdit, editId, icon, categoryId, categoryName, status, otherFees, unit, remark, expectedDays, soldPrice, soldDate } = this.data;
 
     // 验证：名称必填
     if (!name.trim()) {
@@ -256,6 +284,10 @@ Page({
       unit,
       remark: remark.trim(),
     };
+
+    if (unit === 'day' && expectedDays) {
+      itemData.expectedDays = parseInt(expectedDays, 10);
+    }
 
     // 卖出相关字段
     if (status === 'retired' && soldPrice) {

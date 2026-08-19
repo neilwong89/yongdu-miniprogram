@@ -1,31 +1,55 @@
 /**
  * 洞察页 - 数据分析与可视化
- * 使用 AppStore.subscribe() 监听 items 变化，使用 CostCalculator 计算指标
+ * 路由: /pages/insight/index
  */
 const AppStore = require('../../stores/app-store');
+const ItemService = require('../../services/item');
 const CostCalculator = require('../../services/calculator');
-const { formatMoney, formatPercent } = require('../../utils/format');
 const { calcDaysUsed } = require('../../utils/date');
+
+// 预置分类（按设计稿，与 cost 页一致）
+const PRESET_CATEGORIES = [
+  { id: 'all', name: '全部' },
+  { id: 'digital', name: '数码' },
+  { id: 'member', name: '会员' },
+  { id: 'transport', name: '交通' },
+  { id: 'life', name: '生活' },
+];
+
+// 状态映射
+const STATUS_MAP = {
+  using: '使用中',
+  paused: '已废弃',
+  retired: '已卖出',
+};
 
 Page({
   data: {
     navBarHeight: 0,
 
-    // ---------- 顶部统计卡 ----------
-    totalItems: 0,
-    usingItems: 0,
-    totalInvestment: '0.00',    // 总投入（元）
-    todayCost: '0.00',          // 今日总成本（元）
-    avgPerUse: '0.00',          // 平均单次成本（元）
+    // ---------- 顶部汇总 ----------
+    itemCount: 0,
+    todayCost: '0.00',
 
-    // ---------- 成本分布（按分类） ----------
-    categoryStats: [],          // [{id, name, icon, itemCount, totalInvest, dailyCost, percent}]
+    // ---------- 分类筛选 ----------
+    categories: PRESET_CATEGORIES,
+    selectedCategory: 'all',
 
-    // ---------- 成本排行 ----------
-    costRanking: [],            // [{rank, id, name, icon, cost, costStr, unit}]
+    // ---------- 成本曲线 ----------
+    chartRange: '90',
+    curvePath: '',
+    curveFillPath: '',
+    chartStartLabel: '',
+    chartEndLabel: '',
 
-    // ---------- 低效率物品提示 ----------
-    lowEfficiencyItems: [],     // [{id, name, icon, days, unit, reason}]
+    // ---------- 分类账本 ----------
+    categoryStats: [],
+
+    // ---------- 用度之最 ----------
+    topMostExpensive: null,
+    topLongest: null,
+    topHighestDaily: null,
+    topMostUsed: null,
 
     // ---------- 状态 ----------
     isEmpty: true,
@@ -39,216 +63,234 @@ Page({
   },
 
   onShow() {
-    // 订阅 AppStore，每次 items 变化都重新计算
-    if (this._unsubscribe) {
-      this._unsubscribe(); // 避免重复订阅
-    }
-    this._unsubscribe = AppStore.subscribe(() => {
-      this._calcStats();
-    });
-    // 首次也计算一次
+    if (this._unsubscribe) this._unsubscribe();
+    this._unsubscribe = AppStore.subscribe(() => this._calcStats());
     this._calcStats();
   },
 
-  onHide() {
-    if (this._unsubscribe) {
-      this._unsubscribe();
-      this._unsubscribe = null;
-    }
-  },
-
   onUnload() {
-    if (this._unsubscribe) {
-      this._unsubscribe();
-      this._unsubscribe = null;
-    }
+    if (this._unsubscribe) { this._unsubscribe(); this._unsubscribe = null; }
   },
 
   // ---------- 计算所有指标 ----------
   _calcStats() {
-    const { items, categories } = AppStore.getState();
-    if (!items || !items.length) {
-      this.setData({ isEmpty: true });
-      return;
+    const state = AppStore.getState();
+    let items = ItemService.getItems();
+    const { selectedCategory } = this.data;
+
+    // 分类筛选
+    if (selectedCategory !== 'all') {
+      items = items.filter(i => i.categoryId === selectedCategory);
     }
 
-    // === 1. 顶部统计 ===
-    const totalItems = items.length;
-    const usingItems = items.filter(i => i.status === 'using').length;
+    const usingItems = items.filter(i => i.status === 'using');
 
-    // 总投入 = Σ(price + otherFees)，仅"使用中"+"已报废"
-    const investItems = items.filter(i => i.status === 'using' || i.status === 'retired');
-    const totalInvestmentFen = investItems.reduce((s, i) => s + (i.price || 0) + (i.otherFees || 0), 0);
-    const totalInvestment = formatMoney(totalInvestmentFen);
+    // 今日总成本（使用中的按天物品）
+    const totalDailyCostFen = CostCalculator.calcTotalDailyCost(items);
+    const todayCost = (totalDailyCostFen / 100).toFixed(2);
 
-    // 今日总成本 = Σ(使用中且unit=day物品的每日成本)
-    const todayCostFen = CostCalculator.calcTotalDailyCost(items);
-    const todayCost = formatMoney(Math.round(todayCostFen));
-
-    // 平均单次成本
-    const { avgCost } = CostCalculator.calcAveragePerUseCost(items);
-    const avgPerUse = avgCost !== null ? formatMoney(Math.round(avgCost * 100)) : '0.00';
-
-    // === 2. 成本分布（按分类） ===
-    const catMap = {};
-    // 构建分类名->icon 映射（categories 里有）
-    if (categories && categories.length) {
-      categories.forEach(c => { catMap[c.id] = c; });
-    }
-    // 默认分类（兜底）
-    const defaultCats = [
-      { id: 'electronics', name: '电子产品', icon: '📱' },
-      { id: 'daily', name: '日用品', icon: '🧴' },
-      { id: 'food', name: '食品', icon: '🍎' },
-      { id: 'clothing', name: '服饰', icon: '👕' },
-      { id: 'entertainment', name: '娱乐', icon: '🎮' },
-      { id: 'study', name: '学习', icon: '📚' },
-      { id: 'health', name: '健康', icon: '💊' },
-      { id: 'other', name: '其他', icon: '📦' },
-    ];
-    defaultCats.forEach(c => { if (!catMap[c.id]) catMap[c.id] = c; });
-
-    // 按分类聚合
-    const catStats = {};
-    items.forEach(item => {
+    // --- 分类账本 ---
+    const catGroups = {};
+    usingItems.forEach(item => {
       const cid = item.categoryId || 'other';
-      if (!catStats[cid]) {
-        const catInfo = catMap[cid] || { name: '其他', icon: '📦' };
-        catStats[cid] = {
-          id: cid,
-          name: catInfo.name,
-          icon: catInfo.icon || '📦',
-          itemCount: 0,
-          totalInvest: 0,
+      if (!catGroups[cid]) {
+        const catInfo = state.categories.find(c => c.id === cid);
+        catGroups[cid] = {
+          name: catInfo ? catInfo.name : (item.categoryName || '其他'),
+          count: 0,
+          totalAmount: 0,
           dailyCost: 0,
+          isCount: false,
         };
       }
-      const cs = catStats[cid];
-      cs.itemCount++;
-      cs.totalInvest += (item.price || 0) + (item.otherFees || 0);
-      cs.dailyCost += CostCalculator.calcDailyCost(item) || 0;
+      const g = catGroups[cid];
+      g.count++;
+      g.totalAmount += (item.price || 0) + (item.otherFees || 0);
+      if (item.unit === 'day') {
+        g.dailyCost += CostCalculator.calcDailyCost(item) || 0;
+      } else {
+        g.isCount = true;
+      }
     });
 
-    // 排序：按每日成本降序，取前5
-    const sortedCats = Object.values(catStats)
-      .sort((a, b) => b.dailyCost - a.dailyCost)
-      .slice(0, 5);
+    const categoryStats = Object.values(catGroups)
+      .sort((a, b) => b.totalAmount - a.totalAmount)
+      .map(g => ({
+        name: g.name,
+        count: g.count,
+        totalAmount: g.totalAmount > 0 ? (g.totalAmount / 100).toLocaleString('zh-CN', { minimumFractionDigits: 0 }) : '0',
+        costPerDay: g.isCount ? '' : (g.dailyCost > 0 ? (g.dailyCost / 100).toFixed(2) : '0.00'),
+        isCount: g.isCount,
+      }));
 
-    // 计算百分比
-    const totalDailyCost = sortedCats.reduce((s, c) => s + c.dailyCost, 0) || 1;
-    sortedCats.forEach(c => {
-      c.totalInvestStr = formatMoney(c.totalInvest);
-      c.dailyCostStr = formatMoney(Math.round(c.dailyCost));
-      c.percent = c.dailyCost / totalDailyCost;
-      c.barWidth = Math.max(4, Math.round(c.percent * 100));
-    });
-    const categoryStats = sortedCats;
+    // --- 用度之最 ---
+    const retiredUsing = items.filter(i => i.status === 'using' || i.status === 'retired');
 
-    // === 3. 成本排行（前5高） ===
-    const usingDayItems = items.filter(i => i.status === 'using' && i.unit === 'day');
-    const usingCountItems = items.filter(i => i.status === 'using' && i.unit === 'count');
-
-    const dayRankItems = usingDayItems
-      .map(i => ({
-        id: i.id,
-        name: i.name,
-        icon: i.icon || '📦',
-        cost: CostCalculator.calcDailyCost(i) || 0,
-        unit: '元/天',
-      }))
-      .sort((a, b) => b.cost - a.cost)
-      .slice(0, 5);
-
-    const countRankItems = usingCountItems
-      .map(i => ({
-        id: i.id,
-        name: i.name,
-        icon: i.icon || '📦',
-        cost: CostCalculator.calcPerUseCost(i) || 0,
-        unit: '元/次',
-      }))
-      .sort((a, b) => b.cost - a.cost)
-      .slice(0, 5);
-
-    // 合并两个排行，取前5（按成本降序）
-    const allRank = [...dayRankItems, ...countRankItems]
-      .filter(i => i.cost > 0)
-      .sort((a, b) => b.cost - a.cost)
-      .slice(0, 5);
-
-    const costRanking = allRank.map((item, idx) => ({
-      rank: idx + 1,
-      id: item.id,
-      name: item.name,
-      icon: item.icon,
-      costStr: formatMoney(Math.round(item.cost)),
-      unit: item.unit,
-      // 排名颜色
-      rankColor: idx === 0 ? '#b08050' : idx === 1 ? '#8a9a7a' : idx === 2 ? '#a8b89a' : '#9e9a93',
-    }));
-
-    // === 4. 低效率物品提示 ===
-    const lowEfficiency = [];
-
-    // A. 按次物品，买了很久（>30天）但使用次数=0
-    const oldUnusedCount = items.filter(i => {
-      if (i.status !== 'using' || i.unit !== 'count') return false;
-      if ((i.usedCount || 0) > 0) return false;
-      const days = calcDaysUsed(i.purchaseDate);
-      return days > 30;
-    });
-
-    oldUnusedCount.forEach(i => {
-      const days = calcDaysUsed(i.purchaseDate);
-      lowEfficiency.push({
-        id: i.id,
-        name: i.name,
-        icon: i.icon || '📦',
-        days,
-        unit: '次',
-        reason: `购买${days}天还未使用过`,
-        reasonType: 'unused',
+    // 最贵：price + otherFees 最高
+    let topMostExpensive = null;
+    if (retiredUsing.length > 0) {
+      const sortedByPrice = [...retiredUsing].sort((a, b) => {
+        const pa = (a.price || 0) + (a.otherFees || 0);
+        const pb = (b.price || 0) + (b.otherFees || 0);
+        return pb - pa;
       });
-    });
+      if (sortedByPrice[0]) {
+        const priceFen = (sortedByPrice[0].price || 0) + (sortedByPrice[0].otherFees || 0);
+        topMostExpensive = {
+          name: sortedByPrice[0].name,
+          priceDisplay: (priceFen / 100).toLocaleString('zh-CN', { minimumFractionDigits: 0 }),
+        };
+      }
+    }
 
-    // B. 按天物品，已废弃（买了很久但用很少，或已暂停很久）
-    const wasteDayItems = items.filter(i => {
-      if (i.status !== 'retired' || i.unit !== 'day') return false;
-      const days = calcDaysUsed(i.purchaseDate);
-      return days > 60;
-    });
-
-    wasteDayItems.forEach(i => {
-      const days = calcDaysUsed(i.purchaseDate);
-      lowEfficiency.push({
-        id: i.id,
-        name: i.name,
-        icon: i.icon || '📦',
-        days,
-        unit: '天',
-        reason: `已报废，使用了${days}天`,
-        reasonType: 'waste',
+    // 陪伴最久：已用天数最多
+    let topLongest = null;
+    if (usingItems.length > 0) {
+      const sortedByDays = [...usingItems].sort((a, b) => {
+        const da = a.unit === 'day' ? calcDaysUsed(a.purchaseDate) : (a.usedCount || 0);
+        const db = b.unit === 'day' ? calcDaysUsed(b.purchaseDate) : (b.usedCount || 0);
+        return db - da;
       });
-    });
+      if (sortedByDays[0]) {
+        const days = sortedByDays[0].unit === 'day'
+          ? calcDaysUsed(sortedByDays[0].purchaseDate)
+          : (sortedByDays[0].usedCount || 0);
+        topLongest = { name: sortedByDays[0].name, days };
+      }
+    }
 
-    // 限制最多显示5个
-    const lowEfficiencyItems = lowEfficiency.slice(0, 5);
+    // 每日成本最高
+    let topHighestDaily = null;
+    const dayItems = usingItems.filter(i => i.unit === 'day');
+    if (dayItems.length > 0) {
+      const sortedByDaily = [...dayItems].sort((a, b) => {
+        const da = CostCalculator.calcDailyCost(a) || 0;
+        const db = CostCalculator.calcDailyCost(b) || 0;
+        return db - da;
+      });
+      if (sortedByDaily[0]) {
+        const cost = CostCalculator.calcDailyCost(sortedByDaily[0]) || 0;
+        topHighestDaily = {
+          name: sortedByDaily[0].name,
+          costPerDay: (cost / 100).toFixed(2),
+        };
+      }
+    }
 
-    // === 更新 data ===
+    // 使用最多（按次物品）
+    let topMostUsed = null;
+    const countItems = usingItems.filter(i => i.unit === 'count');
+    if (countItems.length > 0) {
+      const sortedByCount = [...countItems].sort((a, b) => (b.usedCount || 0) - (a.usedCount || 0));
+      if (sortedByCount[0]) {
+        topMostUsed = {
+          name: sortedByCount[0].name,
+          usedCount: sortedByCount[0].usedCount || 0,
+        };
+      }
+    }
+
+    // --- 成本曲线 SVG ---
+    const { curvePath, curveFillPath, startLabel, endLabel } = this._calcCurvePath(items);
+
     this.setData({
-      isEmpty: false,
-      totalItems,
-      usingItems,
-      totalInvestment,
+      isEmpty: items.length === 0,
+      itemCount: items.length,
       todayCost,
-      avgPerUse,
       categoryStats,
-      costRanking,
-      lowEfficiencyItems,
+      topMostExpensive,
+      topLongest,
+      topHighestDaily,
+      topMostDaily,
+      topMostUsed,
+      curvePath,
+      curveFillPath,
+      chartStartLabel: startLabel,
+      chartEndLabel: endLabel,
     });
   },
 
-  // ---------- 跳转到物品详情 ----------
+  // ---------- 计算 SVG 成本曲线 ----------
+  _calcCurvePath(items) {
+    const { chartRange } = this.data;
+    const usingItems = items.filter(i => i.status === 'using' && i.unit === 'day');
+    if (usingItems.length === 0) {
+      return { curvePath: '', curveFillPath: '', startLabel: '', endLabel: '' };
+    }
+
+    const now = new Date();
+    const endDate = now;
+    let startDate;
+    if (chartRange === '90') {
+      startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - 90);
+    } else {
+      // 全部：取最早的购买日期
+      const dates = usingItems.map(i => new Date(i.purchaseDate)).filter(d => !isNaN(d));
+      if (dates.length === 0) {
+        return { curvePath: '', curveFillPath: '', startLabel: '', endLabel: '' };
+      }
+      startDate = dates.reduce((a, b) => a < b ? a : b);
+    }
+
+    // 每天的累计成本（倒序：从 start 到 end）
+    const days = [];
+    const cur = new Date(startDate);
+    while (cur <= endDate) {
+      let dayCost = 0;
+      usingItems.forEach(item => {
+        const itemStart = new Date(item.purchaseDate);
+        if (cur >= itemStart) {
+          const daysUsed = Math.floor((cur - itemStart) / 86400000) + 1;
+          const totalFen = (item.price || 0) + (item.otherFees || 0);
+          dayCost += totalFen / daysUsed;
+        }
+      });
+      days.push({ date: new Date(cur), cost: dayCost });
+      cur.setDate(cur.getDate() + 1);
+    }
+
+    if (days.length === 0) {
+      return { curvePath: '', curveFillPath: '', startLabel: '', endLabel: '' };
+    }
+
+    // 采样（最多 90 个点）
+    const maxPoints = 90;
+    const step = Math.max(1, Math.floor(days.length / maxPoints));
+    const sampled = days.filter((_, i) => i % step === 0);
+
+    const costs = sampled.map(d => d.cost);
+    const maxCost = Math.max(...costs, 1);
+    const W = 330, H = 132, padBottom = 6, padTop = 6;
+    const chartH = H - padBottom - padTop;
+
+    const points = sampled.map((d, i) => {
+      const x = (i / (sampled.length - 1)) * W;
+      const y = chartH - (d.cost / maxCost) * chartH + padTop;
+      return [x, y];
+    });
+
+    const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+    const fillD = pathD + ` L${W},${H - padBottom} L0,${H - padBottom} Z`;
+
+    const fmtDate = d => `${d.getMonth() + 1}/${d.getDate()}`;
+    const startLabel = fmtDate(sampled[0].date);
+    const endLabel = fmtDate(sampled[sampled.length - 1].date);
+
+    return { curvePath: pathD, curveFillPath: fillD, startLabel, endLabel };
+  },
+
+  // ---------- 交互 ----------
+  selectCategory(e) {
+    this.setData({ selectedCategory: e.currentTarget.dataset.category });
+    this._calcStats();
+  },
+
+  setChartRange(e) {
+    this.setData({ chartRange: e.currentTarget.dataset.range });
+    this._calcStats();
+  },
+
   goItemDetail(e) {
     const { id } = e.currentTarget.dataset;
     if (id) {
@@ -256,7 +298,6 @@ Page({
     }
   },
 
-  // ---------- 空状态：去添加 ----------
   goAdd() {
     wx.switchTab({ url: '/pages/add-cost/index' });
   },

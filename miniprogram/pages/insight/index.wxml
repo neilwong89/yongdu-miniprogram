@@ -1,135 +1,148 @@
-<!-- 洞察页 -->
+<!-- 洞察页 - 设计稿还原 -->
 <view class="page">
-  <!-- 导航栏 -->
-  <view class="nav-bar" style="padding-top: {{navBarHeight}}px;">
-    <view class="nav-title">洞察</view>
+
+  <!-- 主内容 -->
+  <view class="page-content" style="padding-top: {{navBarHeight}}px;">
+
+    <!-- 头部 -->
+    <view class="page-header">
+      <view class="header-left">
+        <text class="header-date">YONGDU · INSIGHT</text>
+        <view class="header-row2">
+          <text class="header-title">洞察</text>
+          <text class="header-count-pill">{{itemCount}} 件</text>
+        </view>
+        <text class="header-slogan">看见时间留下的价值。</text>
+      </view>
+    </view>
+
+    <!-- 分类横滚胶囊（筛选） -->
+    <scroll-view class="cats-scroll" scroll-x enable-flex>
+      <view class="cats-wrap">
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="cat-pill {{selectedCategory === item.id ? 'active' : ''}}"
+          bindtap="selectCategory"
+          data-category="{{item.id}}"
+        >{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- 今日成本曲线卡片 -->
+    <view class="chart-card">
+      <view class="chart-header">
+        <view class="chart-title-group">
+          <text class="chart-label">按日期 · 今日成本</text>
+          <view class="chart-cost">
+            <text class="chart-cost-value">¥ {{todayCost}}</text>
+            <text class="chart-cost-unit">/ 日</text>
+          </view>
+        </view>
+        <view class="chart-range-btns">
+          <view
+            class="range-btn {{chartRange === '90' ? 'active' : ''}}"
+            bindtap="setChartRange"
+            data-range="90"
+          >90天</view>
+          <view
+            class="range-btn {{chartRange === 'all' ? 'active' : ''}}"
+            bindtap="setChartRange"
+            data-range="all"
+          >全部</view>
+        </view>
+      </view>
+      <!-- SVG 成本曲线 -->
+      <view class="chart-svg-wrap">
+        <svg class="cost-svg" viewBox="0 0 330 132" preserveAspectRatio="none">
+          <path
+            d="{{curvePath}}"
+            fill="none"
+            stroke="#587966"
+            stroke-linecap="round"
+            stroke-width="3"
+          />
+          <path
+            d="{{curveFillPath}}"
+            fill="#cce0cf"
+            opacity="0.65"
+          />
+          <line stroke="#aec3b1" x1="0" x2="330" y1="130" y2="130"/>
+        </svg>
+        <view class="chart-axis-labels">
+          <text class="axis-label">{{chartStartLabel}}</text>
+          <text class="axis-label">{{chartEndLabel}}</text>
+        </view>
+      </view>
+      <text class="chart-hint">拖动曲线可查看日期；双指缩放可切换时间密度</text>
+    </view>
+
+    <!-- 分类账本 -->
+    <view class="section-header">
+      <text class="section-title">分类账本</text>
+    </view>
+    <view class="category-table">
+      <view class="table-head">
+        <text class="th th-name">类别</text>
+        <text class="th th-count">数量</text>
+        <text class="th th-amount">总投入</text>
+        <text class="th th-cost">每日成本</text>
+      </view>
+      <view
+        wx:for="{{categoryStats}}"
+        wx:key="name"
+        class="table-row"
+      >
+        <text class="td td-name">{{item.name}}</text>
+        <text class="td td-count">{{item.count}}</text>
+        <text class="td td-amount">¥{{item.totalAmount}}</text>
+        <text class="td td-cost {{item.isCount ? 'cost-times' : 'cost-daily'}}">
+          {{item.isCount ? '按次' : '¥' + item.costPerDay}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 用度之最 -->
+    <view class="section-header" style="margin-top: 40rpx;">
+      <view class="section-title-group">
+        <text class="section-title">用度之最</text>
+        <text class="section-sub">一些轻巧的记录</text>
+      </view>
+    </view>
+    <view class="top-list">
+      <!-- 最贵 -->
+      <view class="top-card top-most-expensive" wx:if="{{topMostExpensive}}">
+        <text class="top-icon">🏆</text>
+        <text class="top-label">购买最贵</text>
+        <text class="top-name">{{topMostExpensive.name}}</text>
+        <text class="top-value">¥ {{topMostExpensive.priceDisplay}}</text>
+      </view>
+      <!-- 最久 -->
+      <view class="top-card top-longest" wx:if="{{topLongest}}">
+        <text class="top-icon">📅</text>
+        <text class="top-label">陪伴最久</text>
+        <text class="top-name">{{topLongest.name}}</text>
+        <text class="top-value">{{topLongest.days}} 天</text>
+      </view>
+      <!-- 成本最高 -->
+      <view class="top-card top-highest-daily" wx:if="{{topHighestDaily}}">
+        <text class="top-icon">⚡</text>
+        <text class="top-label">每日成本最高</text>
+        <text class="top-name">{{topHighestDaily.name}}</text>
+        <text class="top-value">¥ {{topHighestDaily.costPerDay}} / 日</text>
+      </view>
+      <!-- 使用最多 -->
+      <view class="top-card top-most-used" wx:if="{{topMostUsed}}">
+        <text class="top-icon">🎧</text>
+        <text class="top-label">使用最多</text>
+        <text class="top-name">{{topMostUsed.name}}</text>
+        <text class="top-value">{{topMostUsed.usedCount}} 次</text>
+      </view>
+    </view>
+
+    <!-- 底部留白 -->
+    <view style="height: 40rpx;"></view>
+
   </view>
 
-  <!-- 空状态引导 -->
-  <block wx:if="{{isEmpty}}">
-    <view class="empty-state">
-      <view class="empty-icon">📊</view>
-      <view class="empty-title">暂无数据</view>
-      <view class="empty-desc">添加第一个物品，开启你的洞察分析</view>
-      <view class="empty-btn" bindtap="goAdd">去添加</view>
-    </view>
-  </block>
-
-  <!-- 数据内容 -->
-  <block wx:else>
-    <scroll-view scroll-y class="scroll-area">
-
-      <!-- ========== 顶部统计卡 ========== -->
-      <view class="section">
-        <view class="stat-cards">
-          <view class="stat-card stat-card-primary">
-            <view class="stat-label">总物品</view>
-            <view class="stat-value">{{totalItems}}</view>
-            <view class="stat-sub">使用中 {{usingItems}}</view>
-          </view>
-          <view class="stat-card">
-            <view class="stat-label">总投入</view>
-            <view class="stat-value">¥{{totalInvestment}}</view>
-          </view>
-          <view class="stat-card">
-            <view class="stat-label">今日成本</view>
-            <view class="stat-value primary">¥{{todayCost}}</view>
-          </view>
-          <view class="stat-card">
-            <view class="stat-label">单次均摊</view>
-            <view class="stat-value">¥{{avgPerUse}}</view>
-          </view>
-        </view>
-      </view>
-
-      <!-- ========== 成本分布 ========== -->
-      <view class="section">
-        <view class="section-header">
-          <view class="section-title">成本分布</view>
-          <view class="section-sub">按分类 · 每日成本</view>
-        </view>
-        <view class="category-list">
-          <view
-            class="category-item"
-            wx:for="{{categoryStats}}"
-            wx:key="id"
-            data-id="{{item.id}}"
-            bindtap="goItemDetail"
-          >
-            <view class="cat-left">
-              <text class="cat-icon">{{item.icon}}</text>
-              <view class="cat-info">
-                <view class="cat-name">{{item.name}}</view>
-                <view class="cat-meta">{{item.itemCount}}个物品</view>
-              </view>
-            </view>
-            <view class="cat-right">
-              <view class="cat-cost">¥{{item.dailyCostStr}}/天</view>
-              <view class="cat-bar-wrap">
-                <view class="cat-bar" style="width: {{item.barWidth}}%;"></view>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- ========== 成本排行 ========== -->
-      <view class="section">
-        <view class="section-header">
-          <view class="section-title">成本排行</view>
-          <view class="section-sub">每日/每次成本 TOP5</view>
-        </view>
-        <view class="ranking-list">
-          <view
-            class="rank-item"
-            wx:for="{{costRanking}}"
-            wx:key="id"
-            data-id="{{item.id}}"
-            bindtap="goItemDetail"
-          >
-            <view class="rank-left">
-              <view class="rank-badge" style="background: {{item.rankColor}};">
-                {{item.rank}}
-              </view>
-              <text class="rank-icon">{{item.icon}}</text>
-              <view class="rank-name">{{item.name}}</view>
-            </view>
-            <view class="rank-right">
-              <view class="rank-cost" style="color: {{item.rankColor}};">
-                ¥{{item.costStr}}
-              </view>
-              <view class="rank-unit">{{item.unit}}</view>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- ========== 低效率物品 ========== -->
-      <view class="section" wx:if="{{lowEfficiencyItems.length > 0}}">
-        <view class="section-header">
-          <view class="section-title warning-title">低效率物品</view>
-          <view class="section-sub">买了很久没用，性价比低</view>
-        </view>
-        <view class="warn-list">
-          <view
-            class="warn-item"
-            wx:for="{{lowEfficiencyItems}}"
-            wx:key="id"
-            data-id="{{item.id}}"
-            bindtap="goItemDetail"
-          >
-            <text class="warn-icon">{{item.icon}}</text>
-            <view class="warn-info">
-              <view class="warn-name">{{item.name}}</view>
-              <view class="warn-reason">{{item.reason}}</view>
-            </view>
-            <view class="warn-arrow">›</view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 底部留空 -->
-      <view class="bottom-spacer"></view>
-    </scroll-view>
-  </block>
 </view>

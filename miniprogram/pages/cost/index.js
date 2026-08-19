@@ -7,19 +7,13 @@ const AppStore = require('../../stores/app-store');
 const ItemService = require('../../services/item');
 const CostCalculator = require('../../services/calculator');
 
-// 预置分类
+// 预置分类（按设计稿）
 const PRESET_CATEGORIES = [
-  { id: 'digital', name: '数码产品', icon: '📱' },
-  { id: 'member', name: '会员服务', icon: '💳' },
-  { id: 'fitness', name: '运动健身', icon: '🏋️' },
-  { id: 'transport', name: '交通出行', icon: '🚗' },
-  { id: 'home', name: '家居生活', icon: '🏠' },
-  { id: 'food', name: '食品饮料', icon: '🍜' },
-  { id: 'fashion', name: '服装配饰', icon: '👔' },
-  { id: 'book', name: '图书文具', icon: '📚' },
-  { id: 'beauty', name: '美妆护肤', icon: '💄' },
-  { id: 'health', name: '医疗健康', icon: '💊' },
-  { id: 'other', name: '其他', icon: '📦' },
+  { id: 'all', name: '全部' },
+  { id: 'digital', name: '数码' },
+  { id: 'member', name: '会员' },
+  { id: 'transport', name: '交通' },
+  { id: 'life', name: '生活' },
 ];
 
 // 状态选项
@@ -41,14 +35,15 @@ const SORT_OPTIONS = [
 Page({
   data: {
     // 汇总数据
-    todayCost: 0,        // 今日成本（两位小数显示）
-    avgPerUseCost: null, // 平均每次成本
-    avgPerUseCount: 0,   // 按次物品数量
+    todayCost: '0.00',
+    todayCostPerItem: '0.00',
+    remainCost: '0',
+    usingCount: 0,
 
     // 物品列表
     items: [],
 
-    // 筛选
+    // 筛选/排序
     categories: PRESET_CATEGORIES,
     statusOptions: STATUS_OPTIONS,
     sortOptions: SORT_OPTIONS,
@@ -56,9 +51,8 @@ Page({
     selectedCategory: 'all',
 
     // 视图模式
-    displayMode: 'card', // 'card' | 'list'
-    showSortPop: false,  // 排序弹层
-    showFilterPop: false, // 筛选弹层
+    displayMode: 'card',
+    showSortPop: false,
 
     // 搜索
     searchKeyword: '',
@@ -67,35 +61,36 @@ Page({
     // 空状态
     isEmpty: false,
 
+    // 排序
+    sortOrder: 'custom',
+
     // 自定义导航栏高度
     navBarHeight: 0,
-    selectedCategoryName: '全部分类',
-    sortOrder: 'custom',
+
+    // 当前日期字符串
+    todayStr: '',
   },
 
-  // 页内变量
   _unsubscribe: null,
 
   onLoad() {
-    // 获取系统信息，计算导航栏高度
     const sysInfo = wx.getSystemInfoSync();
     const navBarHeight = sysInfo.statusBarHeight + 44;
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
     this.setData({
       navBarHeight,
-      sortOrder: AppStore.get('sortOrder'),
+      todayStr,
+      sortOrder: AppStore.get('sortOrder') || 'custom',
     });
-
-    // 加载数据
     this._loadData();
   },
 
   onShow() {
-    // 每次进入页面刷新数据
     this._refreshData();
   },
 
   onUnload() {
-    // 取消订阅
     if (this._unsubscribe) {
       this._unsubscribe();
       this._unsubscribe = null;
@@ -105,20 +100,13 @@ Page({
   // ---------- 数据加载 ----------
 
   async _loadData() {
-    // 加载物品
     await ItemService.loadItems();
-
-    // 同步到 AppStore
     const items = ItemService.getItems();
     AppStore.set({ items });
-
-    // 渲染
     this._renderItems();
-
-    // 订阅 AppStore 变更
     this._unsubscribe = AppStore.subscribe((prev, next) => {
       if (prev.items !== next.items) {
-        this._renderItems();
+        this._refreshData();
       }
     });
   },
@@ -131,26 +119,22 @@ Page({
 
   _renderItems() {
     const state = AppStore.getState();
-    const { selectedStatus, selectedCategory, displayMode, searchKeyword } = this.data;
+    const { selectedCategory, searchKeyword } = this.data;
 
     let items = ItemService.getItems();
-
-    // 过滤：状态
-    if (selectedStatus !== 'all') {
-      items = items.filter(i => i.status === selectedStatus);
-    }
 
     // 过滤：分类
     if (selectedCategory !== 'all') {
       items = items.filter(i => i.categoryId === selectedCategory);
     }
 
-    // 搜索
+    // 过滤：搜索
     if (searchKeyword) {
       const kw = searchKeyword.toLowerCase();
       items = items.filter(i =>
         i.name.toLowerCase().includes(kw) ||
-        (i.remark || '').toLowerCase().includes(kw)
+        (i.remark || '').toLowerCase().includes(kw) ||
+        (i.purchaseDate || '').includes(kw)
       );
     }
 
@@ -162,96 +146,116 @@ Page({
     });
 
     // 汇总
-    const todayCost = CostCalculator.calcTotalDailyCost(ItemService.getItems());
-    const avgResult = CostCalculator.calcAveragePerUseCost(ItemService.getItems());
+    const allItems = ItemService.getItems();
+    const usingItems = allItems.filter(i => i.status === 'using');
 
-    // 卡片数据处理
+    // 今日按天总成本
+    const totalDaily = CostCalculator.calcTotalDailyCost(allItems);
+    // 按天物品的今日成本
+    const todayCost = parseFloat(totalDaily.toFixed(2));
+    // 按天物品数
+    const todayItems = usingItems.filter(i => i.unit === 'day');
+    const todayCostPerItem = todayItems.length > 0
+      ? parseFloat((totalDaily / todayItems.length).toFixed(2))
+      : 0;
+
+    // 按次物品剩余成本总和
+    const countItems = usingItems.filter(i => i.unit === 'count');
+    let remainCost = 0;
+    countItems.forEach(item => {
+      const remain = CostCalculator.calcRemainingCost(item);
+      if (remain !== null) remainCost += remain;
+    });
+
     const processedItems = items.map(item => this._processItem(item));
 
     this.setData({
       items: processedItems,
-      todayCost: parseFloat(todayCost.toFixed(2)),
-      avgPerUseCost: avgResult.avgCost !== null ? parseFloat(avgResult.avgCost.toFixed(2)) : null,
-      avgPerUseCount: avgResult.count,
+      todayCost: todayCost.toFixed(2),
+      todayCostPerItem: todayCostPerItem.toFixed(2),
+      remainCost: Math.round(remainCost).toLocaleString('zh-CN'),
+      usingCount: usingItems.length,
       isEmpty: items.length === 0,
-      selectedCategoryName: this._getSelectedCategoryName(),
     });
   },
 
   _processItem(item) {
-    // 计算每物品的展示数据
-    let costDisplay = '--';
-    let costUnit = '';
-    let usedDisplay = '';
+    const state = AppStore.getState();
+    const category = state.categories.find(c => c.id === item.categoryId)
+      || { name: item.categoryName || '其他', icon: item.icon || '📦' };
 
-    if (item.status === 'using') {
-      if (item.unit === 'day') {
-        const days = CostCalculator.calcDaysUsed(item.purchaseDate);
-        const cost = CostCalculator.calcDailyCost(item);
-        costDisplay = parseFloat(cost.toFixed(2));
-        costUnit = '元/天';
-        usedDisplay = `已用${days}天`;
-      } else if (item.unit === 'count') {
-        const cost = CostCalculator.calcPerUseCost(item);
-        if (cost !== null) {
-          costDisplay = parseFloat(cost.toFixed(2));
-        }
-        costUnit = '元/次';
-        usedDisplay = `已用${item.usedCount || 0}次`;
-      }
-    }
-
-    // 分类名
-    const category = PRESET_CATEGORIES.find(c => c.id === item.categoryId) || { name: item.categoryId || '其他', icon: '📦' };
-
-    // 状态标签
     const statusMap = {
       using: '使用中',
       paused: '已废弃',
       retired: '已卖出',
     };
+    const statusClassMap = {
+      using: 'status-using',
+      paused: 'status-paused',
+      retired: 'status-retired',
+    };
+
+    let costDisplay = '--';
+    let usedDays = 0;
+    let usedCount = item.usedCount || 0;
+
+    if (item.status === 'using') {
+      if (item.unit === 'day') {
+        const cost = CostCalculator.calcDailyCost(item);
+        costDisplay = parseFloat(cost.toFixed(2));
+        usedDays = CostCalculator.calcDaysUsed(item.purchaseDate);
+      } else if (item.unit === 'count') {
+        const cost = CostCalculator.calcPerUseCost(item);
+        costDisplay = cost !== null ? parseFloat(cost.toFixed(2)) : '--';
+      }
+    }
+
+    // 格式化日期
+    const purchaseDateStr = item.purchaseDate
+      ? item.purchaseDate.replace(/-/g, '.')
+      : '';
+
+    // 购买价格（分→元）
+    const priceDisplay = item.price != null
+      ? (item.price / 100).toLocaleString('zh-CN', { minimumFractionDigits: 0 })
+      : '0';
 
     return {
       id: item.id,
       name: item.name,
-      icon: category.icon,
-      categoryName: category.name,
+      icon: item.icon || '📦',
+      categoryName: category.name || '其他',
+      hasImage: false,
+      imageUrl: '',
       status: item.status,
       statusLabel: statusMap[item.status] || item.status,
-      costDisplay,
-      costUnit,
-      usedDisplay,
-      isUsing: item.status === 'using',
+      statusClass: statusClassMap[item.status] || '',
+      costDisplay: typeof costDisplay === 'number' ? costDisplay.toFixed(2) : costDisplay,
       isCount: item.unit === 'count',
+      isUsing: item.status === 'using',
+      usedDays,
+      usedCount,
+      priceDisplay,
+      purchaseDateStr,
     };
-  },
-
-  _getSelectedCategoryName() {
-    if (this.data.selectedCategory === 'all') return '全部分类';
-    const cat = PRESET_CATEGORIES.find(c => c.id === this.data.selectedCategory);
-    return cat ? cat.name : '分类';
   },
 
   // ---------- 交互 ----------
 
-  // 切换视图模式
   switchView(e) {
     const mode = e.currentTarget.dataset.mode;
     this.setData({ displayMode: mode });
-    this._renderItems();
   },
 
-  // 展开/收起排序弹层
+  // 排序弹层
   toggleSortPop() {
     this.setData({ showSortPop: !this.data.showSortPop });
   },
 
-  // 关闭排序弹层
   closeSortPop() {
     this.setData({ showSortPop: false });
   },
 
-  // 选择排序方式
   selectSort(e) {
     const value = e.currentTarget.dataset.value;
     AppStore.set({ sortOrder: value });
@@ -259,43 +263,26 @@ Page({
     this._renderItems();
   },
 
-  // 展开/收起筛选弹层
-  toggleFilterPop() {
-    this.setData({ showFilterPop: !this.data.showFilterPop });
-  },
-
-  // 关闭筛选弹层
-  closeFilterPop() {
-    this.setData({ showFilterPop: false });
-  },
-
-  // 选择状态筛选
   selectStatus(e) {
     const status = e.currentTarget.dataset.status;
-    this.setData({ selectedStatus: status, showFilterPop: false });
+    this.setData({ selectedStatus: status, showSortPop: false });
     this._renderItems();
   },
 
-  // 选择分类筛选
+  // 分类胶囊选择（直接切换，不弹层）
   selectCategory(e) {
     const category = e.currentTarget.dataset.category;
-    this.setData({
-      selectedCategory: category,
-      selectedCategoryName: this._getSelectedCategoryName(),
-      showFilterPop: false
-    });
+    this.setData({ selectedCategory: category });
     this._renderItems();
   },
 
   // 点击物品卡片
   onItemTap(e) {
     const id = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/item-detail/index?id=${id}`,
-    });
+    wx.navigateTo({ url: `/pages/item-detail/index?id=${id}` });
   },
 
-  // 按次物品加一次使用
+  // 按次物品 +1
   onUseOnce(e) {
     e.stopPropagation();
     const id = e.currentTarget.dataset.id;
@@ -304,7 +291,7 @@ Page({
     });
   },
 
-  // 搜索相关
+  // 搜索
   onSearchInput(e) {
     this.setData({ searchKeyword: e.detail.value });
     this._renderItems();
@@ -328,11 +315,9 @@ Page({
     this._renderItems();
   },
 
-  // 跳转添加页
   goAdd() {
     wx.switchTab({ url: '/pages/add-cost/index' });
   },
 
-  // 空操作（用于阻止事件穿透）
   noop() {},
 });

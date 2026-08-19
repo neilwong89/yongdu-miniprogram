@@ -36,12 +36,13 @@
 .tab-center {
   width: 96rpx;
   height: 64rpx;
-  background: #6b7c5e;
+  background: #466957;
   border-radius: 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 8rpx;
+  box-shadow: 0 4rpx 16rpx rgba(70, 105, 87, 0.3);
 }
 
 .center-icon {

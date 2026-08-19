@@ -1,197 +1,265 @@
-/* add-cost 页面样式 - 清新淡雅 */
+/* 添加成本页 - 设计稿还原 WXSS */
+
 page {
-  background: #f5f3ef;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #edf0e9;
 }
 
+/* === 页面框架 === */
 .page {
-  padding: 32rpx 40rpx 140rpx;
-  background: #f5f3ef;
-}
-
-.section {
-  margin-bottom: 36rpx;
-}
-
-.section-title {
-  font-size: 26rpx;
-  color: #9e9a93;
-  margin-bottom: 16rpx;
-  letter-spacing: 1rpx;
-  text-transform: uppercase;
-}
-
-.required {
-  color: #c06050;
-  margin-left: 4rpx;
-}
-
-/* emoji 选择 */
-.emoji-grid {
+  min-height: 100vh;
+  background: #edf0e9;
   display: flex;
-  flex-wrap: wrap;
-  gap: 14rpx;
+  flex-direction: column;
 }
 
-.emoji-item {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48rpx;
-  border-radius: 16rpx;
-  background: #ffffff;
-  border: 1.5rpx solid #e4e0d8;
-  transition: border-color 0.2s, background 0.2s;
+.form-scroll {
+  flex: 1;
+  background: #fbfaf6;
 }
 
-.emoji-item.active {
-  background: #e8f2e8;
-  border-color: #6b7c5e;
+.form-content {
+  padding: 0 40rpx 200rpx;
 }
 
-/* 输入框 */
-.input {
-  background: #ffffff;
-  border: 1.5rpx solid #e4e0d8;
-  border-radius: 16rpx;
-  padding: 22rpx 28rpx;
-  font-size: 30rpx;
-  color: #2d3436;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-
-.input:focus {
-  border-color: #a8c5a8;
-}
-
-.input::placeholder {
-  color: #c5c0b6;
-}
-
-/* picker 行 */
-.picker-row {
+/* === 顶部导航 === */
+.form-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #ffffff;
-  border: 1.5rpx solid #e4e0d8;
-  border-radius: 16rpx;
-  padding: 22rpx 28rpx;
-  transition: border-color 0.2s;
+  padding-top: 24rpx;
 }
 
-.picker-row .label {
-  font-size: 30rpx;
-  color: #2d3436;
-}
-
-.picker-row .right {
+.back-btn {
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: #eef1eb;
+  border-radius: 50%;
 }
 
-.picker-value {
-  font-size: 30rpx;
-  color: #2d3436;
-}
-
-.arrow {
+.back-icon {
   font-size: 32rpx;
-  color: #c5c0b6;
-  margin-left: 8rpx;
+  color: #32423b;
 }
 
-/* radio */
-radio-group {
-  display: flex;
-  gap: 24rpx;
-  flex-wrap: wrap;
+.header-center {
+  text-align: center;
 }
 
-.radio-item {
-  display: inline-flex;
-  align-items: center;
-  font-size: 30rpx;
-  color: #4a4540;
-  padding: 12rpx 24rpx;
-  background: #ffffff;
-  border: 1.5rpx solid #e4e0d8;
-  border-radius: 100rpx;
-  transition: all 0.2s;
+.header-sub {
+  font-size: 22rpx;
+  color: #8b968f;
+  letter-spacing: 3rpx;
+  display: block;
 }
 
-.radio-item radio {
-  margin-right: 10rpx;
-  transform: scale(0.85);
-}
-
-.radio-item[aria-checked="true"] {
-  background: #e8f2e8;
-  border-color: #6b7c5e;
-  color: #4a5a3a;
-}
-
-/* textarea */
-.textarea {
-  background: #ffffff;
-  border: 1.5rpx solid #e4e0d8;
-  border-radius: 16rpx;
-  padding: 22rpx 28rpx;
-  font-size: 30rpx;
-  color: #2d3436;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 160rpx;
-  transition: border-color 0.2s;
-}
-
-.textarea:focus {
-  border-color: #a8c5a8;
-}
-
-.textarea::placeholder {
-  color: #c5c0b6;
-}
-
-/* 保存按钮 */
-.btn-area {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20rpx 40rpx calc(20rpx + env(safe-area-inset-bottom));
-  background: #f5f3ef;
-  border-top: 1.5rpx solid #e4e0d8;
-}
-
-.btn-primary {
-  background: #6b7c5e;
-  color: #fff;
-  font-size: 32rpx;
+.header-title {
+  font-size: 36rpx;
   font-weight: 600;
-  border-radius: 100rpx;
-  height: 96rpx;
-  line-height: 96rpx;
+  color: #32423b;
+  display: block;
+  margin-top: 4rpx;
+}
+
+.w-9 {
+  width: 72rpx;
+}
+
+/* === 图片上传区 === */
+.photo-upload {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: #f0f5ef;
+  border: 3rpx dashed #b8c9ba;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-top: 36rpx;
+}
+
+.upload-icon-wrap {
+  width: 100rpx;
+  height: 100rpx;
+  background: #dceadf;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.upload-icon {
+  font-size: 48rpx;
+}
+
+.upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.upload-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #32423b;
+}
+
+.upload-sub {
+  font-size: 24rpx;
+  color: #7b897f;
+}
+
+/* === 表单区 === */
+.form-sections {
+  margin-top: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.field-row {
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid #f0ede8;
+}
+
+.field-row.cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 24rpx;
+  color: #8b968f;
+  margin-bottom: 14rpx;
   letter-spacing: 1rpx;
 }
 
-/* 辅助类 */
-.mt16 {
-  margin-top: 16rpx;
+.field-input {
+  background: #f0f2ec;
+  border-radius: 20rpx;
+  padding: 22rpx 28rpx;
+  font-size: 30rpx;
+  color: #32423b;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* picker 弹层 */
+.field-input::placeholder {
+  color: #9da79f;
+}
+
+.field-textarea {
+  background: #f0f2ec;
+  border-radius: 20rpx;
+  padding: 22rpx 28rpx;
+  font-size: 28rpx;
+  color: #32423b;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 140rpx;
+}
+
+.field-textarea::placeholder {
+  color: #9da79f;
+}
+
+.field-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0f2ec;
+  border-radius: 20rpx;
+  padding: 22rpx 28rpx;
+}
+
+.field-select-val {
+  font-size: 30rpx;
+  color: #32423b;
+}
+
+.field-arrow {
+  font-size: 32rpx;
+  color: #9da79f;
+}
+
+/* === 成本计算方式卡片 === */
+.method-card {
+  background: #e6eee7;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin: 28rpx 0;
+}
+
+.method-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #32423b;
+}
+
+.method-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.method-btn {
+  padding: 22rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #32423b;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.method-btn.active {
+  background: #466957;
+  color: #ffffff;
+}
+
+.method-hint {
+  font-size: 22rpx;
+  color: #668070;
+  display: block;
+  margin-top: 18rpx;
+  line-height: 1.6;
+}
+
+/* === 底部保存按钮 === */
+.bottom-bar {
+  padding: 20rpx 40rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: #fbfaf6;
+  border-top: 1.5rpx solid #e8ebe4;
+}
+
+.save-btn {
+  background: #466957;
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  padding: 28rpx 0;
+  border-radius: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+/* === 选择器弹层 === */
 .picker-mask {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(45, 52, 54, 0.25);
+  background: rgba(50, 66, 59, 0.3);
   z-index: 999;
   display: flex;
   align-items: flex-end;
@@ -199,7 +267,7 @@ radio-group {
 
 .picker-sheet {
   width: 100%;
-  background: #faf8f4;
+  background: #fbfaf6;
   border-radius: 32rpx 32rpx 0 0;
   padding: 24rpx 0 60rpx;
 }
@@ -213,25 +281,24 @@ radio-group {
   text-align: center;
   line-height: 80rpx;
   font-size: 30rpx;
-  color: #4a4540;
+  color: #32423b;
 }
 
 .picker-cancel {
   text-align: center;
-  color: #9e9a93;
+  color: #7a887f;
   font-size: 30rpx;
-  margin-top: 16rpx;
   padding: 24rpx;
 }
 
-/* 自定义分类弹窗 */
+/* === 自定义分类弹窗 === */
 .mask {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(45, 52, 54, 0.25);
+  background: rgba(50, 66, 59, 0.3);
   z-index: 999;
   display: flex;
   align-items: center;
@@ -240,9 +307,9 @@ radio-group {
 
 .dialog {
   width: 560rpx;
-  background: #faf8f4;
+  background: #fbfaf6;
   border-radius: 28rpx;
-  padding: 48rpx 40rpx 40rpx;
+  padding: 48rpx 40rpx;
 }
 
 .dialog-title {
@@ -250,21 +317,22 @@ radio-group {
   font-weight: 600;
   text-align: center;
   margin-bottom: 36rpx;
-  color: #2d3436;
+  color: #32423b;
 }
 
 .dialog-input {
-  background: #ffffff;
-  border: 1.5rpx solid #e4e0d8;
-  border-radius: 16rpx;
+  background: #f0f2ec;
+  border-radius: 20rpx;
   padding: 22rpx 28rpx;
   font-size: 30rpx;
+  color: #32423b;
   margin-bottom: 36rpx;
-  color: #2d3436;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.dialog-input:focus {
-  border-color: #a8c5a8;
+.dialog-input::placeholder {
+  color: #9da79f;
 }
 
 .dialog-btns {
@@ -274,19 +342,19 @@ radio-group {
 
 .dialog-btn {
   flex: 1;
-  font-size: 30rpx;
+  text-align: center;
+  padding: 24rpx 0;
   border-radius: 100rpx;
-  height: 88rpx;
-  line-height: 88rpx;
+  font-size: 30rpx;
 }
 
 .dialog-btn.cancel {
   background: #ffffff;
-  border: 1.5rpx solid #e4e0d8;
-  color: #7a756c;
+  border: 1.5rpx solid #e8ebe4;
+  color: #7a887f;
 }
 
 .dialog-btn.confirm {
-  background: #6b7c5e;
-  color: #fff;
+  background: #466957;
+  color: #ffffff;
 }
