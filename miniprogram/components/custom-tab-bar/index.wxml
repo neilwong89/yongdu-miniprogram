@@ -1,0 +1,16 @@
+<view class="tabbar">
+  <view
+    wx:for="{{list}}"
+    wx:key="index"
+    class="tab {{active === index ? 'active' : ''}}"
+    data-index="{{index}}"
+    catchtap="switchTab"
+  >
+    <view wx:if="{{index === 1}}" class="tab-center">
+      <view class="center-icon">+</view>
+    </view>
+    <view wx:else class="tab-text">
+      <text>{{item.text}}</text>
+    </view>
+  </view>
+</view>

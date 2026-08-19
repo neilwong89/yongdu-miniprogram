@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/cost/index",
+    "pages/add-cost/index",
+    "pages/insight/index",
+    "pages/item-detail/index"
+  ],
+  "subpackages": [],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "用度",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#333333",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/cost/index",
+        "text": "成本"
+      },
+      {
+        "pagePath": "pages/add-cost/index",
+        "text": ""
+      },
+      {
+        "pagePath": "pages/insight/index",
+        "text": "洞察"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

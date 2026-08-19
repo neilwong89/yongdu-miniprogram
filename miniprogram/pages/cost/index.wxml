@@ -1,0 +1,197 @@
+<!-- 成本页（首页） -->
+<view class="page">
+
+  <!-- 自定义导航栏 -->
+  <view class="nav-bar" style="padding-top: {{navBarHeight}}px;">
+    <view class="nav-content">
+      <view class="nav-title">用度</view>
+      <view class="nav-slogan">记录每一分花出去的成本</view>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <text class="icon-search">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索物品名称、备注"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindfocus="onSearchFocus"
+        bindblur="onSearchBlur"
+      />
+      <text wx:if="{{searchKeyword}}" class="icon-clear" bindtap="onSearchClear">✕</text>
+    </view>
+    <text wx:if="{{isSearching}}" class="search-cancel" bindtap="onSearchCancel">取消</text>
+  </view>
+
+  <!-- 筛选 & 排序工具栏 -->
+  <view class="tool-bar">
+    <view class="filter-tags">
+      <view
+        class="filter-tag {{selectedStatus === 'all' ? 'active' : ''}}"
+        bindtap="toggleFilterPop"
+      >
+        {{selectedStatus === 'all' ? '全部' : (selectedStatus === 'using' ? '使用中' : selectedStatus === 'paused' ? '已废弃' : '已卖出')}}
+        <text class="arrow">▼</text>
+      </view>
+      <view
+        class="filter-tag {{selectedCategory !== 'all' ? 'active' : ''}}"
+        bindtap="toggleFilterPop"
+      >
+        {{selectedCategory === 'all' ? '全部分类' : selectedCategoryName}}
+        <text class="arrow">▼</text>
+      </view>
+    </view>
+    <view class="tool-right">
+      <view class="sort-btn" bindtap="toggleSortPop">
+        <text>排序</text>
+      </view>
+      <view class="view-toggle">
+        <text
+          class="view-icon {{displayMode === 'card' ? 'active' : ''}}"
+          bindtap="switchView"
+          data-mode="card"
+        >▦</text>
+        <text
+          class="view-icon {{displayMode === 'list' ? 'active' : ''}}"
+          bindtap="switchView"
+          data-mode="list"
+        >☰</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成本汇总区 -->
+  <view class="summary-section">
+    <view class="summary-card">
+      <view class="summary-item">
+        <view class="summary-label">今日成本</view>
+        <view class="summary-value primary">¥ {{todayCost}}</view>
+      </view>
+      <view class="summary-divider"></view>
+      <view class="summary-item">
+        <view class="summary-label">平均每次</view>
+        <view class="summary-value" wx:if="{{avgPerUseCost !== null}}">
+          ¥ {{avgPerUseCost}}
+          <text class="summary-sub">（按次物品 · 共{{avgPerUseCount}}件）</text>
+        </view>
+        <view class="summary-value" wx:else>--</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 物品列表 -->
+  <view class="items-section" wx:if="{{!isEmpty}}">
+
+    <!-- 卡片视图 -->
+    <view wx:if="{{displayMode === 'card'}}" class="card-list">
+      <view
+        wx:for="{{items}}"
+        wx:key="id"
+        class="item-card"
+        bindtap="onItemTap"
+        data-id="{{item.id}}"
+      >
+        <view class="card-icon">{{item.icon}}</view>
+        <view class="card-body">
+          <view class="card-name">{{item.name}}</view>
+          <view class="card-meta">
+            <text class="card-category">{{item.categoryName}}</text>
+            <text class="card-sep">·</text>
+            <text class="card-status {{item.isUsing ? 'status-using' : 'status-other'}}">{{item.statusLabel}}</text>
+          </view>
+          <view class="card-cost">
+            <text class="cost-value" wx:if="{{item.isUsing}}">¥ {{item.costDisplay}}</text>
+            <text class="cost-value" wx:else>--</text>
+            <text class="cost-unit">{{item.costUnit}}</text>
+            <!-- 按次物品加号按钮 -->
+            <text
+              wx:if="{{item.isUsing && item.isCount}}"
+              class="use-btn"
+              catchtap="onUseOnce"
+              data-id="{{item.id}}"
+            >+</text>
+          </view>
+          <view class="card-used">{{item.usedDisplay}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 列表视图 -->
+    <view wx:else class="list-view">
+      <view
+        wx:for="{{items}}"
+        wx:key="id"
+        class="list-item"
+        bindtap="onItemTap"
+        data-id="{{item.id}}"
+      >
+        <view class="list-icon">{{item.icon}}</view>
+        <view class="list-name">{{item.name}}</view>
+        <view class="list-category">{{item.categoryName}}</view>
+        <view class="list-cost">
+          <text wx:if="{{item.isUsing}}">¥ {{item.costDisplay}}{{item.costUnit}}</text>
+          <text wx:else>--</text>
+        </view>
+        <view class="list-used">{{item.usedDisplay}}</view>
+        <text
+          wx:if="{{item.isUsing && item.isCount}}"
+          class="use-btn"
+          catchtap="onUseOnce"
+          data-id="{{item.id}}"
+        >+</text>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{isEmpty}}" class="empty-state">
+    <view class="empty-illustration">📦</view>
+    <view class="empty-title">记录你的第一笔用度</view>
+    <view class="empty-desc">开始追踪你的消费成本</view>
+    <view class="empty-btn" bindtap="goAdd">添加物品</view>
+  </view>
+
+  <!-- 排序弹层 -->
+  <view wx:if="{{showSortPop}}" class="pop-overlay" bindtap="closeSortPop">
+    <view class="pop-sheet" catchtap="noop">
+      <view class="pop-title">排序方式</view>
+      <view
+        wx:for="{{sortOptions}}"
+        wx:key="value"
+        class="pop-item {{sortOrder === item.value ? 'active' : ''}}"
+        bindtap="selectSort"
+        data-value="{{item.value}}"
+      >{{item.label}}</view>
+      <view class="pop-cancel" bindtap="closeSortPop">取消</view>
+    </view>
+  </view>
+
+  <!-- 筛选弹层 -->
+  <view wx:if="{{showFilterPop}}" class="pop-overlay" bindtap="closeFilterPop">
+    <view class="pop-sheet" catchtap="noop">
+      <view class="pop-title">状态筛选</view>
+      <view
+        wx:for="{{statusOptions}}"
+        wx:key="value"
+        class="pop-item {{selectedStatus === item.value ? 'active' : ''}}"
+        bindtap="selectStatus"
+        data-status="{{item.value}}"
+      >{{item.label}}</view>
+      <view class="pop-divider"></view>
+      <view class="pop-title">分类筛选</view>
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="pop-item {{selectedCategory === item.id ? 'active' : ''}}"
+        bindtap="selectCategory"
+        data-category="{{item.id}}"
+      >{{item.icon}} {{item.name}}</view>
+      <view class="pop-cancel" bindtap="closeFilterPop">取消</view>
+    </view>
+  </view>
+
+</view>

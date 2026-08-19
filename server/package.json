@@ -1,0 +1,14 @@
+{
+  "name": "yongdu-server",
+  "version": "1.0.0",
+  "description": "用度服务端",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.1",
+    "express": "^5.2.1",
+    "ws": "^8.20.0"
+  }
+}

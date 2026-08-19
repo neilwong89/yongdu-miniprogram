@@ -1,0 +1,175 @@
+<view class="page">
+
+  <!-- emoji 选择 -->
+  <view class="section">
+    <view class="section-title">图标</view>
+    <view class="emoji-grid">
+      <view
+        wx:for="{{emojis}}"
+        wx:key="*this"
+        class="emoji-item {{icon === item ? 'active' : ''}}"
+        data-emoji="{{item}}"
+        bindtap="onEmojiTap"
+      >{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 名称 -->
+  <view class="section">
+    <view class="section-title">名称 <text class="required">*</text></view>
+    <input
+      class="input"
+      placeholder="请输入物品名称（最多20字）"
+      maxlength="20"
+      value="{{name}}"
+      bindinput="onNameInput"
+    />
+  </view>
+
+  <!-- 分类 -->
+  <view class="section">
+    <view class="section-title">分类</view>
+    <view class="picker-row" bindtap="onCategoryTap">
+      <text class="picker-value">{{categoryName}}</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 状态 -->
+  <view class="section">
+    <view class="section-title">状态</view>
+    <radio-group bindchange="onStatusChange">
+      <label
+        wx:for="{{statusOptions}}"
+        wx:key="value"
+        class="radio-item"
+      >
+        <radio value="{{item.value}}" checked="{{status === item.value}}"/>
+        <text>{{item.label}}</text>
+      </label>
+    </radio-group>
+  </view>
+
+  <!-- 购买日期 -->
+  <view class="section">
+    <view class="section-title">购买日期 <text class="required">*</text></view>
+    <picker mode="date" value="{{purchaseDate}}" bindchange="onPurchaseDateChange">
+      <view class="picker-row">
+        <text class="picker-value">{{purchaseDate}}</text>
+        <text class="arrow">›</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 单价 -->
+  <view class="section">
+    <view class="section-title">单价（元）<text class="required">*</text></view>
+    <input
+      class="input"
+      type="digit"
+      placeholder="请输入购买单价"
+      value="{{price}}"
+      bindinput="onPriceInput"
+    />
+  </view>
+
+  <!-- 其他费用 -->
+  <view class="section">
+    <view class="section-title">其他费用（元）</view>
+    <input
+      class="input"
+      type="digit"
+      placeholder="可选，如运费、配件等"
+      value="{{otherFees}}"
+      bindinput="onOtherFeesInput"
+    />
+  </view>
+
+  <!-- 计量单位 -->
+  <view class="section">
+    <view class="section-title">计量方式</view>
+    <radio-group bindchange="onUnitChange">
+      <label
+        wx:for="{{unitOptions}}"
+        wx:key="value"
+        class="radio-item"
+      >
+        <radio value="{{item.value}}" checked="{{unit === item.value}}"/>
+        <text>{{item.label}}</text>
+      </label>
+    </radio-group>
+  </view>
+
+  <!-- 备注 -->
+  <view class="section">
+    <view class="section-title">备注</view>
+    <textarea
+      class="textarea"
+      placeholder="可选（最多200字）"
+      maxlength="200"
+      value="{{remark}}"
+      bindinput="onRemarkInput"
+    />
+  </view>
+
+  <!-- 卖出信息（仅已报废状态显示） -->
+  <view class="section" wx:if="{{status === 'retired'}}">
+    <view class="section-title">卖出信息</view>
+    <input
+      class="input"
+      type="digit"
+      placeholder="卖出价格（元）"
+      value="{{soldPrice}}"
+      bindinput="onSoldPriceInput"
+    />
+    <picker mode="date" value="{{soldDate}}" bindchange="onSoldDateChange">
+      <view class="picker-row mt16">
+        <text class="label">卖出日期</text>
+        <view class="right">
+          <text class="picker-value">{{soldDate}}</text>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="btn-area">
+    <button class="btn-primary" bindtap="onSave">保存</button>
+  </view>
+
+</view>
+
+<!-- 分类选择器弹层 -->
+<view class="picker-mask" wx:if="{{showCategoryPicker}}" bindtap="onCategoryPickerCancel">
+  <view class="picker-sheet" catchtap="noop">
+    <picker-view
+      indicator-class="picker-indicator"
+      bindchange="onCategoryPickerChange"
+    >
+      <picker-view-column>
+        <view wx:for="{{categoryList}}" wx:key="id" class="picker-item">{{item.name}}</view>
+      </picker-view-column>
+    </picker-view>
+    <view class="picker-cancel" bindtap="onCategoryPickerCancel">取消</view>
+  </view>
+</view>
+
+<!-- 自定义分类输入弹窗 -->
+<view class="mask" wx:if="{{showCustomCategoryInput}}" bindtap="onCustomCategoryCancel">
+  <view class="dialog" catchtap="noop">
+    <view class="dialog-title">自定义分类</view>
+    <input
+      class="dialog-input"
+      placeholder="请输入分类名称（最多10字）"
+      maxlength="10"
+      focus="{{true}}"
+      value="{{customCategoryName}}"
+      bindinput="onCustomCategoryInput"
+    />
+    <view class="dialog-btns">
+      <button class="dialog-btn cancel" bindtap="onCustomCategoryCancel">取消</button>
+      <button class="dialog-btn confirm" bindtap="onCustomCategoryConfirm">确定</button>
+    </view>
+  </view>
+</view>
