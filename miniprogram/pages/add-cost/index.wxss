@@ -1,21 +1,28 @@
-/* add-cost 页面样式 */
+/* add-cost 页面样式 - 清新淡雅 */
+page {
+  background: #f5f3ef;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
 .page {
-  padding: 24rpx;
-  padding-bottom: 120rpx;
+  padding: 32rpx 40rpx 140rpx;
+  background: #f5f3ef;
 }
 
 .section {
-  margin-bottom: 32rpx;
+  margin-bottom: 36rpx;
 }
 
 .section-title {
-  font-size: 28rpx;
-  color: #666;
+  font-size: 26rpx;
+  color: #9e9a93;
   margin-bottom: 16rpx;
+  letter-spacing: 1rpx;
+  text-transform: uppercase;
 }
 
 .required {
-  color: #e64340;
+  color: #c06050;
   margin-left: 4rpx;
 }
 
@@ -23,7 +30,7 @@
 .emoji-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 14rpx;
 }
 
 .emoji-item {
@@ -33,24 +40,36 @@
   align-items: center;
   justify-content: center;
   font-size: 48rpx;
-  border-radius: 12rpx;
-  background: #f5f5f5;
-  border: 2rpx solid transparent;
+  border-radius: 16rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .emoji-item.active {
-  background: #e8f4ff;
-  border-color: #1aad19;
+  background: #e8f2e8;
+  border-color: #6b7c5e;
 }
 
 /* 输入框 */
 .input {
-  background: #f5f5f5;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  border-radius: 16rpx;
+  padding: 22rpx 28rpx;
   font-size: 30rpx;
+  color: #2d3436;
   width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: #a8c5a8;
+}
+
+.input::placeholder {
+  color: #c5c0b6;
 }
 
 /* picker 行 */
@@ -58,14 +77,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f5f5f5;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  border-radius: 16rpx;
+  padding: 22rpx 28rpx;
+  transition: border-color 0.2s;
 }
 
 .picker-row .label {
   font-size: 30rpx;
-  color: #333;
+  color: #2d3436;
 }
 
 .picker-row .right {
@@ -75,36 +96,65 @@
 
 .picker-value {
   font-size: 30rpx;
-  color: #333;
+  color: #2d3436;
 }
 
 .arrow {
   font-size: 32rpx;
-  color: #999;
+  color: #c5c0b6;
   margin-left: 8rpx;
 }
 
 /* radio */
+radio-group {
+  display: flex;
+  gap: 24rpx;
+  flex-wrap: wrap;
+}
+
 .radio-item {
   display: inline-flex;
   align-items: center;
-  margin-right: 40rpx;
   font-size: 30rpx;
+  color: #4a4540;
+  padding: 12rpx 24rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  border-radius: 100rpx;
+  transition: all 0.2s;
 }
 
 .radio-item radio {
-  margin-right: 8rpx;
+  margin-right: 10rpx;
+  transform: scale(0.85);
+}
+
+.radio-item[aria-checked="true"] {
+  background: #e8f2e8;
+  border-color: #6b7c5e;
+  color: #4a5a3a;
 }
 
 /* textarea */
 .textarea {
-  background: #f5f5f5;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  border-radius: 16rpx;
+  padding: 22rpx 28rpx;
   font-size: 30rpx;
+  color: #2d3436;
   width: 100%;
   box-sizing: border-box;
   min-height: 160rpx;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  border-color: #a8c5a8;
+}
+
+.textarea::placeholder {
+  color: #c5c0b6;
 }
 
 /* 保存按钮 */
@@ -113,18 +163,20 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 24rpx 32rpx;
-  background: #fff;
-  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
+  padding: 20rpx 40rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: #f5f3ef;
+  border-top: 1.5rpx solid #e4e0d8;
 }
 
 .btn-primary {
-  background: #1aad19;
+  background: #6b7c5e;
   color: #fff;
   font-size: 32rpx;
-  border-radius: 48rpx;
+  font-weight: 600;
+  border-radius: 100rpx;
   height: 96rpx;
   line-height: 96rpx;
+  letter-spacing: 1rpx;
 }
 
 /* 辅助类 */
@@ -139,7 +191,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(45, 52, 54, 0.25);
   z-index: 999;
   display: flex;
   align-items: flex-end;
@@ -147,9 +199,9 @@
 
 .picker-sheet {
   width: 100%;
-  background: #fff;
-  border-radius: 24rpx 24rpx 0 0;
-  padding: 32rpx 0;
+  background: #faf8f4;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 24rpx 0 60rpx;
 }
 
 .picker-indicator {
@@ -161,14 +213,15 @@
   text-align: center;
   line-height: 80rpx;
   font-size: 30rpx;
+  color: #4a4540;
 }
 
 .picker-cancel {
   text-align: center;
-  color: #999;
+  color: #9e9a93;
   font-size: 30rpx;
   margin-top: 16rpx;
-  padding: 20rpx;
+  padding: 24rpx;
 }
 
 /* 自定义分类弹窗 */
@@ -178,7 +231,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(45, 52, 54, 0.25);
   z-index: 999;
   display: flex;
   align-items: center;
@@ -187,45 +240,53 @@
 
 .dialog {
   width: 560rpx;
-  background: #fff;
-  border-radius: 24rpx;
-  padding: 40rpx;
+  background: #faf8f4;
+  border-radius: 28rpx;
+  padding: 48rpx 40rpx 40rpx;
 }
 
 .dialog-title {
   font-size: 34rpx;
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
-  margin-bottom: 32rpx;
+  margin-bottom: 36rpx;
+  color: #2d3436;
 }
 
 .dialog-input {
-  background: #f5f5f5;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  border-radius: 16rpx;
+  padding: 22rpx 28rpx;
   font-size: 30rpx;
-  margin-bottom: 32rpx;
+  margin-bottom: 36rpx;
+  color: #2d3436;
+}
+
+.dialog-input:focus {
+  border-color: #a8c5a8;
 }
 
 .dialog-btns {
   display: flex;
-  gap: 24rpx;
+  gap: 20rpx;
 }
 
 .dialog-btn {
   flex: 1;
   font-size: 30rpx;
-  border-radius: 48rpx;
+  border-radius: 100rpx;
   height: 88rpx;
   line-height: 88rpx;
 }
 
 .dialog-btn.cancel {
-  background: #f5f5f5;
-  color: #666;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  color: #7a756c;
 }
 
 .dialog-btn.confirm {
-  background: #1aad19;
+  background: #6b7c5e;
   color: #fff;
 }

@@ -1,7 +1,12 @@
-/* item-detail 页面样式 */
+/* item-detail 页面样式 - 清新淡雅 */
+page {
+  background: #f5f3ef;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
 .page {
-  padding: 24rpx;
-  padding-bottom: 140rpx;
+  padding: 32rpx 40rpx 140rpx;
+  background: #f5f3ef;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -12,17 +17,22 @@
   align-items: center;
   gap: 24rpx;
   margin-bottom: 32rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  border-radius: 24rpx;
+  padding: 32rpx;
 }
 
 .icon-wrap {
   width: 100rpx;
   height: 100rpx;
-  background: #f5f5f5;
+  background: #f5f3ef;
   border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1.5rpx solid #e4e0d8;
 }
 
 .icon {
@@ -35,10 +45,11 @@
 
 .name {
   font-size: 40rpx;
-  font-weight: bold;
-  color: #333;
+  font-weight: 700;
+  color: #2d3436;
   display: block;
-  margin-bottom: 12rpx;
+  margin-bottom: 14rpx;
+  letter-spacing: -0.5rpx;
 }
 
 .tags {
@@ -49,24 +60,24 @@
 
 .tag {
   font-size: 22rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 6rpx;
+  padding: 5rpx 14rpx;
+  border-radius: 100rpx;
   color: #fff;
 }
 
 .tag.category {
-  background: #1aad19;
+  background: #6b7c5e;
 }
 
 .tag.status {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 /* 成本卡片 */
 .cost-card {
-  background: linear-gradient(135deg, #1aad19, #0d8a00);
-  border-radius: 20rpx;
-  padding: 32rpx;
+  background: #6b7c5e;
+  border-radius: 24rpx;
+  padding: 36rpx;
   margin-bottom: 32rpx;
   color: #fff;
 }
@@ -75,33 +86,34 @@
   display: flex;
   align-items: baseline;
   gap: 8rpx;
-  margin-bottom: 24rpx;
+  margin-bottom: 28rpx;
 }
 
 .cost-label {
   font-size: 26rpx;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .cost-value {
-  font-size: 56rpx;
-  font-weight: bold;
+  font-size: 60rpx;
+  font-weight: 700;
+  letter-spacing: -2rpx;
 }
 
 .cost-unit {
   font-size: 26rpx;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .cost-divider {
   height: 1rpx;
-  background: rgba(255,255,255,0.2);
-  margin-bottom: 24rpx;
+  background: rgba(255,255,255,0.15);
+  margin-bottom: 28rpx;
 }
 
 .cost-sub {
   display: flex;
-  gap: 40rpx;
+  gap: 48rpx;
 }
 
 .cost-item {
@@ -112,18 +124,19 @@
 
 .ci-label {
   font-size: 24rpx;
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
 .ci-value {
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: 34rpx;
+  font-weight: 600;
 }
 
 /* 明细列表 */
 .detail-list {
-  background: #fff;
-  border-radius: 16rpx;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  border-radius: 24rpx;
   overflow: hidden;
 }
 
@@ -132,7 +145,7 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 28rpx 32rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid #f0ede8;
 }
 
 .detail-item:last-child {
@@ -141,26 +154,26 @@
 
 .di-key {
   font-size: 28rpx;
-  color: #666;
+  color: #9e9a93;
   flex-shrink: 0;
 }
 
 .di-val {
   font-size: 28rpx;
-  color: #333;
+  color: #2d3436;
   text-align: right;
   max-width: 380rpx;
   word-break: break-all;
 }
 
 .di-val.remark {
-  color: #666;
+  color: #7a756c;
   font-size: 26rpx;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .detail-item.sold .di-val {
-  color: #ff6b00;
+  color: #b05a3a;
 }
 
 /* 底部操作栏 */
@@ -170,38 +183,42 @@
   left: 0;
   right: 0;
   display: flex;
-  gap: 24rpx;
-  padding: 24rpx 32rpx;
-  background: #fff;
-  box-shadow: 0 -2rpx 16rpx rgba(0,0,0,0.06);
+  gap: 20rpx;
+  padding: 20rpx 40rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: #f5f3ef;
+  border-top: 1.5rpx solid #e4e0d8;
 }
 
 .btn-use {
   flex: 1;
-  background: #ff9800;
+  background: #b05a3a;
   color: #fff;
   font-size: 30rpx;
-  border-radius: 48rpx;
+  font-weight: 600;
+  border-radius: 100rpx;
   height: 88rpx;
   line-height: 88rpx;
 }
 
 .btn-edit {
   flex: 1;
-  background: #1aad19;
+  background: #6b7c5e;
   color: #fff;
   font-size: 30rpx;
-  border-radius: 48rpx;
+  font-weight: 600;
+  border-radius: 100rpx;
   height: 88rpx;
   line-height: 88rpx;
 }
 
 .btn-delete {
   flex: 1;
-  background: #f5f5f5;
-  color: #e64340;
+  background: #ffffff;
+  border: 1.5rpx solid #e4e0d8;
+  color: #9e9a93;
   font-size: 30rpx;
-  border-radius: 48rpx;
+  font-weight: 600;
+  border-radius: 100rpx;
   height: 88rpx;
   line-height: 88rpx;
 }

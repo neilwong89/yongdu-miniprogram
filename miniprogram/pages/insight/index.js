@@ -184,7 +184,7 @@ Page({
       costStr: formatMoney(Math.round(item.cost)),
       unit: item.unit,
       // 排名颜色
-      rankColor: idx === 0 ? '#ff6b6b' : idx === 1 ? '#ffa502' : idx === 2 ? '#ffd32a' : '#999',
+      rankColor: idx === 0 ? '#b08050' : idx === 1 ? '#8a9a7a' : idx === 2 ? '#a8b89a' : '#9e9a93',
     }));
 
     // === 4. 低效率物品提示 ===

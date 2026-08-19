@@ -9,9 +9,9 @@ const { formatMoney } = require('../../utils/format');
 
 // 状态映射
 const STATUS_MAP = {
-  using: { label: '使用中', color: '#1aad19' },
-  paused: { label: '已暂停', color: '#ff9800' },
-  retired: { label: '已报废', color: '#999' },
+  using: { label: '使用中', color: '#5a7a5a' },
+  paused: { label: '已暂停', color: '#b08050' },
+  retired: { label: '已报废', color: '#9e9a93' },
 };
 
 Page({

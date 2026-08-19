@@ -1,14 +1,15 @@
+/* custom-tab-bar 样式 - 清新淡雅 */
 .tabbar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 88rpx;
+  height: 96rpx;
   padding-bottom: env(safe-area-inset-bottom);
-  background: #fff;
+  background: #faf8f4;
   display: flex;
   align-items: flex-end;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1.5rpx solid #e4e0d8;
   z-index: 999;
 }
 
@@ -17,29 +18,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 80rpx;
+  height: 84rpx;
 }
 
 .tab-text text {
   font-size: 24rpx;
-  color: #999;
+  color: #9e9a93;
   transition: color 0.2s;
+  letter-spacing: 0.5rpx;
 }
 
 .tab.active .tab-text text {
-  color: #333;
+  color: #4a5a3a;
   font-weight: 600;
 }
 
 .tab-center {
   width: 96rpx;
   height: 64rpx;
-  background: linear-gradient(135deg, #34c759, #30d158);
+  background: #6b7c5e;
   border-radius: 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(52, 199, 89, 0.35);
+  margin-bottom: 8rpx;
 }
 
 .center-icon {
