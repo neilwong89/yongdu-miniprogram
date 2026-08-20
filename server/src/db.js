@@ -41,6 +41,7 @@ db.exec(`
     id TEXT PRIMARY KEY,
     width INTEGER,
     height INTEGER,
+    thumb_url TEXT,
     created_at INTEGER
   );
 `);

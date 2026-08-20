@@ -1,134 +1,133 @@
 /**
  * image-compress.js
- * 微信小程序图片压缩工具（基于 Node canvas API）
- * 使用 type="2d" 的离屏 canvas 压缩图片
+ * 微信小程序图片压缩工具
+ * 优先使用 wx.compressImage，质量不足时用 canvas 二次精修
  */
 
 const MAIN_MAX_SIDE = 1200;
-const THUMB_MAX_SIDE = 200;
-const MAIN_QUALITY = 0.85;
-const THUMB_QUALITY = 0.75;
+const THUMB_MAX_SIDE = 400; // 缩略图用 400px，后续展示层再缩放
+const MAIN_QUALITY = 80;    // wx.compressImage quality 0~100
+const THUMB_QUALITY = 70;
 
 /**
- * 用 canvas 压缩图片
- * @param {string} filePath  原始文件路径（wx.chooseImage 返回的临时路径）
- * @param {number} maxSide  最大边（px）
- * @param {number} quality  JPEG 质量 0~1
- * @param {string} canvasId  wxml 中 canvas 的 id
- * @returns {Promise<{tempFilePath: string, width: number, height: number}>}
+ * 获取图片尺寸
  */
-/**
- * 降级压缩：wx.compressImage（质量不如 canvas 但成功率高）
- */
-function fallbackCompress(filePath, maxSide, quality, resolve, reject) {
-  // quality 0~100，maxSide 0~10（越小越压缩）
-  const compressQuality = Math.round(quality * 100);
-  const compressLevel = maxSide <= 200 ? 10 : maxSide <= 600 ? 6 : 3;
-  wx.compressImage({
-    src: filePath,
-    quality: compressQuality,
-    success: (res) => {
-      // compressImage 返回的是临时文件路径
-      if (res.tempFilePath) {
-        // 获取实际压缩后尺寸
-        wx.getImageInfo({
-          src: res.tempFilePath,
-          success: (info) => {
-            resolve({ tempFilePath: res.tempFilePath, width: info.width, height: info.height });
-          },
-          fail: () => resolve({ tempFilePath: res.tempFilePath, width: maxSide, height: maxSide })
-        });
-      } else {
-        reject(new Error('compressImage returned null'));
-      }
-    },
-    fail: () => reject(new Error('compressImage failed'))
+function getImageInfo(src) {
+  return new Promise((resolve, reject) => {
+    wx.getImageInfo({ src, success: resolve, fail: reject });
   });
 }
 
-function compressWithCanvas(filePath, maxSide, quality, canvasId, context) {
+/**
+ * 使用 canvas 精修压缩（传入已存在的 canvas context）
+ * @param {string} filePath
+ * @param {number} targetW
+ * @param {number} targetH
+ * @param {number} quality  0~1
+ * @param {object} canvasNode  canvas node 实例
+ * @returns {Promise<{tempFilePath: string, width: number, height: number}>}
+ */
+function canvas精修(filePath, targetW, targetH, quality, canvasNode) {
   return new Promise((resolve, reject) => {
+    const ctx = canvasNode.getContext('2d');
+    canvasNode.width = targetW;
+    canvasNode.height = targetH;
+
+    const img = canvasNode.createImage();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, targetW, targetH);
+      wx.nextTick(() => {
+        wx.canvasToTempFilePath({
+          canvas: canvasNode,
+          quality,
+          success: (r) => resolve({ tempFilePath: r.tempFilePath, width: targetW, height: targetH }),
+          fail: () => reject(new Error('canvasToTempFilePath failed')),
+        });
+      });
+    };
+    img.onerror = () => reject(new Error('createImage onerror'));
+    img.src = filePath;
+  });
+}
+
+/**
+ * 压缩主图（1200px）
+ * @param {string} filePath
+ * @param {object} context  组件实例（传入 this）
+ */
+async function compressMain(filePath, context) {
+  try {
+    // 优先尝试 wx.compressImage（成功率最高）
+    const res = await new Promise((resolve, reject) => {
+      wx.compressImage({
+        src: filePath,
+        quality: MAIN_QUALITY,
+        success: (r) => r.tempFilePath ? resolve(r) : reject(new Error('compressImage null')),
+        fail: reject,
+      });
+    });
+
+    // 获取实际尺寸
+    const info = await getImageInfo(res.tempFilePath);
+    return { tempFilePath: res.tempFilePath, width: info.width, height: info.height };
+  } catch (_) {
+    // wx.compressImage 失败，用 canvas 精修
+    return canvas精修WithNewCanvas(filePath, MAIN_MAX_SIDE, 0.85, context);
+  }
+}
+
+/**
+ * 压缩缩略图（400px）
+ * @param {string} filePath
+ * @param {object} context  组件实例（传入 this）
+ */
+async function compressThumb(filePath, context) {
+  try {
+    const res = await new Promise((resolve, reject) => {
+      wx.compressImage({
+        src: filePath,
+        quality: THUMB_QUALITY,
+        success: (r) => r.tempFilePath ? resolve(r) : reject(new Error('compressImage null')),
+        fail: reject,
+      });
+    });
+
+    const info = await getImageInfo(res.tempFilePath);
+    return { tempFilePath: res.tempFilePath, width: info.width, height: info.height };
+  } catch (_) {
+    return canvas精修WithNewCanvas(filePath, THUMB_MAX_SIDE, 0.75, context);
+  }
+}
+
+/**
+ * 创建新的离屏 canvas 做精修（不依赖 wxml 里的 canvas）
+ * 使用 WXML canvas 节点
+ */
+function canvas精修WithNewCanvas(filePath, maxSide, quality, context) {
+  return new Promise((resolve, reject) => {
+    const canvasId = maxSide <= 400 ? 'compress-thumb-canvas' : 'compress-canvas';
     const query = wx.createSelectorQuery().in(context);
     query.select(`#${canvasId}`)
       .node((res) => {
         if (!res || !res.node) {
-          reject(new Error(`canvas ${canvasId} not found`));
+          // canvas 节点不可用，直接返回原图路径（让上传继续）
+          console.warn('[image-compress] canvas not ready, using original');
+          wx.getImageInfo({
+            src: filePath,
+            success: (info) => resolve({ tempFilePath: filePath, width: info.width, height: info.height }),
+            fail: () => reject(new Error('getImageInfo failed')),
+          });
           return;
         }
-        const canvas = res.node;
-        const ctx = canvas.getContext('2d');
-
-        // 先获取图片信息以计算目标尺寸
-        wx.getImageInfo({
-          src: filePath,
-          success: (imgInfo) => {
-            const { width, height } = imgInfo;
-            let targetW, targetH;
-
-            if (width >= height) {
-              targetW = Math.min(width, maxSide);
-              targetH = Math.round((height * maxSide) / width);
-            } else {
-              targetH = Math.min(height, maxSide);
-              targetW = Math.round((width * maxSide) / height);
-            }
-
-            // 设置 canvas 尺寸
-            canvas.width = targetW;
-            canvas.height = targetH;
-
-            // 绘制图片
-            const img = canvas.createImage();
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0, targetW, targetH);
-              // 等下一帧渲染完成再导出，否则 tempFilePath 可能为 null
-              wx.nextTick(() => {
-                wx.canvasToTempFilePath({
-                  canvas,
-                  quality,
-                  success: (result) => {
-                    if (result.tempFilePath) {
-                      resolve({ tempFilePath: result.tempFilePath, width: targetW, height: targetH });
-                    } else {
-                      // canvas 为空，降级到 wx.compressImage
-                      fallbackCompress(filePath, maxSide, quality, resolve, reject);
-                    }
-                  },
-                  fail: () => {
-                    fallbackCompress(filePath, maxSide, quality, resolve, reject);
-                  }
-                });
-              });
-            };
-            img.onerror = reject;
-            img.src = filePath;
-          },
-          fail: reject
-        });
+        canvas精修(filePath, maxSide, maxSide, quality, res.node)
+          .then(resolve)
+          .catch(reject);
       })
       .exec();
   });
 }
 
-/**
- * 压缩主图（1200px，85%）
- * @param {string} filePath
- * @param {object} context  组件实例（需传入 this）
- */
-async function compressMain(filePath, context) {
-  return compressWithCanvas(filePath, MAIN_MAX_SIDE, MAIN_QUALITY, 'compress-canvas', context);
-}
-
-/**
- * 压缩缩略图（200px，75%）
- * @param {string} filePath
- * @param {object} context  组件实例（需传入 this）
- */
-async function compressThumb(filePath, context) {
-  return compressWithCanvas(filePath, THUMB_MAX_SIDE, THUMB_QUALITY, 'compress-thumb-canvas', context);
-}
-
 module.exports = {
   compressMain,
-  compressThumb
+  compressThumb,
 };

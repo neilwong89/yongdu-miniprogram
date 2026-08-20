@@ -273,40 +273,59 @@ Component({
         count: 1,
         sourceType: ['camera', 'album'],
         success: async (res) => {
-          const originalPath = res.tempFilePaths[0];
+          console.warn('[photo] chooseImage success');
+          const originalPath = (res.tempFilePaths && res.tempFilePaths[0])
+            || (res.tempFiles && res.tempFiles[0] && res.tempFiles[0].path);
+          console.warn('[photo] originalPath:', originalPath);
+          if (!originalPath) {
+            wx.showToast({ title: '图片选择失败', icon: 'none' });
+            return;
+          }
+
           wx.showLoading({ title: '处理中…' });
 
           try {
             // ① 生成 photo_id
             const photoId = `${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
 
-            // ② 客户端第一次压缩 → 主图 1200px
-            const mainResult = await compressMain(originalPath, this);
-            // ③ 客户端第二次压缩 → 缩略图 200px
-            const thumbResult = await compressThumb(originalPath, this);
-
-            // ④ 保存本地缩略图缓存
-            await saveLocalThumb(photoId, thumbResult.tempFilePath);
-
-            // ⑤ 同时上传主图和缩略图
-            const [mainUpload, thumbUpload] = await Promise.all([
-              this._uploadFile(mainResult.tempFilePath, photoId, mainResult.width, mainResult.height, 'main'),
-              this._uploadFile(thumbResult.tempFilePath, photoId, thumbResult.width, thumbResult.height, 'thumb'),
-            ]);
-
-            if (mainUpload.code !== 0 || thumbUpload.code !== 0) {
-              throw new Error('upload failed');
+            // ② 串行上传：先 main，等服务器返回后再上传 thumb
+            // （必须在同一个请求里同时包含 main+thumb，Promise.all 会分成两个独立请求）
+            console.warn('[photo] uploading main...');
+            const mainUpload = await this._uploadFile(originalPath, photoId, 0, 0, 'main');
+            console.warn('[photo] mainUpload:', JSON.stringify(mainUpload));
+            if (mainUpload.code !== 0) {
+              console.error('[photo] main upload failed:', JSON.stringify(mainUpload));
+              throw new Error('main upload failed');
             }
 
-            wx.hideLoading();
-            this.setData({
-              photoId,
-              photoLocalPath: thumbResult.tempFilePath,
+            console.warn('[photo] uploading thumb...');
+            const thumbUpload = await this._uploadFile(originalPath, photoId, 0, 0, 'thumb');
+            console.warn('[photo] thumbUpload:', JSON.stringify(thumbUpload));
+            if (thumbUpload.code !== 0) {
+              console.error('[photo] thumb upload failed:', JSON.stringify(thumbUpload));
+              throw new Error('thumb upload failed');
+            }
+
+            // ③ 上传成功后，再用 copyFile 复制到本地缓存（供展示用）
+            // copyFile 不会删除原文件
+            const fs = wx.getFileSystemManager();
+            const cacheDir = `${wx.env.USER_DATA_PATH}/photo_cache`;
+            const savedThumbPath = await new Promise((resolve, reject) => {
+              fs.copyFile({
+                srcPath: originalPath,
+                destPath: `${cacheDir}/${photoId}.jpg`,
+                success: () => resolve(`${cacheDir}/${photoId}.jpg`),
+                fail: reject,
+              });
             });
+            console.warn('[photo] local copy done:', savedThumbPath);
+
+            wx.hideLoading();
+            this.setData({ photoId, photoLocalPath: savedThumbPath });
           } catch (err) {
             wx.hideLoading();
             wx.showToast({ title: '图片处理失败', icon: 'none' });
-            console.error('[add-cost-panel] onPhotoTap error:', err);
+            console.error('[photo] onPhotoTap error:', err);
           }
         },
         fail: (err) => {
@@ -317,20 +336,25 @@ Component({
     },
 
     _uploadFile(filePath, photoId, width, height, field) {
+      console.warn('[photo] _uploadFile field:', field, 'filePath:', filePath);
       return new Promise((resolve, reject) => {
         wx.uploadFile({
           url: `${API_BASE}/api/yongdu/photo/upload`,
-          filePath,
+          filePath,   // 直接用原始路径，不做任何处理
           name: field,
           formData: { photo_id: photoId, width, height },
           success: (res) => {
+            console.warn('[photo] uploadFile success, statusCode:', res.statusCode);
             try {
               resolve(JSON.parse(res.data));
             } catch (_) {
               reject(new Error('invalid response'));
             }
           },
-          fail: reject,
+          fail: (err) => {
+            console.error('[photo] uploadFile fail:', JSON.stringify(err));
+            reject(err);
+          },
         });
       });
     },
