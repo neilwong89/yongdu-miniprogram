@@ -17,9 +17,9 @@ const THUMB_QUALITY = 0.75;
  * @param {string} canvasId  wxml 中 canvas 的 id
  * @returns {Promise<{tempFilePath: string, width: number, height: number}>}
  */
-function compressWithCanvas(filePath, maxSide, quality, canvasId) {
+function compressWithCanvas(filePath, maxSide, quality, canvasId, context) {
   return new Promise((resolve, reject) => {
-    const query = wx.createSelectorQuery().in(this); // 注意：需要在组件内使用时 in(this)
+    const query = wx.createSelectorQuery().in(context);
     query.select(`#${canvasId}`)
       .node((res) => {
         if (!res || !res.node) {
@@ -77,18 +77,20 @@ function compressWithCanvas(filePath, maxSide, quality, canvasId) {
 
 /**
  * 压缩主图（1200px，85%）
- * 在组件内调用时需 bind(this)
+ * @param {string} filePath
+ * @param {object} context  组件实例（需传入 this）
  */
 async function compressMain(filePath, context) {
-  return compressWithCanvas.call(context, filePath, MAIN_MAX_SIDE, MAIN_QUALITY, 'compress-canvas');
+  return compressWithCanvas(filePath, MAIN_MAX_SIDE, MAIN_QUALITY, 'compress-canvas', context);
 }
 
 /**
  * 压缩缩略图（200px，75%）
- * 在组件内调用时需 bind(this)
+ * @param {string} filePath
+ * @param {object} context  组件实例（需传入 this）
  */
 async function compressThumb(filePath, context) {
-  return compressWithCanvas.call(context, filePath, THUMB_MAX_SIDE, THUMB_QUALITY, 'compress-thumb-canvas');
+  return compressWithCanvas(filePath, THUMB_MAX_SIDE, THUMB_QUALITY, 'compress-thumb-canvas', context);
 }
 
 module.exports = {

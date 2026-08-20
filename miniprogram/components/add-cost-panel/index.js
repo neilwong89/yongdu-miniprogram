@@ -281,9 +281,9 @@ Component({
             const photoId = `${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
 
             // ② 客户端第一次压缩 → 主图 1200px
-            const mainResult = await compressMain.call(this, originalPath);
+            const mainResult = await compressMain(originalPath, this);
             // ③ 客户端第二次压缩 → 缩略图 200px
-            const thumbResult = await compressThumb.call(this, originalPath);
+            const thumbResult = await compressThumb(originalPath, this);
 
             // ④ 保存本地缩略图缓存
             await saveLocalThumb(photoId, thumbResult.tempFilePath);
