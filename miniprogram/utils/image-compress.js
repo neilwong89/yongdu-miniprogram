@@ -17,6 +17,35 @@ const THUMB_QUALITY = 0.75;
  * @param {string} canvasId  wxml 中 canvas 的 id
  * @returns {Promise<{tempFilePath: string, width: number, height: number}>}
  */
+/**
+ * 降级压缩：wx.compressImage（质量不如 canvas 但成功率高）
+ */
+function fallbackCompress(filePath, maxSide, quality, resolve, reject) {
+  // quality 0~100，maxSide 0~10（越小越压缩）
+  const compressQuality = Math.round(quality * 100);
+  const compressLevel = maxSide <= 200 ? 10 : maxSide <= 600 ? 6 : 3;
+  wx.compressImage({
+    src: filePath,
+    quality: compressQuality,
+    success: (res) => {
+      // compressImage 返回的是临时文件路径
+      if (res.tempFilePath) {
+        // 获取实际压缩后尺寸
+        wx.getImageInfo({
+          src: res.tempFilePath,
+          success: (info) => {
+            resolve({ tempFilePath: res.tempFilePath, width: info.width, height: info.height });
+          },
+          fail: () => resolve({ tempFilePath: res.tempFilePath, width: maxSide, height: maxSide })
+        });
+      } else {
+        reject(new Error('compressImage returned null'));
+      }
+    },
+    fail: () => reject(new Error('compressImage failed'))
+  });
+}
+
 function compressWithCanvas(filePath, maxSide, quality, canvasId, context) {
   return new Promise((resolve, reject) => {
     const query = wx.createSelectorQuery().in(context);
@@ -52,17 +81,23 @@ function compressWithCanvas(filePath, maxSide, quality, canvasId, context) {
             const img = canvas.createImage();
             img.onload = () => {
               ctx.drawImage(img, 0, 0, targetW, targetH);
-              wx.canvasToTempFilePath({
-                canvas,
-                quality,
-                success: (result) => {
-                  resolve({
-                    tempFilePath: result.tempFilePath,
-                    width: targetW,
-                    height: targetH
-                  });
-                },
-                fail: reject
+              // 等下一帧渲染完成再导出，否则 tempFilePath 可能为 null
+              wx.nextTick(() => {
+                wx.canvasToTempFilePath({
+                  canvas,
+                  quality,
+                  success: (result) => {
+                    if (result.tempFilePath) {
+                      resolve({ tempFilePath: result.tempFilePath, width: targetW, height: targetH });
+                    } else {
+                      // canvas 为空，降级到 wx.compressImage
+                      fallbackCompress(filePath, maxSide, quality, resolve, reject);
+                    }
+                  },
+                  fail: () => {
+                    fallbackCompress(filePath, maxSide, quality, resolve, reject);
+                  }
+                });
               });
             };
             img.onerror = reject;
