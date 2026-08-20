@@ -101,27 +101,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
   background: #f0f5ef;
   border: 3rpx dashed #b8c9ba;
   border-radius: 24rpx;
-  padding: 36rpx 16rpx 32rpx;
-  min-height: 180rpx;
+  padding: 28rpx 16rpx;
+  min-height: 120rpx;
   box-sizing: border-box;
-}
-
-.photo-btn-icon,
-.icon-btn-icon {
-  font-size: 48rpx;
-  line-height: 1;
 }
 
 .photo-btn-text,
 .icon-btn-text {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #7b897f;
   font-family: 'SimSun', Georgia, serif;
   text-align: center;
+  letter-spacing: 1rpx;
 }
 
 /* 状态一：已选图片 → 全幅展示 */
