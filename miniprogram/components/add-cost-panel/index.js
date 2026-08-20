@@ -202,9 +202,15 @@ Component({
 
         fn().then(() => {
           wx.hideLoading();
+          // 关闭 FAB、恢复 TabBar
+          const app = getApp();
+          if (app.globalData._tabBarRef) {
+            app.globalData._tabBarRef.setData({ panelOpen: 0 });
+          }
+          // 刷新页面列表
           AppStore.set(() => ({ items: ItemService.getItems() }));
           this.triggerEvent('save', { isEdit });
-          // FAB/面板关闭由 TabBar 的 onTogglePanel() 处理，panel 只负责播放退出动画
+          // 播放退出动画，260ms 后关闭面板
           this._playOut(() => {
             this._resetForm();
             this.setData({ visible: false, panelVisible: false });

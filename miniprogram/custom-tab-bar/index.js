@@ -49,11 +49,8 @@ Component({
       panel.show();
     },
 
-    // 绿色保存按钮 → 先关闭 FAB/恢复 TabBar，再触发保存
+    // 绿色保存按钮 → 触发 panel 保存
     onSave() {
-      // 第一步：立即关闭 FAB、恢复 TabBar（和 ✕ 按钮一致）
-      this.onTogglePanel();
-      // 第二步：触发 panel 保存（保存成功后 panel 自行关闭）
       const pages = getCurrentPages();
       if (!pages.length) return;
       const panel = pages[pages.length - 1].selectComponent('#addCostPanel');
