@@ -28,18 +28,23 @@
         <view class="clear-btn" catchtap="onPhotoClear">✕</view>
       </view>
 
-      <!-- 状态二：已选图标 → 只看图标 -->
-      <view class="icon-full-wrap" wx:if="{{icon && !photoLocalPath && icon !== '🎁'}}">
+      <!-- 状态二：已选图标（不是默认🎁）→ 大 emoji 展示 -->
+      <view class="icon-full-wrap" wx:if="{{icon && icon !== '🎁' && !photoLocalPath}}">
         <view class="icon-full-emoji">{{icon}}</view>
         <view class="icon-full-tip songti">日后仍能被记起</view>
         <view class="clear-btn" catchtap="onIconClear">✕</view>
       </view>
 
-      <!-- 状态三：默认（无图无图标）→ 默认占位图 -->
-      <view class="photo-full-wrap" wx:if="{{!photoLocalPath && (!icon || icon === '🎁')}}" bindtap="onIconButtonTap">
-        <view class="photo-placeholder">
-          <text class="photo-placeholder-icon">📦</text>
-          <view class="photo-placeholder-tip songti">为他留下些什么吧</view>
+      <!-- 状态三：默认 → 两个按钮并排 -->
+      <view class="photo-upload" wx:if="{{(!photoLocalPath && !icon) || (!photoLocalPath && icon === '🎁')}}">
+        <!-- 左侧：添加照片 -->
+        <view class="photo-btn" bindtap="onPhotoTap">
+          <view class="photo-btn-text songti">为他拍摄一张照片</view>
+        </view>
+
+        <!-- 右侧：设置图标 -->
+        <view class="icon-btn" bindtap="onIconButtonTap">
+          <view class="icon-btn-text songti">为他选择一个图标</view>
         </view>
       </view>
 
