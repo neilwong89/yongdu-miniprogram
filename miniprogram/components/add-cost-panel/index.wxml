@@ -51,20 +51,9 @@
       <!-- 表单 -->
       <view class="form-sections">
 
-        <!-- emoji + 名称 -->
+        <!-- 名称 -->
         <view class="field-row">
           <view class="field-label songti">名称</view>
-          <view class="emoji-row" wx:if="{{!icon}}">
-            <view class="emoji-picker">
-              <text
-                wx:for="{{emojis}}"
-                wx:key="this"
-                class="emoji-item {{icon === item ? 'active' : ''}}"
-                data-emoji="{{item}}"
-                bindtap="onEmojiTap"
-              >{{item}}</text>
-            </view>
-          </view>
           <input
             class="field-input"
             placeholder="比如：新买的书桌灯"
