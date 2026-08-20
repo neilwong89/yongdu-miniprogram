@@ -3,6 +3,19 @@
   font-family: 'SimSun', Georgia, serif;
 }
 
+/* === 全局统一变量约定（固化到整个小程序）===
+   - 圆角: 20rpx
+   - 内边距: 28rpx
+   - 外边距: 24rpx
+   - 主色: #466957 森林绿
+   - 背景: #fbfaf6 米白
+   - 输入框背景: #f0f2ec 象灰
+   - 按钮背景: #e6eee7 象白
+   - 文字色: #32423b 深森绿
+   - 次要文字: #8b968f 灰绿
+   - 分隔线: 全部去掉（简约风格）
+*/
+
 /* === 遮罩 === */
 .mask {
   position: fixed;
@@ -66,19 +79,6 @@
   padding: 100rpx 0 32rpx;
 }
 
-.close-btn {
-  font-size: 30rpx;
-  color: #7a887f;
-  padding: 8rpx 0;
-}
-
-.save-btn {
-  font-size: 30rpx;
-  color: #466957;
-  font-weight: 600;
-  padding: 8rpx 0;
-}
-
 .panel-title {
   font-size: 34rpx;
   font-weight: 600;
@@ -87,62 +87,38 @@
 
 /* === 图片上传区（三态） === */
 
-/* 状态三：默认——两个按钮，斜切分隔 */
+/* 状态三：默认——两个按钮并排，无分隔线 */
 .photo-upload {
-  position: relative;
   display: flex;
-  height: 100rpx;
+  gap: 16rpx;
+  margin: 24rpx 0;
 }
 
-/* 统一外框，两侧圆角 */
+/* 统一按钮样式 */
 .photo-btn,
 .icon-btn {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e6eee7;
+  background: #ffffff;
+  border-radius: 20rpx;
+  min-height: 88rpx;
   box-sizing: border-box;
-}
-
-.photo-btn {
-  border-radius: 24rpx 0 0 24rpx;
-  padding-left: 36rpx;
-}
-
-.icon-btn {
-  border-radius: 0 24rpx 24rpx 0;
-  padding-right: 36rpx;
-}
-
-/* 斜向分割线：从右上到左下，留 6rpx 宽的小缝 */
-.photo-upload::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6rpx;
-  height: 200%;
-  background: #fbfaf6;
-  transform: translate(-50%, -50%) rotate(20deg);
-  border-radius: 100rpx;
-  z-index: 1;
 }
 
 .photo-btn-text,
 .icon-btn-text {
-  font-size: 28rpx;
-  color: #7b897f;
+  font-size: 26rpx;
+  color: #466957;
   font-family: 'SimSun', Georgia, serif;
   letter-spacing: 1rpx;
-  position: relative;
-  z-index: 2;
 }
 
 /* 状态一：已选图片 → 全幅展示 */
 .photo-full-wrap {
   position: relative;
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   overflow: hidden;
   background: #e6eee7;
 }
@@ -246,20 +222,21 @@
 
 /* === 表单区 === */
 .form-sections {
-  margin-top: 28rpx;
+  margin-top: 24rpx;
   display: flex;
   flex-direction: column;
 }
 
 .field-row {
   padding: 24rpx 0;
-  border-bottom: 1rpx solid #f0ede8;
+  /* 分隔线：全部去掉，简约风格 */
+  border-bottom: none;
 }
 
 .field-row.cols-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .field-group {
@@ -270,20 +247,19 @@
 .field-label {
   font-size: 24rpx;
   color: #8b968f;
-  margin-bottom: 14rpx;
+  margin-bottom: 12rpx;
   letter-spacing: 1rpx;
 }
 
 .field-input {
   background: #f0f2ec;
   border-radius: 20rpx;
-  padding: 22rpx 28rpx;
+  padding: 22rpx 24rpx;
   font-size: 30rpx;
   color: #32423b;
   width: 100%;
   height: 88rpx;
   box-sizing: border-box;
-  margin-top: 14rpx;
   line-height: 1.4;
 }
 
@@ -294,13 +270,12 @@
 .field-textarea {
   background: #f0f2ec;
   border-radius: 20rpx;
-  padding: 22rpx 28rpx;
+  padding: 22rpx 24rpx;
   font-size: 28rpx;
   color: #32423b;
   width: 100%;
   box-sizing: border-box;
   min-height: 120rpx;
-  margin-top: 14rpx;
   line-height: 1.5;
 }
 
@@ -314,8 +289,7 @@
   justify-content: space-between;
   background: #f0f2ec;
   border-radius: 20rpx;
-  padding: 22rpx 28rpx;
-  margin-top: 14rpx;
+  padding: 22rpx 24rpx;
 }
 
 .field-select-val {
@@ -328,32 +302,10 @@
   color: #9da79f;
 }
 
-/* === Emoji 选择器 === */
-.emoji-row {
-  margin-bottom: 12rpx;
-}
-
-.emoji-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx;
-}
-
-.emoji-item {
-  font-size: 40rpx;
-  padding: 6rpx;
-  border-radius: 8rpx;
-  transition: background 0.15s;
-}
-
-.emoji-item.active {
-  background: #dceadf;
-}
-
 /* === 分摊方式卡片 === */
 .method-card {
   background: #e6eee7;
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   padding: 28rpx;
   margin: 24rpx 0;
 }
@@ -410,7 +362,7 @@
 .picker-sheet {
   width: 100%;
   background: #fbfaf6;
-  border-radius: 32rpx 32rpx 0 0;
+  border-radius: 20rpx 20rpx 0 0;
   padding: 24rpx 0 60rpx;
 }
 
@@ -423,9 +375,11 @@
 
 .picker-cancel {
   text-align: center;
-  color: #7a887f;
+  color: #8b968f;
   font-size: 30rpx;
   padding: 24rpx;
+  /* 分隔线去掉，简约风格 */
+  border-top: none;
 }
 
 /* === 自定义分类弹窗 === */
@@ -445,7 +399,7 @@
 .dialog {
   width: 560rpx;
   background: #fbfaf6;
-  border-radius: 28rpx;
+  border-radius: 20rpx;
   padding: 48rpx 40rpx;
 }
 
@@ -460,7 +414,7 @@
 .dialog-input {
   background: #f0f2ec;
   border-radius: 20rpx;
-  padding: 22rpx 28rpx;
+  padding: 22rpx 24rpx;
   font-size: 30rpx;
   color: #32423b;
   margin-bottom: 36rpx;
@@ -488,7 +442,7 @@
 .dialog-btn.cancel {
   background: #ffffff;
   border: 1.5rpx solid #e8ebe4;
-  color: #7a887f;
+  color: #8b968f;
 }
 
 .dialog-btn.confirm {
@@ -577,7 +531,7 @@
 .emoji-dialog {
   width: 560rpx;
   background: #fbfaf6;
-  border-radius: 28rpx;
+  border-radius: 20rpx;
   padding: 40rpx 36rpx 36rpx;
   opacity: 0;
   transform: scale(0.96);
@@ -624,9 +578,10 @@
 
 .emoji-dialog-cancel {
   text-align: center;
-  color: #7a887f;
+  color: #8b968f;
   font-size: 30rpx;
   padding: 28rpx 0 8rpx;
   margin-top: 20rpx;
-  border-top: 1rpx solid #f0ede8;
+  /* 分隔线去掉，简约风格 */
+  border-top: none;
 }
