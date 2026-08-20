@@ -71,6 +71,7 @@ Component({
     categoryList: [],
     showStatusPicker: false,
     showCustomCategoryInput: false,
+    showEmojiPicker: false,
   },
 
   lifetimes: {
@@ -302,6 +303,19 @@ Component({
 
     onEmojiTap(e) {
       this.setData({ icon: e.currentTarget.dataset.emoji });
+    },
+
+    // ---------- 图标按钮 ----------
+    onIconButtonTap() {
+      this.setData({ showEmojiPicker: true });
+    },
+
+    onEmojiSelect(e) {
+      this.setData({ icon: e.currentTarget.dataset.emoji, showEmojiPicker: false });
+    },
+
+    onEmojiPickerClose() {
+      this.setData({ showEmojiPicker: false });
     },
 
     // ---------- 图片上传 ----------

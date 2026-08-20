@@ -89,58 +89,66 @@
 .photo-upload {
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: 20rpx;
+}
+
+.photo-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
   background: #f0f5ef;
   border: 3rpx dashed #b8c9ba;
   border-radius: 24rpx;
-  padding: 32rpx;
+  padding: 32rpx 0;
+  min-height: 160rpx;
+  box-sizing: border-box;
 }
 
-.upload-icon-wrap {
-  width: 100rpx;
-  height: 100rpx;
-  background: #dceadf;
-  border-radius: 20rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.photo-btn.has-photo {
+  background: #f0f5ef;
+  border-style: solid;
+  border-color: #b8c9ba;
 }
 
-.upload-icon {
+.photo-btn-icon {
   font-size: 48rpx;
 }
 
-.upload-text {
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
-
-.upload-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #32423b;
-}
-
-.upload-sub {
+.photo-btn-text {
   font-size: 24rpx;
   color: #7b897f;
+  font-family: 'SimSun', Georgia, serif;
+}
+
+.icon-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  background: #f0f5ef;
+  border: 3rpx dashed #b8c9ba;
+  border-radius: 24rpx;
+  padding: 32rpx 0;
+  min-height: 160rpx;
+  box-sizing: border-box;
+}
+
+.icon-btn-emoji {
+  font-size: 56rpx;
+  line-height: 1;
 }
 
 /* === 图片预览 === */
 .photo-preview {
-  width: 120rpx;
-  height: 120rpx;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 16rpx;
   object-fit: cover;
-  flex-shrink: 0;
-}
-
-.photo-replace-hint {
-  font-size: 22rpx;
-  color: #7b897f;
-  margin-left: 16rpx;
 }
 
 /* === 隐藏 canvas === */
@@ -456,4 +464,51 @@
   transform: scale(1);
   opacity: 1;
   transition: transform 0.22s ease-out, opacity 0.18s ease;
+}
+
+/* === Emoji 选择弹窗 === */
+.emoji-dialog {
+  width: 560rpx;
+  background: #fbfaf6;
+  border-radius: 28rpx;
+  padding: 40rpx 36rpx 36rpx;
+}
+
+.emoji-dialog-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 36rpx;
+  color: #32423b;
+}
+
+.emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  justify-content: center;
+}
+
+.emoji-option {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  border-radius: 16rpx;
+  transition: background 0.15s;
+}
+
+.emoji-option.active {
+  background: #dceadf;
+}
+
+.emoji-dialog-cancel {
+  text-align: center;
+  color: #7a887f;
+  font-size: 30rpx;
+  padding: 28rpx 0 8rpx;
+  margin-top: 20rpx;
+  border-top: 1rpx solid #f0ede8;
 }

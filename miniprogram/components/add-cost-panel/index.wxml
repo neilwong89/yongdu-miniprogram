@@ -17,21 +17,25 @@
         <text class="panel-title songti">{{mode === 'edit' ? '编辑拥有' : '记录一个拥有'}}</text>
       </view>
 
-      <!-- 图片上传区 -->
-      <view class="photo-upload" bindtap="onPhotoTap">
-        <block wx:if="{{photoLocalPath}}">
-          <image class="photo-preview" src="{{photoLocalPath}}" mode="aspectFill" />
-          <view class="photo-replace-hint">点击更换照片</view>
-        </block>
-        <block wx:else>
-          <view class="upload-icon-wrap">
-            <text class="upload-icon">📷</text>
-          </view>
-          <view class="upload-text">
-            <text class="upload-title songti">为它留下一张照片</text>
-            <text class="upload-sub songti">日后仍能被记起</text>
-          </view>
-        </block>
+      <!-- 图片上传区：两个按钮 -->
+      <view class="photo-upload">
+        <!-- 左侧：添加照片 -->
+        <view class="photo-btn {{photoLocalPath ? 'has-photo' : ''}}" bindtap="onPhotoTap">
+          <block wx:if="{{photoLocalPath}}">
+            <image class="photo-preview" src="{{photoLocalPath}}" mode="aspectFill" />
+            <view class="photo-btn-text">更换照片</view>
+          </block>
+          <block wx:else>
+            <view class="photo-btn-icon">📷</view>
+            <view class="photo-btn-text">添加照片</view>
+          </block>
+        </view>
+
+        <!-- 右侧：设置图标 -->
+        <view class="icon-btn" bindtap="onIconButtonTap">
+          <view class="icon-btn-emoji">{{icon}}</view>
+          <view class="photo-btn-text">设置图标</view>
+        </view>
       </view>
 
       <!-- 表单 -->
@@ -151,6 +155,23 @@
       </picker-view-column>
     </picker-view>
     <view class="picker-cancel" bindtap="onStatusPickerCancel">取消</view>
+  </view>
+</view>
+
+<!-- Emoji 图标选择弹窗 -->
+<view class="dialog-mask" wx:if="{{showEmojiPicker}}" bindtap="onEmojiPickerClose">
+  <view class="emoji-dialog" catchtap="noop">
+    <view class="emoji-dialog-title songti">选择图标</view>
+    <view class="emoji-grid">
+      <view
+        wx:for="{{emojis}}"
+        wx:key="this"
+        class="emoji-option {{icon === item ? 'active' : ''}}"
+        data-emoji="{{item}}"
+        bindtap="onEmojiSelect"
+      >{{item}}</view>
+    </view>
+    <view class="emoji-dialog-cancel" bindtap="onEmojiPickerClose">取消</view>
   </view>
 </view>
 
