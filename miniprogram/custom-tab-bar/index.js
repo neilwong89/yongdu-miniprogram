@@ -49,12 +49,16 @@ Component({
       panel.show();
     },
 
-    // 绿色保存按钮 → 触发 panel 保存，FAB/面板关闭由 saveAndClose() 成功后自行处理
+    // 绿色保存按钮 → 触发 panel 保存，保存成功后再关闭 FAB、恢复 TabBar
     onSave() {
       const pages = getCurrentPages();
       if (!pages.length) return;
       const panel = pages[pages.length - 1].selectComponent('#addCostPanel');
-      if (panel) panel.saveAndClose();
+      if (!panel) return;
+      panel.saveAndClose().then(() => {
+        // 保存成功后关闭 FAB、恢复 TabBar
+        this.onTogglePanel();
+      });
     },
 
     // 红色取消按钮 → TabBar 自己关闭，不走外部链路

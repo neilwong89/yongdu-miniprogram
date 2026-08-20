@@ -155,85 +155,88 @@ Component({
 
     // ---------- 加号保存并关闭 ----------
     saveAndClose() {
-      const { name, price, purchaseDate, icon, categoryId, categoryName, status, otherFees, unit, remark, soldPrice, soldDate, soldNote, photoId, photoLocalPath, photoPendingUpload } = this.data;
-      const isEdit = this.properties.mode === 'edit';
-      const editId = this.properties.itemId;
+      return new Promise((resolve, reject) => {
+        const { name, price, purchaseDate, icon, categoryId, categoryName, status, otherFees, unit, remark, soldPrice, soldDate, soldNote, photoId, photoLocalPath, photoPendingUpload } = this.data;
+        const isEdit = this.properties.mode === 'edit';
+        const editId = this.properties.itemId;
 
-      if (!name.trim()) {
-        wx.showToast({ title: '请输入拥有名称', icon: 'none' }); return;
-      }
-      if (name.trim().length > 20) {
-        wx.showToast({ title: '名称最多20字', icon: 'none' }); return;
-      }
-      const priceNum = parseFloat(price);
-      if (isNaN(priceNum) || priceNum <= 0) {
-        wx.showToast({ title: '请输入正确的单价', icon: 'none' }); return;
-      }
-      if (purchaseDate > today()) {
-        wx.showToast({ title: '入手日期不能晚于今天', icon: 'none' }); return;
-      }
+        if (!name.trim()) {
+          wx.showToast({ title: '请输入拥有名称', icon: 'none' }); reject(new Error('empty name')); return;
+        }
+        if (name.trim().length > 20) {
+          wx.showToast({ title: '名称最多20字', icon: 'none' }); reject(new Error('name too long')); return;
+        }
+        const priceNum = parseFloat(price);
+        if (isNaN(priceNum) || priceNum <= 0) {
+          wx.showToast({ title: '请输入正确的单价', icon: 'none' }); reject(new Error('invalid price')); return;
+        }
+        if (purchaseDate > today()) {
+          wx.showToast({ title: '入手日期不能晚于今天', icon: 'none' }); reject(new Error('future date')); return;
+        }
 
-      const itemData = {
-        icon,
-        name: name.trim(),
-        categoryId,
-        categoryName,
-        status,
-        purchaseDate,
-        price: Math.round(parseFloat(price) * 100),
-        otherFees: otherFees ? Math.round(parseFloat(otherFees) * 100) : 0,
-        unit,
-        remark: remark.trim(),
-        photoId,
-      };
-      if (status === 'retired' && soldPrice) {
-        itemData.soldPrice = Math.round(parseFloat(soldPrice) * 100);
-        itemData.soldDate = soldDate;
-        if (soldNote) itemData.soldNote = soldNote.trim();
-      }
+        const itemData = {
+          icon,
+          name: name.trim(),
+          categoryId,
+          categoryName,
+          status,
+          purchaseDate,
+          price: Math.round(parseFloat(price) * 100),
+          otherFees: otherFees ? Math.round(parseFloat(otherFees) * 100) : 0,
+          unit,
+          remark: remark.trim(),
+          photoId,
+        };
+        if (status === 'retired' && soldPrice) {
+          itemData.soldPrice = Math.round(parseFloat(soldPrice) * 100);
+          itemData.soldDate = soldDate;
+          if (soldNote) itemData.soldNote = soldNote.trim();
+        }
 
-      wx.showLoading({ title: '保存中…' });
+        wx.showLoading({ title: '保存中…' });
 
-      // 如果选了新图，先上传再保存
-      const doSave = () => {
-        const fn = isEdit
-          ? ItemService.updateItem.bind(null, editId, itemData)
-          : ItemService.addItem.bind(null, itemData);
+        // 如果选了新图，先上传再保存
+        const doSave = () => {
+          const fn = isEdit
+            ? ItemService.updateItem.bind(null, editId, itemData)
+            : ItemService.addItem.bind(null, itemData);
 
-        fn().then(() => {
-          wx.hideLoading();
-          this.triggerEvent('save', { isEdit });
-          this._playOut(() => {
-            this._resetForm();
-            this.setData({ visible: false, panelVisible: false });
+          fn().then(() => {
+            wx.hideLoading();
+            this.triggerEvent('save', { isEdit });
+            this._playOut(() => {
+              this._resetForm();
+              this.setData({ visible: false, panelVisible: false });
+            });
+            resolve();
+          }).catch(err => {
+            wx.hideLoading();
+            wx.showToast({ title: '保存失败', icon: 'none' });
+            console.error('[add-cost-panel] save error', err);
+            reject(err);
           });
-        }).catch(err => {
-          wx.hideLoading();
-          wx.showToast({ title: '保存失败', icon: 'none' });
-          console.error('[add-cost-panel] save error', err);
-        });
-      };
+        };
 
-      if (photoId && photoLocalPath && photoPendingUpload) {
-        // 选了新图：先上传 main，等成功再上传 thumb，然后保存
-        console.warn('[photo] saving with upload, photoId:', photoId);
-        this._uploadFile(photoLocalPath, photoId, 0, 0, 'main').then(mainRes => {
-          if (mainRes.code !== 0) throw new Error('main upload failed');
-          return this._uploadFile(photoLocalPath, photoId, 0, 0, 'thumb');
-        }).then(thumbRes => {
-          if (thumbRes.code !== 0) throw new Error('thumb upload failed');
-          console.warn('[photo] both uploads done, proceeding to save');
-          this.setData({ photoPendingUpload: false });
+        if (photoId && photoLocalPath && photoPendingUpload) {
+          // 选了新图：先上传 main，等成功再上传 thumb，然后保存
+          this._uploadFile(photoLocalPath, photoId, 0, 0, 'main').then(mainRes => {
+            if (mainRes.code !== 0) throw new Error('main upload failed');
+            return this._uploadFile(photoLocalPath, photoId, 0, 0, 'thumb');
+          }).then(thumbRes => {
+            if (thumbRes.code !== 0) throw new Error('thumb upload failed');
+            this.setData({ photoPendingUpload: false });
+            doSave();
+          }).catch(err => {
+            wx.hideLoading();
+            wx.showToast({ title: '图片上传失败', icon: 'none' });
+            console.error('[photo] save upload error:', err);
+            reject(err);
+          });
+        } else {
+          // 没有新图，直接保存
           doSave();
-        }).catch(err => {
-          wx.hideLoading();
-          wx.showToast({ title: '图片上传失败', icon: 'none' });
-          console.error('[photo] save upload error:', err);
-        });
-      } else {
-        // 没有新图，直接保存
-        doSave();
-      }
+        }
+      });
     },
 
     // ---------- 表单操作 ----------

@@ -335,16 +335,7 @@ Page({
   },
 
   onAddCostSave() {
-    // 刷新列表
     this.setData({ items: ItemService.getItems() });
-    // 关闭 FAB、恢复 TabBar（通过 getCurrentPages 获取 tabBar 实例）
-    const pages = getCurrentPages();
-    if (pages.length) {
-      const tabBar = pages[pages.length - 1].selectComponent('#tabbar');
-      if (tabBar) {
-        tabBar.setData({ panelOpen: 0 });
-      }
-    }
   },
 
   noop() {},
