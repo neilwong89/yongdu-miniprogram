@@ -188,6 +188,30 @@
   z-index: 2;
 }
 
+/* 默认占位图 */
+.photo-placeholder {
+  width: 100%;
+  height: 280rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f0f5ef;
+  border-radius: 24rpx;
+  gap: 16rpx;
+}
+
+.photo-placeholder-icon {
+  font-size: 80rpx;
+  line-height: 1;
+}
+
+.photo-placeholder-tip {
+  font-size: 28rpx;
+  color: #9da79f;
+  letter-spacing: 2rpx;
+}
+
 /* .photo-btn.has-photo 已移除（不再使用） */
 
 /* === 隐藏 canvas === */

@@ -250,7 +250,7 @@ Component({
     // ---------- 表单操作 ----------
     _resetForm() {
       this.setData({
-        icon: '',
+        icon: '🎁',
         name: '',
         categoryId: PRESET_CATEGORIES[0].id,
         categoryName: PRESET_CATEGORIES[0].name,
@@ -323,12 +323,12 @@ Component({
 
     // 清除图片
     onPhotoClear() {
-      this.setData({ photoLocalPath: '', photoId: '', photoPendingUpload: false });
+      this.setData({ photoLocalPath: '', photoId: '', photoPendingUpload: false, icon: '🎁' });
     },
 
     // 清除图标
     onIconClear() {
-      this.setData({ icon: '' });
+      this.setData({ icon: '🎁' });
     },
 
     // ---------- 图片上传 ----------
