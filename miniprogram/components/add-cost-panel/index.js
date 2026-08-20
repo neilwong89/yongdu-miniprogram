@@ -61,6 +61,9 @@ Component({
     remark: '',
     soldPrice: '',
     soldDate: today(),
+    photoId: '',
+    photoLocalPath: '',
+    photoPendingUpload: false,
 
     emojis: EMOJIS,
     statusOptions: STATUS_OPTIONS,
@@ -152,7 +155,7 @@ Component({
 
     // ---------- 加号保存并关闭 ----------
     saveAndClose() {
-      const { name, price, purchaseDate, icon, categoryId, categoryName, status, otherFees, unit, remark, soldPrice, soldDate, soldNote, photoId } = this.data;
+      const { name, price, purchaseDate, icon, categoryId, categoryName, status, otherFees, unit, remark, soldPrice, soldDate, soldNote, photoId, photoLocalPath, photoPendingUpload } = this.data;
       const isEdit = this.properties.mode === 'edit';
       const editId = this.properties.itemId;
 
@@ -190,24 +193,49 @@ Component({
       }
 
       wx.showLoading({ title: '保存中…' });
-      const fn = isEdit
-        ? ItemService.updateItem.bind(null, editId, itemData)
-        : ItemService.addItem.bind(null, itemData);
 
-      fn().then(() => {
-        wx.hideLoading();
-        AppStore.set(() => ({ items: ItemService.getItems() }));
-        this.triggerEvent('save', { isEdit });
-        const app = getApp();
-        if (app.globalData._tabBarRef) {
-          app.globalData._tabBarRef.setData({ panelOpen: 0 });
-        }
-        this.hide();
-      }).catch(err => {
-        wx.hideLoading();
-        wx.showToast({ title: '保存失败', icon: 'none' });
-        console.error('[add-cost-panel] save error', err);
-      });
+      // 如果选了新图，先上传再保存
+      const doSave = () => {
+        const fn = isEdit
+          ? ItemService.updateItem.bind(null, editId, itemData)
+          : ItemService.addItem.bind(null, itemData);
+
+        fn().then(() => {
+          wx.hideLoading();
+          AppStore.set(() => ({ items: ItemService.getItems() }));
+          this.triggerEvent('save', { isEdit });
+          // FAB/面板关闭由 TabBar 的 onTogglePanel() 处理，panel 只负责播放退出动画
+          this._playOut(() => {
+            this._resetForm();
+            this.setData({ visible: false, panelVisible: false });
+          });
+        }).catch(err => {
+          wx.hideLoading();
+          wx.showToast({ title: '保存失败', icon: 'none' });
+          console.error('[add-cost-panel] save error', err);
+        });
+      };
+
+      if (photoId && photoLocalPath && photoPendingUpload) {
+        // 选了新图：先上传 main，等成功再上传 thumb，然后保存
+        console.warn('[photo] saving with upload, photoId:', photoId);
+        this._uploadFile(photoLocalPath, photoId, 0, 0, 'main').then(mainRes => {
+          if (mainRes.code !== 0) throw new Error('main upload failed');
+          return this._uploadFile(photoLocalPath, photoId, 0, 0, 'thumb');
+        }).then(thumbRes => {
+          if (thumbRes.code !== 0) throw new Error('thumb upload failed');
+          console.warn('[photo] both uploads done, proceeding to save');
+          this.setData({ photoPendingUpload: false });
+          doSave();
+        }).catch(err => {
+          wx.hideLoading();
+          wx.showToast({ title: '图片上传失败', icon: 'none' });
+          console.error('[photo] save upload error:', err);
+        });
+      } else {
+        // 没有新图，直接保存
+        doSave();
+      }
     },
 
     // ---------- 表单操作 ----------
@@ -228,6 +256,7 @@ Component({
         soldDate: today(),
         photoId: '',
         photoLocalPath: '',
+        photoPendingUpload: false,
       });
     },
 
@@ -285,29 +314,8 @@ Component({
           wx.showLoading({ title: '处理中…' });
 
           try {
-            // ① 生成 photo_id
+            // 生成 photo_id，直接复制到本地缓存（不上传到服务器）
             const photoId = `${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
-
-            // ② 串行上传：先 main，等服务器返回后再上传 thumb
-            // （必须在同一个请求里同时包含 main+thumb，Promise.all 会分成两个独立请求）
-            console.warn('[photo] uploading main...');
-            const mainUpload = await this._uploadFile(originalPath, photoId, 0, 0, 'main');
-            console.warn('[photo] mainUpload:', JSON.stringify(mainUpload));
-            if (mainUpload.code !== 0) {
-              console.error('[photo] main upload failed:', JSON.stringify(mainUpload));
-              throw new Error('main upload failed');
-            }
-
-            console.warn('[photo] uploading thumb...');
-            const thumbUpload = await this._uploadFile(originalPath, photoId, 0, 0, 'thumb');
-            console.warn('[photo] thumbUpload:', JSON.stringify(thumbUpload));
-            if (thumbUpload.code !== 0) {
-              console.error('[photo] thumb upload failed:', JSON.stringify(thumbUpload));
-              throw new Error('thumb upload failed');
-            }
-
-            // ③ 上传成功后，再用 copyFile 复制到本地缓存（供展示用）
-            // copyFile 不会删除原文件
             const fs = wx.getFileSystemManager();
             const cacheDir = `${wx.env.USER_DATA_PATH}/photo_cache`;
             const savedThumbPath = await new Promise((resolve, reject) => {
@@ -321,7 +329,8 @@ Component({
             console.warn('[photo] local copy done:', savedThumbPath);
 
             wx.hideLoading();
-            this.setData({ photoId, photoLocalPath: savedThumbPath });
+            // photoPendingUpload = true 表示选了新图，保存时要上传
+            this.setData({ photoId, photoLocalPath: savedThumbPath, photoPendingUpload: true });
           } catch (err) {
             wx.hideLoading();
             wx.showToast({ title: '图片处理失败', icon: 'none' });

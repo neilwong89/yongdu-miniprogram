@@ -335,7 +335,7 @@ Page({
   },
 
   onAddCostSave() {
-    this._loadItems();
+    this.setData({ items: ItemService.getItems() });
   },
 
   noop() {},
