@@ -87,32 +87,57 @@
 
 /* === 图片上传区（三态） === */
 
-/* 状态三：默认——两个按钮并排，无分隔线 */
+/* 状态三：默认——整体一块按钮，中间斜杠分隔 */
 .photo-upload {
+  position: relative;
   display: flex;
-  gap: 16rpx;
+  height: 88rpx;
   margin: 24rpx 0;
 }
 
-/* 统一按钮样式 */
+/* 统一按钮样式：整体一块，各占一半 */
 .photo-btn,
 .icon-btn {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
-  border-radius: 20rpx;
-  min-height: 88rpx;
+  background: #e6eee7;
   box-sizing: border-box;
+}
+
+.photo-btn {
+  border-radius: 20rpx 0 0 20rpx;
+  padding-left: 36rpx;
+}
+
+.icon-btn {
+  border-radius: 0 20rpx 20rpx 0;
+  padding-right: 36rpx;
+}
+
+/* 斜向分割线：从右上到左下，留 6rpx 宽的小缝 */
+.photo-upload::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6rpx;
+  height: 200%;
+  background: #fbfaf6;
+  transform: translate(-50%, -50%) rotate(20deg);
+  border-radius: 100rpx;
+  z-index: 1;
 }
 
 .photo-btn-text,
 .icon-btn-text {
   font-size: 26rpx;
-  color: #466957;
+  color: #32423b;
   font-family: 'SimSun', Georgia, serif;
   letter-spacing: 1rpx;
+  position: relative;
+  z-index: 2;
 }
 
 /* 状态一：已选图片 → 全幅展示 */
