@@ -203,7 +203,6 @@ Component({
 
           fn().then((result) => {
             wx.hideLoading();
-            console.warn('[panel] save SUCCESS, result:', result, 'item added, total items:', ItemService.getItems().length);
             // 刷新页面列表
             const pages = getCurrentPages();
             if (pages.length) {
