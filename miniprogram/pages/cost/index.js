@@ -335,7 +335,8 @@ Page({
   },
 
   onAddCostSave() {
-    this.setData({ items: ItemService.getItems() });
+    console.warn('[cost] onAddCostSave called, items:', ItemService.getItems().length);
+    this.updateDisplay();
   },
 
   noop() {},
