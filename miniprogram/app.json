@@ -1,7 +1,6 @@
 {
   "pages": [
     "pages/cost/index",
-    "pages/add-cost/index",
     "pages/insight/index",
     "pages/item-detail/index"
   ],
@@ -25,15 +24,12 @@
         "text": "成本"
       },
       {
-        "pagePath": "pages/add-cost/index",
-        "text": ""
-      },
-      {
         "pagePath": "pages/insight/index",
         "text": "洞察"
       }
     ]
   },
+  "usingComponents": {},
   "style": "v2",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"

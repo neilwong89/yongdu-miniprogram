@@ -68,7 +68,7 @@ async function main() {
         type: 'miniProgram',
         projectPath: projectRoot,
         privateKeyPath: path.resolve(projectRoot, privateKeyPath),
-        ignores: ['node_modules/**', 'src/**', 'scripts/**', '*.md', 'docs/**', 'server/**', 'subpackages/**'],
+        ignores: ['node_modules/**', 'src/**', 'scripts/**', '*.md', 'docs/**', 'server/**', 'subpackages/**', 'build.sh', 'upload-dev.js'],
       }),
       version,
       desc,

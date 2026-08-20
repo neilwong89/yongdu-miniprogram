@@ -5,6 +5,7 @@ module.exports = {
       script: 'src/index.js',
       cwd: '/opt/yongdu/api-server',
       interpreter: 'node',
+      exec_mode: 'fork',
       instances: 1,
       autorestart: true,
       watch: false,

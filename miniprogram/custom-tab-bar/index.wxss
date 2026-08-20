@@ -1,0 +1,134 @@
+/* ============================================
+   TabBar 整体：用 transition 替代 animation
+   ============================================ */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #fbfaf6;
+  border-top: 1.5rpx solid #e0e4db;
+  display: flex;
+  align-items: flex-start;
+  z-index: 999;
+  transition: transform 0.28s ease-out;
+}
+
+/* 弹层打开时 TabBar 下移 */
+.tabbar.panel-open {
+  transform: translateY(200rpx);
+}
+
+/* ============================================
+   两侧 tab 样式
+   ============================================ */
+.tab-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100rpx;
+}
+
+.tab-label {
+  font-size: 26rpx;
+  color: #9e9a93;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.tab-label.active {
+  color: #466957;
+  font-weight: 600;
+}
+
+/* ============================================
+   中间按钮容器
+   ============================================ */
+.tab-center-wrap {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100rpx;
+  transition: transform 0.28s ease-out;
+}
+
+/* 弹层打开时：加号按钮抵消下移，保持不动 */
+.tabbar.panel-open .tab-center-wrap {
+  transform: translateY(-200rpx);
+}
+
+/* 凸起按钮 */
+.tab-center-btn {
+  width: 100rpx;
+  height: 100rpx;
+  background: #466957;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -24rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(70, 105, 87, 0.25),
+              0 4rpx 16rpx rgba(70, 105, 87, 0.15);
+  transition: transform 0.22s ease-in, opacity 0.18s ease-in;
+}
+
+/* 弹层打开时：加号按钮缩小消失 */
+.tabbar.panel-open .tab-center-btn {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.tab-center-icon {
+  width: 44rpx;
+  height: 44rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-h {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 2rpx;
+  transition: opacity 0.15s ease-in;
+}
+
+.icon-line1 {
+  width: 4rpx;
+  height: 44rpx;
+  top: 0;
+  left: 50%;
+  margin-left: -2rpx;
+  transform: rotate(90deg);
+  opacity: 1;
+}
+
+.icon-line2 {
+  width: 4rpx;
+  height: 44rpx;
+  top: 0;
+  left: 50%;
+  margin-left: -2rpx;
+  transform: rotate(0deg);
+  opacity: 1;
+}
+
+/* ============================================
+   固定按钮：动画控制
+   ============================================ */
+.fab-btns {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.22s ease-out, transform 0.22s ease-out;
+}
+
+.fab-btns.fab-visible {
+  opacity: 1;
+  transform: scale(1);
+}

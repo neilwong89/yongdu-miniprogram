@@ -35,7 +35,7 @@ Page({
     categories: PRESET_CATEGORIES,
     selectedCategory: 'all',
 
-    // ---------- 成本曲线 ----------
+    // ---------- 用度曲线 ----------
     chartRange: '90',
     curvePath: '',
     curveFillPath: '',
@@ -57,8 +57,8 @@ Page({
 
   _unsubscribe: null,
 
-  onLoad() {
-    const sysInfo = wx.getSystemInfoSync();
+  async onLoad() {
+    const sysInfo = await wx.getWindowInfo();
     this.setData({ navBarHeight: sysInfo.statusBarHeight + 44 });
   },
 
@@ -85,7 +85,7 @@ Page({
 
     const usingItems = items.filter(i => i.status === 'using');
 
-    // 今日总成本（使用中的按天物品）
+    // 今日总用度（使用中的按天物品）
     const totalDailyCostFen = CostCalculator.calcTotalDailyCost(items);
     const todayCost = (totalDailyCostFen / 100).toFixed(2);
 
@@ -159,7 +159,7 @@ Page({
       }
     }
 
-    // 每日成本最高
+    // 每日用度最高
     let topHighestDaily = null;
     const dayItems = usingItems.filter(i => i.unit === 'day');
     if (dayItems.length > 0) {
@@ -190,7 +190,7 @@ Page({
       }
     }
 
-    // --- 成本曲线 SVG ---
+    // --- 用度曲线 SVG ---
     const { curvePath, curveFillPath, startLabel, endLabel } = this._calcCurvePath(items);
 
     this.setData({
@@ -201,7 +201,6 @@ Page({
       topMostExpensive,
       topLongest,
       topHighestDaily,
-      topMostDaily,
       topMostUsed,
       curvePath,
       curveFillPath,
@@ -210,7 +209,7 @@ Page({
     });
   },
 
-  // ---------- 计算 SVG 成本曲线 ----------
+  // ---------- 计算 SVG 用度曲线 ----------
   _calcCurvePath(items) {
     const { chartRange } = this.data;
     const usingItems = items.filter(i => i.status === 'using' && i.unit === 'day');
@@ -233,7 +232,7 @@ Page({
       startDate = dates.reduce((a, b) => a < b ? a : b);
     }
 
-    // 每天的累计成本（倒序：从 start 到 end）
+    // 每天的累计用度（倒序：从 start 到 end）
     const days = [];
     const cur = new Date(startDate);
     while (cur <= endDate) {
@@ -299,6 +298,10 @@ Page({
   },
 
   goAdd() {
-    wx.switchTab({ url: '/pages/add-cost/index' });
+    this.selectComponent('#addCostPanel').show();
+  },
+
+  onAddCostSave() {
+    this._loadData();
   },
 });

@@ -1,5 +1,30 @@
 /* 成本页 - 设计稿还原 WXSS */
 
+/* === 字体加载遮罩 === */
+.font-loading-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #edf0e9;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.font-loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+.font-loading-text {
+  font-size: 30rpx;
+  color: #466957;
+  letter-spacing: 4rpx;
+}
+
 /* === 页面框架 === */
 .page {
   min-height: 100vh;
@@ -495,42 +520,16 @@
 /* === 空状态 === */
 .empty-state {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 160rpx 40rpx;
-  gap: 16rpx;
 }
 
-.empty-icon {
-  font-size: 100rpx;
-  opacity: 0.5;
-}
-
-.empty-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #4a4540;
-}
-
-.empty-desc {
-  font-size: 28rpx;
-  color: #7a887f;
-}
-
-.empty-btn {
-  margin-top: 20rpx;
-  background: #466957;
-  color: #ffffff;
+.empty-hint {
   font-size: 30rpx;
-  font-weight: 600;
-  padding: 22rpx 64rpx;
-  border-radius: 100rpx;
+  color: #9a9a94;
+  text-align: center;
   letter-spacing: 1rpx;
-}
-
-.empty-btn::after {
-  border: none;
 }
 
 /* === 弹层 === */

@@ -1,11 +1,12 @@
 /**
- * 成本页（首页）
+ * 用度页（首页）
  * 路由: /pages/cost/index
  */
 
 const AppStore = require('../../stores/app-store');
 const ItemService = require('../../services/item');
 const CostCalculator = require('../../services/calculator');
+const { getLocalPath } = require('../../utils/photo-cache');
 
 // 预置分类（按设计稿）
 const PRESET_CATEGORIES = [
@@ -27,13 +28,16 @@ const STATUS_OPTIONS = [
 // 排序选项
 const SORT_OPTIONS = [
   { value: 'custom', label: '自定义排序' },
-  { value: 'dailyCost', label: '按成本（从高到低）' },
+  { value: 'dailyCost', label: '按用度（从高到低）' },
   { value: 'name', label: '按名称' },
   { value: 'purchaseDate', label: '按购买日期' },
 ];
 
 Page({
   data: {
+    // 字体加载状态
+    fontLoading: true,
+
     // 汇总数据
     todayCost: '0.00',
     todayCostPerItem: '0.00',
@@ -73,8 +77,9 @@ Page({
 
   _unsubscribe: null,
 
-  onLoad() {
-    const sysInfo = wx.getSystemInfoSync();
+  async onLoad() {
+    const app = getApp();
+    const sysInfo = await wx.getWindowInfo();
     const navBarHeight = sysInfo.statusBarHeight + 44;
     const now = new Date();
     const todayStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
@@ -83,7 +88,13 @@ Page({
       todayStr,
       sortOrder: AppStore.get('sortOrder') || 'custom',
     });
-    this._loadData();
+
+    // 等字体加载完成后再渲染数据
+    app.onFontReady((fontReady) => {
+      console.log('[cost] 字体状态:', fontReady ? '✅ 就绪' : '❌ 失败，用系统字体');
+      this.setData({ fontLoading: false });
+      this._loadData();
+    });
   },
 
   onShow() {
@@ -104,10 +115,9 @@ Page({
     const items = ItemService.getItems();
     AppStore.set({ items });
     this._renderItems();
-    this._unsubscribe = AppStore.subscribe((prev, next) => {
-      if (prev.items !== next.items) {
-        this._refreshData();
-      }
+    this._unsubscribe = AppStore.subscribe(() => {
+      // 只刷新视图，不重复调用 set()，避免死循环
+      this._renderItems();
     });
   },
 
@@ -149,9 +159,9 @@ Page({
     const allItems = ItemService.getItems();
     const usingItems = allItems.filter(i => i.status === 'using');
 
-    // 今日按天总成本
+    // 今日按天总用度
     const totalDaily = CostCalculator.calcTotalDailyCost(allItems);
-    // 按天物品的今日成本
+    // 按天物品的今日用度
     const todayCost = parseFloat(totalDaily.toFixed(2));
     // 按天物品数
     const todayItems = usingItems.filter(i => i.unit === 'day');
@@ -159,7 +169,7 @@ Page({
       ? parseFloat((totalDaily / todayItems.length).toFixed(2))
       : 0;
 
-    // 按次物品剩余成本总和
+    // 按次物品剩余用度总和
     const countItems = usingItems.filter(i => i.unit === 'count');
     let remainCost = 0;
     countItems.forEach(item => {
@@ -220,13 +230,18 @@ Page({
       ? (item.price / 100).toLocaleString('zh-CN', { minimumFractionDigits: 0 })
       : '0';
 
+    // 图片：优先读本地缓存
+    const photoId = item.photoId;
+    const photoLocalPath = photoId ? getLocalPath(photoId) : null;
+    const hasImage = !!photoLocalPath;
+
     return {
       id: item.id,
       name: item.name,
       icon: item.icon || '📦',
       categoryName: category.name || '其他',
-      hasImage: false,
-      imageUrl: '',
+      hasImage,
+      imageUrl: photoLocalPath || '',
       status: item.status,
       statusLabel: statusMap[item.status] || item.status,
       statusClass: statusClassMap[item.status] || '',
@@ -316,7 +331,11 @@ Page({
   },
 
   goAdd() {
-    wx.switchTab({ url: '/pages/add-cost/index' });
+    this.selectComponent('#addCostPanel').show();
+  },
+
+  onAddCostSave() {
+    this._loadItems();
   },
 
   noop() {},

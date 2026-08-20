@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "洞察",
-  "navigationStyle": "custom"
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "add-cost-panel": "/components/add-cost-panel"
+  }
 }

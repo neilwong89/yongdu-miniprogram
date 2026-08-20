@@ -36,6 +36,13 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_items_openid ON items(openid);
   CREATE INDEX IF NOT EXISTS idx_items_updated_at ON items(updated_at);
+
+  CREATE TABLE IF NOT EXISTS photos (
+    id TEXT PRIMARY KEY,
+    width INTEGER,
+    height INTEGER,
+    created_at INTEGER
+  );
 `);
 
 module.exports = db;

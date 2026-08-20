@@ -9,10 +9,10 @@
       <view class="header-left">
         <text class="header-date">YONGDU · INSIGHT</text>
         <view class="header-row2">
-          <text class="header-title">洞察</text>
+          <text class="header-title songti">洞察</text>
           <text class="header-count-pill">{{itemCount}} 件</text>
         </view>
-        <text class="header-slogan">看见时间留下的价值。</text>
+        <text class="header-slogan songti">看见时间留下的价值。</text>
       </view>
     </view>
 
@@ -29,11 +29,11 @@
       </view>
     </scroll-view>
 
-    <!-- 今日成本曲线卡片 -->
+    <!-- 今日用度曲线卡片 -->
     <view class="chart-card">
       <view class="chart-header">
         <view class="chart-title-group">
-          <text class="chart-label">按日期 · 今日成本</text>
+          <text class="chart-label songti">按日期 · 今日用度</text>
           <view class="chart-cost">
             <text class="chart-cost-value">¥ {{todayCost}}</text>
             <text class="chart-cost-unit">/ 日</text>
@@ -52,7 +52,7 @@
           >全部</view>
         </view>
       </view>
-      <!-- SVG 成本曲线 -->
+      <!-- SVG 用度曲线 -->
       <view class="chart-svg-wrap">
         <svg class="cost-svg" viewBox="0 0 330 132" preserveAspectRatio="none">
           <path
@@ -74,19 +74,19 @@
           <text class="axis-label">{{chartEndLabel}}</text>
         </view>
       </view>
-      <text class="chart-hint">拖动曲线可查看日期；双指缩放可切换时间密度</text>
+      <text class="chart-hint songti">拖动曲线可查看日期；双指缩放可切换时间密度</text>
     </view>
 
     <!-- 分类账本 -->
     <view class="section-header">
-      <text class="section-title">分类账本</text>
+      <text class="section-title songti">分类账本</text>
     </view>
     <view class="category-table">
       <view class="table-head">
         <text class="th th-name">类别</text>
         <text class="th th-count">数量</text>
         <text class="th th-amount">总投入</text>
-        <text class="th th-cost">每日成本</text>
+        <text class="th th-cost">每日用度</text>
       </view>
       <view
         wx:for="{{categoryStats}}"
@@ -105,15 +105,15 @@
     <!-- 用度之最 -->
     <view class="section-header" style="margin-top: 40rpx;">
       <view class="section-title-group">
-        <text class="section-title">用度之最</text>
-        <text class="section-sub">一些轻巧的记录</text>
+        <text class="section-title songti">用度之最</text>
+        <text class="section-sub songti">一些轻巧的记录</text>
       </view>
     </view>
     <view class="top-list">
       <!-- 最贵 -->
       <view class="top-card top-most-expensive" wx:if="{{topMostExpensive}}">
         <text class="top-icon">🏆</text>
-        <text class="top-label">购买最贵</text>
+        <text class="top-label">入手最贵</text>
         <text class="top-name">{{topMostExpensive.name}}</text>
         <text class="top-value">¥ {{topMostExpensive.priceDisplay}}</text>
       </view>
@@ -124,17 +124,17 @@
         <text class="top-name">{{topLongest.name}}</text>
         <text class="top-value">{{topLongest.days}} 天</text>
       </view>
-      <!-- 成本最高 -->
+      <!-- 用度最高 -->
       <view class="top-card top-highest-daily" wx:if="{{topHighestDaily}}">
         <text class="top-icon">⚡</text>
-        <text class="top-label">每日成本最高</text>
+        <text class="top-label">日均最贵</text>
         <text class="top-name">{{topHighestDaily.name}}</text>
         <text class="top-value">¥ {{topHighestDaily.costPerDay}} / 日</text>
       </view>
       <!-- 使用最多 -->
       <view class="top-card top-most-used" wx:if="{{topMostUsed}}">
         <text class="top-icon">🎧</text>
-        <text class="top-label">使用最多</text>
+        <text class="top-label">动用最多</text>
         <text class="top-name">{{topMostUsed.name}}</text>
         <text class="top-value">{{topMostUsed.usedCount}} 次</text>
       </view>
@@ -146,3 +146,6 @@
   </view>
 
 </view>
+
+<!-- 添加拥有弹层面板 -->
+<add-cost-panel id="addCostPanel" bind:save="onAddCostSave" />

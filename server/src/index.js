@@ -8,12 +8,16 @@ require('./db');
 
 const userRouter = require('./routes/user');
 const itemRouter = require('./routes/item');
+const photoRouter = require('./routes/photo');
 
 const app = express();
 const PORT = 3012;
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
+
+// Serve uploaded photos as static files
+app.use('/uploads', express.static('/opt/yongdu/api-server/uploads'));
 
 // Health check
 app.get('/api/yongdu/health', (req, res) => {
@@ -32,6 +36,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/yongdu/user', userRouter);
 app.use('/api/yongdu/items', itemRouter);
+app.use('/api/yongdu/photo', photoRouter);
 
 // 404 handler
 app.use((req, res) => {

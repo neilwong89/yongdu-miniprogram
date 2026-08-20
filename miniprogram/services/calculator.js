@@ -24,7 +24,7 @@ function calcDaysUsed(purchaseDate) {
 function calcDailyCost(item) {
   if (item.status !== 'using' || item.unit !== 'day') return 0;
   const days = calcDaysUsed(item.purchaseDate);
-  return (item.price + (item.otherFees || 0)) / days;
+  return (item.price + (item.otherFees || 0)) / days / 100;
 }
 
 /**
@@ -36,7 +36,7 @@ function calcDailyCost(item) {
 function calcPerUseCost(item) {
   if (item.status !== 'using' || item.unit !== 'count') return null;
   if ((item.usedCount || 0) === 0) return null;
-  return (item.price + (item.otherFees || 0)) / item.usedCount;
+  return (item.price + (item.otherFees || 0)) / item.usedCount / 100;
 }
 
 /**
@@ -64,12 +64,30 @@ function calcAveragePerUseCost(items) {
   return { avgCost: totalPrice / totalUsed, count: countItems.length };
 }
 
+/**
+ * 按次物品剩余成本
+ * = (总价 / 预期总次数) × 剩余次数
+ * = (price + otherFees) / expectedDays × (expectedDays - usedCount)
+ * @param {object} item
+ * @returns {number|null}
+ */
+function calcRemainingCost(item) {
+  if (item.status !== 'using' || item.unit !== 'count') return null;
+  const expectedDays = item.expectedDays || 0;
+  const usedCount = item.usedCount || 0;
+  if (expectedDays <= 0) return null;
+  const remaining = expectedDays - usedCount;
+  if (remaining <= 0) return 0;
+  return (item.price + (item.otherFees || 0)) / expectedDays * remaining / 100;
+}
+
 const CostCalculator = {
   calcDaysUsed,
   calcDailyCost,
   calcPerUseCost,
   calcTotalDailyCost,
   calcAveragePerUseCost,
+  calcRemainingCost,
 };
 
 module.exports = CostCalculator;

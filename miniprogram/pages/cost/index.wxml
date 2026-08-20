@@ -1,77 +1,56 @@
-<!-- 成本页（首页） - 设计稿还原 -->
+<!-- 用度页（首页） - 设计稿还原 -->
 <view class="page">
 
+  <!-- 字体加载中遮罩 -->
+  <view wx:if="{{fontLoading}}" class="font-loading-mask">
+    <view class="font-loading-inner">
+      <text class="font-loading-text songti">今日用度，如约而至</text>
+    </view>
+  </view>
+
   <!-- 顶部内容区 -->
-  <view class="page-content" style="padding-top: {{navBarHeight}}px;">
+  <view class="page-content" style="padding-top: {{navBarHeight}}px;" wx:if="{{!fontLoading}}">
 
     <!-- 头部 -->
     <view class="page-header">
       <view class="header-left">
         <text class="header-date">YONGDU · {{todayStr}}</text>
-        <text class="header-title">用度</text>
-        <text class="header-slogan">把拥有，轻轻算成日常。</text>
+        <text class="header-title songti">用度</text>
+        <text class="header-slogan songti">把拥有，轻轻算成日常。</text>
       </view>
       <view class="header-right">
         <button class="sort-btn" bindtap="toggleSortPop">
           <text class="sort-btn-icon">☰</text>
-          <text class="sort-btn-text">{{sortOrder === 'default' ? '排序' : '完成'}}</text>
+          <text class="sort-btn-text songti">{{sortOrder === 'default' ? '排序' : '完成'}}</text>
         </button>
       </view>
     </view>
 
-    <!-- 分类横滚胶囊 -->
-    <scroll-view class="cats-scroll" scroll-x enable-flex>
-      <view class="cats-wrap">
-        <view
-          wx:for="{{categories}}"
-          wx:key="id"
-          class="cat-pill {{selectedCategory === item.id ? 'active' : ''}}"
-          bindtap="selectCategory"
-          data-category="{{item.id}}"
-        >{{item.name}}</view>
-      </view>
-    </scroll-view>
-
-    <!-- 搜索框 -->
-    <view class="search-bar">
-      <text class="search-icon">🔍</text>
-      <input
-        class="search-input"
-        placeholder="搜索名称、购买时间或备注"
-        value="{{searchKeyword}}"
-        bindinput="onSearchInput"
-        bindfocus="onSearchFocus"
-        bindblur="onSearchBlur"
-      />
-      <text wx:if="{{searchKeyword}}" class="search-clear" bindtap="onSearchClear">✕</text>
-    </view>
-
-    <!-- 成本汇总卡片 -->
+    <!-- 用度汇总卡片 -->
     <view class="summary-row">
-      <!-- 左侧：今日按天成本 -->
+      <!-- 左侧：今日用度 -->
       <view class="summary-card card-green">
-        <text class="summary-label">今日按天成本</text>
+        <text class="summary-label songti">今日用度</text>
         <view class="summary-main">
           <text class="summary-value">¥ {{todayCost}}</text>
-          <text class="summary-unit">/ 日</text>
+          <text class="summary-unit songti">/ 日</text>
         </view>
-        <text class="summary-sub">¥ {{todayCostPerItem}} / 件</text>
       </view>
-      <!-- 右侧：按次剩余成本 -->
+      <!-- 右侧：按次用度 -->
       <view class="summary-card card-warm">
-        <text class="summary-label">按次剩余成本</text>
+        <text class="summary-label songti">按次用度</text>
         <view class="summary-main">
           <text class="summary-value">¥ {{remainCost}}</text>
         </view>
-        <text class="summary-sub">每次使用均摊后递减</text>
+        <text class="summary-sub songti">每次使用均摊后递减</text>
       </view>
     </view>
 
     <!-- 列表标题 + 视图切换 -->
     <view class="list-header" wx:if="{{!isEmpty}}">
       <view class="list-title-group">
-        <text class="list-title">正在使用</text>
-        <text class="list-count" wx:if="{{usingCount > 0}}">共 {{usingCount}} 件</text>
+        <text class="list-title songti">仍在使用</text>
+        <text class="list-count" wx:if="{{usingCount > 0}}">共 <text class="songti">{{usingCount}}</text> 份陪伴</text>
       </view>
       <view class="view-toggle">
         <view
@@ -86,6 +65,33 @@
         >☰</view>
       </view>
     </view>
+
+    <!-- 搜索框 -->
+    <view class="search-bar">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input songti"
+        placeholder="搜索名称、购买时间或备注"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindfocus="onSearchFocus"
+        bindblur="onSearchBlur"
+      />
+      <text wx:if="{{searchKeyword}}" class="search-clear" bindtap="onSearchClear">✕</text>
+    </view>
+
+    <!-- 分类横滚胶囊 -->
+    <scroll-view class="cats-scroll" scroll-x enable-flex>
+      <view class="cats-wrap">
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="cat-pill {{selectedCategory === item.id ? 'active' : ''}}"
+          bindtap="selectCategory"
+          data-category="{{item.id}}"
+        >{{item.name}}</view>
+      </view>
+    </scroll-view>
 
     <!-- 物品列表 -->
     <view class="items-list" wx:if="{{!isEmpty}}">
@@ -116,8 +122,8 @@
               <text class="card-cost {{item.isCount ? 'cost-times' : 'cost-daily'}}">
                 ¥ {{item.costDisplay}} {{item.isCount ? '/ 次' : '/ 日'}}
               </text>
-              <text class="card-days" wx:if="{{!item.isCount}}">已陪伴 {{item.usedDays}} 天</text>
-              <text class="card-days" wx:if="{{item.isCount}}">已使用 {{item.usedCount}} 次</text>
+              <text class="card-days" wx:if="{{!item.isCount}}"><text class="songti">相守</text> {{item.usedDays}} 天</text>
+              <text class="card-days" wx:if="{{item.isCount}}"><text class="songti">动用</text> {{item.usedCount}} 次</text>
             </view>
             <!-- 按次物品的 +1 按钮 -->
             <view
@@ -152,8 +158,8 @@
             </view>
             <view class="list-row2">
               <text class="list-meta">¥ {{item.priceDisplay}} · {{item.purchaseDateStr}}</text>
-              <text class="list-days" wx:if="{{!item.isCount}}">{{item.usedDays}} 天</text>
-              <text class="list-days" wx:if="{{item.isCount}}">{{item.usedCount}} 次</text>
+              <text class="list-days" wx:if="{{!item.isCount}}">{{item.usedDays}}<text class="songti">日</text></text>
+              <text class="list-days" wx:if="{{item.isCount}}">{{item.usedCount}}<text class="songti">次</text></text>
             </view>
           </view>
           <view
@@ -169,10 +175,7 @@
 
     <!-- 空状态 -->
     <view wx:if="{{isEmpty}}" class="empty-state">
-      <text class="empty-icon">📦</text>
-      <text class="empty-title">还没有任何物品</text>
-      <text class="empty-desc">开始记录你的第一笔用度</text>
-      <view class="empty-btn" bindtap="goAdd">添加物品</view>
+      <text class="songti empty-hint">点击下方加号记录第一个拥有</text>
     </view>
 
   </view>
@@ -180,7 +183,7 @@
   <!-- 排序弹层 -->
   <view wx:if="{{showSortPop}}" class="pop-overlay" bindtap="closeSortPop">
     <view class="pop-sheet" catchtap="noop">
-      <view class="pop-title">排序方式</view>
+      <view class="pop-title songti">排序方式</view>
       <view
         wx:for="{{sortOptions}}"
         wx:key="value"
@@ -189,7 +192,7 @@
         data-value="{{item.value}}"
       >{{item.label}}</view>
       <view class="pop-divider"></view>
-      <view class="pop-title">状态筛选</view>
+      <view class="pop-title songti">状态筛选</view>
       <view
         wx:for="{{statusOptions}}"
         wx:key="value"
@@ -197,8 +200,11 @@
         bindtap="selectStatus"
         data-status="{{item.value}}"
       >{{item.label}}</view>
-      <view class="pop-cancel" bindtap="closeSortPop">取消</view>
+      <view class="pop-cancel songti" bindtap="closeSortPop">取消</view>
     </view>
   </view>
 
 </view>
+
+<!-- 添加拥有弹层面板 -->
+<add-cost-panel id="addCostPanel" bind:save="onAddCostSave" />

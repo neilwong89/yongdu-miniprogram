@@ -1,0 +1,167 @@
+<!-- 遮罩 -->
+<view class="mask" wx:if="{{visible}}" animation="{{animMask}}" bindtap="onMaskTap"></view>
+
+<!-- 面板 -->
+<view class="panel" wx:if="{{visible}}" animation="{{animPanel}}">
+  <!-- 拖动指示条（吸顶） -->
+  <view class="drag-indicator-wrap">
+    <view class="drag-indicator"></view>
+  </view>
+
+  <!-- 主内容（可滚动） -->
+  <view class="panel-body">
+    <view class="form-content">
+
+      <!-- 顶部标题栏 -->
+      <view class="panel-header">
+        <text class="panel-title songti">{{mode === 'edit' ? '编辑拥有' : '记录一个拥有'}}</text>
+      </view>
+
+      <!-- 图片上传区 -->
+      <view class="photo-upload" bindtap="onPhotoTap">
+        <block wx:if="{{photoLocalPath}}">
+          <image class="photo-preview" src="{{photoLocalPath}}" mode="aspectFill" />
+          <view class="photo-replace-hint">点击更换照片</view>
+        </block>
+        <block wx:else>
+          <view class="upload-icon-wrap">
+            <text class="upload-icon">📷</text>
+          </view>
+          <view class="upload-text">
+            <text class="upload-title songti">为它留下一张照片</text>
+            <text class="upload-sub songti">日后仍能被记起</text>
+          </view>
+        </block>
+      </view>
+
+      <!-- 表单 -->
+      <view class="form-sections">
+
+        <!-- emoji + 名称 -->
+        <view class="field-row">
+          <view class="field-label songti">名称</view>
+          <view class="emoji-row">
+            <view class="emoji-picker">
+              <text
+                wx:for="{{emojis}}"
+                wx:key="this"
+                class="emoji-item {{icon === item ? 'active' : ''}}"
+                data-emoji="{{item}}"
+                bindtap="onEmojiTap"
+              >{{item}}</text>
+            </view>
+          </view>
+          <input
+            class="field-input"
+            placeholder="比如：新买的书桌灯"
+            maxlength="20"
+            value="{{name}}"
+            bindinput="onNameInput"
+          />
+        </view>
+
+        <!-- 类别 + 状态 -->
+        <view class="field-row cols-2">
+          <view class="field-group">
+            <view class="field-label songti">类别</view>
+            <view class="field-select" bindtap="onCategoryTap">
+              <text class="field-select-val">{{categoryName}}</text>
+              <text class="field-arrow">›</text>
+            </view>
+          </view>
+          <view class="field-group">
+            <view class="field-label songti">状态</view>
+            <view class="field-select" bindtap="onStatusTap">
+              <text class="field-select-val">{{statusLabel}}</text>
+              <text class="field-arrow">›</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 入手价 + 入手日期 -->
+        <view class="field-row cols-2">
+          <view class="field-group">
+            <view class="field-label songti">入手价</view>
+            <input class="field-input" type="digit" placeholder="0.00" value="{{price}}" bindinput="onPriceInput" />
+          </view>
+          <view class="field-group">
+            <view class="field-label songti">入手日期</view>
+            <picker mode="date" value="{{purchaseDate}}" bindchange="onPurchaseDateChange">
+              <view class="field-select">
+                <text class="field-select-val">{{purchaseDate}}</text>
+                <text class="field-arrow">›</text>
+              </view>
+            </picker>
+          </view>
+        </view>
+
+        <!-- 分摊方式 -->
+        <view class="method-card">
+          <view class="method-title songti">分摊方式</view>
+          <view class="method-btns">
+            <view class="method-btn {{unit === 'day' ? 'active' : ''}} songti" data-unit="day" bindtap="onUnitChange">按日均摊</view>
+            <view class="method-btn {{unit === 'count' ? 'active' : ''}} songti" data-unit="count" bindtap="onUnitChange">按次计费</view>
+          </view>
+          <text class="method-hint">{{unit === 'day' ? '从入手日起，价格按流逝的日子均摊；可填写你预期与它相伴的时长。' : '总价 ÷ 累计动用次数 = 本次用度；首页可随时为它增加一次动用。'}}</text>
+        </view>
+
+        <!-- 预期相伴 -->
+        <!-- 备注 -->
+        <view class="field-row">
+          <view class="field-label songti">备注</view>
+          <textarea class="field-textarea" placeholder="购买缘由、使用感受或想记下的话" maxlength="200" value="{{remark}}" bindinput="onRemarkInput" />
+        </view>
+
+        <!-- 出手价（已卖出时） -->
+        <view class="field-row" wx:if="{{status === 'retired'}}">
+          <view class="field-label songti">出手价（元）</view>
+          <input class="field-input" type="digit" placeholder="可选，若已有新主人" value="{{soldPrice}}" bindinput="onSoldPriceInput" />
+        </view>
+
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部安全区 -->
+  <view style="height: env(safe-area-inset-bottom);"></view>
+
+  <!-- 隐藏 canvas（用于图片压缩） -->
+  <canvas type="2d" id="compress-canvas" class="hidden-canvas" />
+  <canvas type="2d" id="compress-thumb-canvas" class="hidden-canvas" />
+</view>
+
+<!-- 分类选择器 -->
+<view class="picker-mask" wx:if="{{showCategoryPicker}}" bindtap="onCategoryPickerCancel">
+  <view class="picker-sheet" catchtap="noop">
+    <picker-view indicator-class="picker-indicator" bindchange="onCategoryPickerChange">
+      <picker-view-column>
+        <view wx:for="{{categoryList}}" wx:key="id" class="picker-item">{{item.name}}</view>
+      </picker-view-column>
+    </picker-view>
+    <view class="picker-cancel" bindtap="onCategoryPickerCancel">取消</view>
+  </view>
+</view>
+
+<!-- 状态选择器 -->
+<view class="picker-mask" wx:if="{{showStatusPicker}}" bindtap="onStatusPickerCancel">
+  <view class="picker-sheet" catchtap="noop">
+    <picker-view indicator-class="picker-indicator" bindchange="onStatusPickerChange">
+      <picker-view-column>
+        <view wx:for="{{statusOptions}}" wx:key="value" class="picker-item">{{item.label}}</view>
+      </picker-view-column>
+    </picker-view>
+    <view class="picker-cancel" bindtap="onStatusPickerCancel">取消</view>
+  </view>
+</view>
+
+<!-- 自定义分类弹窗 -->
+<view class="dialog-mask" wx:if="{{showCustomCategoryInput}}" bindtap="onCustomCategoryCancel">
+  <view class="dialog" catchtap="noop">
+    <view class="dialog-title songti">自定义分类</view>
+    <input class="dialog-input" placeholder="请输入分类名称（最多10字）" maxlength="10" focus="{{true}}" value="{{customCategoryName}}" bindinput="onCustomCategoryInput" />
+    <view class="dialog-btns">
+      <view class="dialog-btn cancel" bindtap="onCustomCategoryCancel">取消</view>
+      <view class="dialog-btn confirm" bindtap="onCustomCategoryConfirm">确定</view>
+    </view>
+  </view>
+</view>

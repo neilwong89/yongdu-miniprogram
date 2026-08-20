@@ -1,0 +1,39 @@
+<view id="tabbar" class="tabbar {{panelOpen === 1 ? 'panel-open' : ''}}" style="position:fixed;bottom:0;left:0;right:0;height:100rpx;padding-bottom:env(safe-area-inset-bottom);background:#fbfaf6;border-top:1.5rpx solid #e0e4db;display:flex;align-items:flex-start;z-index:999">
+  <!-- 左侧用度 tab -->
+  <view
+    class="tab tab-side {{active === 0 ? 'active' : ''}}"
+    data-index="0"
+    bindtap="switchTab"
+  >
+    <text class="tab-label {{active === 0 ? 'active' : ''}} songti">用度</text>
+  </view>
+
+  <!-- 中间添加按钮 -->
+  <view style="flex:1;display:flex;align-items:flex-start;justify-content:center;height:100rpx">
+    <view style="width:100rpx;height:100rpx;background:#466957;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-24rpx;box-shadow:0 -4rpx 20rpx rgba(70,105,87,0.25),0 4rpx 16rpx rgba(70,105,87,0.15)" bindtap="onTogglePanel">
+      <view style="width:44rpx;height:44rpx;position:relative;display:flex;align-items:center;justify-content:center">
+        <view style="position:absolute;background:#ffffff;border-radius:2rpx;width:4rpx;height:44rpx;top:0;left:50%;margin-left:-2rpx;transform:rotate(90deg)"></view>
+        <view style="position:absolute;background:#ffffff;border-radius:2rpx;width:4rpx;height:44rpx;top:0;left:50%;margin-left:-2rpx;transform:rotate(0deg)"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 右侧洞察 tab -->
+  <view
+    class="tab tab-side {{active === 1 ? 'active' : ''}}"
+    data-index="1"
+    bindtap="switchTab"
+  >
+    <text class="tab-label {{active === 1 ? 'active' : ''}} songti">洞察</text>
+  </view>
+</view>
+
+<!-- 保存/取消按钮：panelOpen===1 时显示，带动画 -->
+<view class="fab-btns {{panelOpen === 1 ? 'fab-visible' : ''}}" style="position:fixed;bottom:32rpx;left:50%;margin-left:-200rpx;width:400rpx;display:flex;align-items:center;justify-content:space-between;z-index:1000;pointer-events:{{panelOpen === 1 ? 'auto' : 'none'}}">
+  <view style="width:88rpx;height:88rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#466957;box-shadow:0 4rpx 16rpx rgba(70,105,87,0.3)" bindtap="onSave">
+    <text style="font-size:36rpx;font-weight:bold;line-height:1;color:#ffffff">✓</text>
+  </view>
+  <view style="width:88rpx;height:88rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e54d42;box-shadow:0 4rpx 16rpx rgba(229,77,66,0.3)" bindtap="onCancel">
+    <text style="font-size:36rpx;font-weight:bold;line-height:1;color:#ffffff">✕</text>
+  </view>
+</view>

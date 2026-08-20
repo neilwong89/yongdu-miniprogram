@@ -2,7 +2,7 @@ Component({
   data: {
     active: 0,
     list: [
-      { pagePath: '/pages/cost/index', text: '成本' },
+      { pagePath: '/pages/cost/index', text: '用度' },
       { pagePath: '/pages/add-cost/index', text: '' },
       { pagePath: '/pages/insight/index', text: '洞察' },
     ],

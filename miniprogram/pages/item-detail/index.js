@@ -6,6 +6,7 @@ const ItemService = require('../../services/item');
 const AppStore = require('../../stores/app-store');
 const { calcDaysUsed } = require('../../utils/date');
 const { formatMoney } = require('../../utils/format');
+const { getLocalPath } = require('../../utils/photo-cache');
 
 Page({
   data: {
@@ -32,7 +33,7 @@ Page({
   loadItem(id) {
     const item = ItemService.getItem(id);
     if (!item) {
-      wx.showToast({ title: '物品不存在', icon: 'none' });
+      wx.showToast({ title: '拥有不存在', icon: 'none' });
       setTimeout(() => wx.navigateBack(), 1500);
       return;
     }
@@ -97,6 +98,15 @@ Page({
     item.expectedDays = item.expectedDays || 0;
     item.progressPercent = progressPercent;
 
+    // 图片：优先读本地缓存
+    if (item.photoId) {
+      const localPath = getLocalPath(item.photoId);
+      if (localPath) {
+        item.imageUrl = localPath;
+        item.hasImage = true;
+      }
+    }
+
     this.setData({ item });
   },
 
@@ -105,9 +115,11 @@ Page({
   },
 
   onEdit() {
-    wx.navigateTo({
-      url: `/pages/add-cost/index?id=${this.data.itemId}`,
-    });
+    this.selectComponent('#addCostPanel').openEdit(this.data.itemId);
+  },
+
+  onEditSave() {
+    this._loadItem(this.data.itemId);
   },
 
   onDelete() {

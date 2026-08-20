@@ -1,4 +1,4 @@
-/* custom-tab-bar 样式 - 清新淡雅 */
+/* custom-tab-bar 样式 - 森林绿设计稿 */
 .tabbar {
   position: fixed;
   bottom: 0;
@@ -6,7 +6,7 @@
   right: 0;
   height: 96rpx;
   padding-bottom: env(safe-area-inset-bottom);
-  background: #faf8f4;
+  background: #fbfaf6;
   display: flex;
   align-items: flex-end;
   border-top: 1.5rpx solid #e4e0d8;
@@ -21,15 +21,28 @@
   height: 84rpx;
 }
 
-.tab-text text {
+.tab-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-label {
   font-size: 24rpx;
   color: #9e9a93;
   transition: color 0.2s;
   letter-spacing: 0.5rpx;
+  line-height: 1;
 }
 
-.tab.active .tab-text text {
-  color: #4a5a3a;
+.tab-label.active {
+  color: #466957;
+  font-weight: 600;
+}
+
+.tab.active .tab-label {
+  color: #466957;
   font-weight: 600;
 }
 

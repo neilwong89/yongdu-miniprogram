@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "用度",
   "navigationStyle": "custom",
-  "usingComponents": {}
+  "usingComponents": {
+    "add-cost-panel": "/components/add-cost-panel"
+  }
 }

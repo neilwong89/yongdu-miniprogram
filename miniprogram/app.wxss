@@ -1,0 +1,9 @@
+/* 全局字体 — SimSun 宋体子集
+   字体由 app.js 中 wx.loadFontFace() 加载（HTTPS CDN）
+   首次加载后微信自动缓存，后续启动无需网络
+*/
+
+/* 只有 .songti class 才使用宋体，其他用系统默认字体 */
+.songti {
+  font-family: 'SimSun', Georgia, serif;
+}

@@ -1,5 +1,4 @@
 {
-  "miniprogramRoot": "./",
   "projectname": "yongdu-miniprogram",
   "description": "用度·微信小程序",
   "appid": "wx2830c3171fc2042b",
@@ -37,6 +36,6 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.3.5",
-  "srcMiniprogramRoot": "./",
+  "miniprogramRoot": "./dist/",
   "condition": {}
 }

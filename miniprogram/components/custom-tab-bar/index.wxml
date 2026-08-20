@@ -7,10 +7,10 @@
     catchtap="switchTab"
   >
     <view wx:if="{{index === 1}}" class="tab-center">
-      <view class="center-icon">+</view>
+      <text class="center-icon">+</text>
     </view>
     <view wx:else class="tab-text">
-      <text>{{item.text}}</text>
+      <text class="tab-label {{active === index ? 'active' : ''}}">{{item.text}}</text>
     </view>
   </view>
 </view>
