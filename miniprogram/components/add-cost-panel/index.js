@@ -318,13 +318,13 @@ Component({
       const { photoLocalPath } = this.data;
       const clearPhoto = photoLocalPath ? { photoLocalPath: '', photoId: '', photoPendingUpload: false } : {};
       this.setData({ icon: e.currentTarget.dataset.emoji, showEmojiPicker: false, ...clearPhoto });
-      setTimeout(() => this.setData({ emojiMaskAnimating: false }), 220);
+      setTimeout(() => this.setData({ emojiMaskAnimating: false }), 260);
     },
 
     onEmojiPickerClose() {
-      // 关闭弹窗内容（缩放淡出），再关闭遮罩
+      // 关闭弹窗：隐藏 dialog，延迟关闭 mask，等待渐隐完成
       this.setData({ showEmojiPicker: false });
-      setTimeout(() => this.setData({ emojiMaskAnimating: false }), 220);
+      setTimeout(() => this.setData({ emojiMaskAnimating: false }), 260);
     },
 
     // 清除图片

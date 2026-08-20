@@ -569,18 +569,9 @@
   animation: mask-fade-in 200ms ease-out forwards;
 }
 
-.emoji-picker-mask.mask-out {
-  animation: mask-fade-out 200ms ease-in forwards;
-}
-
 @keyframes mask-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
-}
-
-@keyframes mask-fade-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
 }
 
 .emoji-dialog {
@@ -596,18 +587,9 @@
   animation: dialog-scale-in 240ms ease-out 20ms forwards;
 }
 
-.emoji-dialog.dialog-out {
-  animation: dialog-scale-out 200ms ease-in forwards;
-}
-
 @keyframes dialog-scale-in {
   from { opacity: 0; transform: scale(0.96); }
   to   { opacity: 1; transform: scale(1); }
-}
-
-@keyframes dialog-scale-out {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(0.96); }
 }
 
 .emoji-dialog-title {
