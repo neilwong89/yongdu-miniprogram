@@ -157,8 +157,8 @@
 </view>
 
 <!-- Emoji 图标选择弹窗 -->
-<view class="dialog-mask" wx:if="{{showEmojiPicker}}" bindtap="onEmojiPickerClose">
-  <view class="emoji-dialog" catchtap="noop">
+<view class="emoji-picker-mask {{showEmojiPicker ? 'mask-in' : 'mask-out'}}" wx:if="{{showEmojiPicker || emojiMaskAnimating}}" bindtap="onEmojiPickerClose">
+  <view class="emoji-dialog {{showEmojiPicker ? 'dialog-in' : 'dialog-out'}}" catchtap="noop">
     <view class="emoji-dialog-title songti">选择图标</view>
     <view class="emoji-grid">
       <view

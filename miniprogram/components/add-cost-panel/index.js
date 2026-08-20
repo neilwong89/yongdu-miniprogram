@@ -72,6 +72,7 @@ Component({
     showStatusPicker: false,
     showCustomCategoryInput: false,
     showEmojiPicker: false,
+    emojiMaskAnimating: false,
   },
 
   lifetimes: {
@@ -307,7 +308,9 @@ Component({
 
     // ---------- 图标按钮 ----------
     onIconButtonTap() {
-      this.setData({ showEmojiPicker: true });
+      // 先显示遮罩（动画淡入），再显示弹窗内容（缩放淡入）
+      this.setData({ emojiMaskAnimating: true });
+      setTimeout(() => this.setData({ showEmojiPicker: true }), 10);
     },
 
     onEmojiSelect(e) {
@@ -315,10 +318,13 @@ Component({
       const { photoLocalPath } = this.data;
       const clearPhoto = photoLocalPath ? { photoLocalPath: '', photoId: '', photoPendingUpload: false } : {};
       this.setData({ icon: e.currentTarget.dataset.emoji, showEmojiPicker: false, ...clearPhoto });
+      setTimeout(() => this.setData({ emojiMaskAnimating: false }), 220);
     },
 
     onEmojiPickerClose() {
+      // 关闭弹窗内容（缩放淡出），再关闭遮罩
       this.setData({ showEmojiPicker: false });
+      setTimeout(() => this.setData({ emojiMaskAnimating: false }), 220);
     },
 
     // 清除图片
