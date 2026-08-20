@@ -39,24 +39,14 @@
       <view class="photo-upload" wx:if="{{!photoLocalPath && !icon}}">
         <!-- 左侧：添加照片 -->
         <view class="photo-btn" bindtap="onPhotoTap">
-          <view class="upload-icon-wrap">
-            <text class="upload-icon">📷</text>
-          </view>
-          <view class="upload-text">
-            <text class="upload-title songti">为它留下一张照片</text>
-            <text class="upload-sub songti">日后仍能被记起</text>
-          </view>
+          <view class="photo-btn-icon">📷</view>
+          <view class="photo-btn-text songti">添加照片</view>
         </view>
 
         <!-- 右侧：设置图标 -->
         <view class="icon-btn" bindtap="onIconButtonTap">
-          <view class="upload-icon-wrap">
-            <text class="upload-icon">🖼️</text>
-          </view>
-          <view class="upload-text">
-            <text class="upload-title songti">挑选一个图标</text>
-            <text class="upload-sub songti">日后一眼认出它</text>
-          </view>
+          <view class="icon-btn-icon">🖼️</view>
+          <view class="icon-btn-text songti">设置图标</view>
         </view>
       </view>
 
