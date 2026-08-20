@@ -85,7 +85,9 @@
   color: #32423b;
 }
 
-/* === 图片上传区 === */
+/* === 图片上传区（三态） === */
+
+/* 状态三：默认——两个按钮并排 */
 .photo-upload {
   display: flex;
   align-items: center;
@@ -95,30 +97,44 @@
 .photo-btn {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8rpx;
+  gap: 20rpx;
   background: #f0f5ef;
   border: 3rpx dashed #b8c9ba;
   border-radius: 24rpx;
-  padding: 32rpx 0;
-  min-height: 160rpx;
-  box-sizing: border-box;
+  padding: 28rpx 24rpx;
 }
 
-.photo-btn.has-photo {
-  background: #f0f5ef;
-  border-style: solid;
-  border-color: #b8c9ba;
+.photo-btn .upload-icon-wrap {
+  width: 88rpx;
+  height: 88rpx;
+  background: #dceadf;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.photo-btn-icon {
-  font-size: 48rpx;
+.photo-btn .upload-icon {
+  font-size: 40rpx;
 }
 
-.photo-btn-text {
-  font-size: 24rpx;
+.photo-btn .upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.photo-btn .upload-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #32423b;
+  font-family: 'SimSun', Georgia, serif;
+}
+
+.photo-btn .upload-sub {
+  font-size: 22rpx;
   color: #7b897f;
   font-family: 'SimSun', Georgia, serif;
 }
@@ -126,30 +142,119 @@
 .icon-btn {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8rpx;
+  gap: 20rpx;
   background: #f0f5ef;
   border: 3rpx dashed #b8c9ba;
   border-radius: 24rpx;
-  padding: 32rpx 0;
-  min-height: 160rpx;
+  padding: 28rpx 24rpx;
+}
+
+.icon-btn .upload-icon-wrap {
+  width: 88rpx;
+  height: 88rpx;
+  background: #dceadf;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-btn .upload-icon {
+  font-size: 40rpx;
+}
+
+.icon-btn .upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.icon-btn .upload-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #32423b;
+  font-family: 'SimSun', Georgia, serif;
+}
+
+.icon-btn .upload-sub {
+  font-size: 22rpx;
+  color: #7b897f;
+  font-family: 'SimSun', Georgia, serif;
+}
+
+/* 状态一：已选图片 → 全幅展示 */
+.photo-full-wrap {
+  position: relative;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: #f0f5ef;
+}
+
+.photo-full {
+  width: 100%;
+  height: 280rpx;
+  display: block;
+}
+
+.photo-full-mask {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(transparent, rgba(0,0,0,0.35));
+}
+
+.photo-full-tip {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.9);
+}
+
+/* 状态二：已选图标 → 大图标居中展示 */
+.icon-full-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f0f5ef;
+  border-radius: 24rpx;
+  padding: 56rpx 24rpx 48rpx;
+  min-height: 280rpx;
   box-sizing: border-box;
 }
 
-.icon-btn-emoji {
-  font-size: 56rpx;
+.icon-full-emoji {
+  font-size: 96rpx;
   line-height: 1;
 }
 
-/* === 图片预览 === */
-.photo-preview {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 16rpx;
-  object-fit: cover;
+.icon-full-tip {
+  font-size: 26rpx;
+  color: #7b897f;
+  margin-top: 16rpx;
 }
+
+/* 清除按钮 */
+.clear-btn {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(0,0,0,0.45);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #ffffff;
+  z-index: 2;
+}
+
+/* .photo-btn.has-photo 已移除（不再使用） */
 
 /* === 隐藏 canvas === */
 .hidden-canvas {

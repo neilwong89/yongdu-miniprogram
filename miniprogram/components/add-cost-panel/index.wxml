@@ -17,24 +17,46 @@
         <text class="panel-title songti">{{mode === 'edit' ? '编辑拥有' : '记录一个拥有'}}</text>
       </view>
 
-      <!-- 图片上传区：两个按钮 -->
-      <view class="photo-upload">
+      <!-- ========== 图片/图标区：三态 ========== -->
+
+      <!-- 状态一：已选图片 → 只看图，可清除 -->
+      <view class="photo-full-wrap" wx:if="{{photoLocalPath && !icon}}">
+        <image class="photo-full" src="{{photoLocalPath}}" mode="aspectFill" />
+        <view class="photo-full-mask">
+          <view class="photo-full-tip songti">为它留下一张照片</view>
+        </view>
+        <view class="clear-btn" catchtap="onPhotoClear">✕</view>
+      </view>
+
+      <!-- 状态二：已选图标 → 只看图标，可清除 -->
+      <view class="icon-full-wrap" wx:if="{{icon && !photoLocalPath}}">
+        <view class="icon-full-emoji">{{icon}}</view>
+        <view class="icon-full-tip songti">日后仍能被记起</view>
+        <view class="clear-btn" catchtap="onIconClear">✕</view>
+      </view>
+
+      <!-- 状态三：默认 → 两个按钮并排 -->
+      <view class="photo-upload" wx:if="{{!photoLocalPath && !icon}}">
         <!-- 左侧：添加照片 -->
-        <view class="photo-btn {{photoLocalPath ? 'has-photo' : ''}}" bindtap="onPhotoTap">
-          <block wx:if="{{photoLocalPath}}">
-            <image class="photo-preview" src="{{photoLocalPath}}" mode="aspectFill" />
-            <view class="photo-btn-text">更换照片</view>
-          </block>
-          <block wx:else>
-            <view class="photo-btn-icon">📷</view>
-            <view class="photo-btn-text">添加照片</view>
-          </block>
+        <view class="photo-btn" bindtap="onPhotoTap">
+          <view class="upload-icon-wrap">
+            <text class="upload-icon">📷</text>
+          </view>
+          <view class="upload-text">
+            <text class="upload-title songti">为它留下一张照片</text>
+            <text class="upload-sub songti">日后仍能被记起</text>
+          </view>
         </view>
 
         <!-- 右侧：设置图标 -->
         <view class="icon-btn" bindtap="onIconButtonTap">
-          <view class="icon-btn-emoji">{{icon}}</view>
-          <view class="photo-btn-text">设置图标</view>
+          <view class="upload-icon-wrap">
+            <text class="upload-icon">🖼️</text>
+          </view>
+          <view class="upload-text">
+            <text class="upload-title songti">挑选一个图标</text>
+            <text class="upload-sub songti">日后一眼认出它</text>
+          </view>
         </view>
       </view>
 
@@ -44,7 +66,7 @@
         <!-- emoji + 名称 -->
         <view class="field-row">
           <view class="field-label songti">名称</view>
-          <view class="emoji-row">
+          <view class="emoji-row" wx:if="{{!icon}}">
             <view class="emoji-picker">
               <text
                 wx:for="{{emojis}}"
@@ -109,7 +131,6 @@
           <text class="method-hint">{{unit === 'day' ? '从入手日起，价格按流逝的日子均摊；可填写你预期与它相伴的时长。' : '总价 ÷ 累计动用次数 = 本次用度；首页可随时为它增加一次动用。'}}</text>
         </view>
 
-        <!-- 预期相伴 -->
         <!-- 备注 -->
         <view class="field-row">
           <view class="field-label songti">备注</view>

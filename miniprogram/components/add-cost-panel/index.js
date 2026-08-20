@@ -47,7 +47,7 @@ Component({
     animMask: null,
 
     // 表单数据
-    icon: EMOJIS[0],
+    icon: '',
     name: '',
     categoryId: PRESET_CATEGORIES[0].id,
     categoryName: PRESET_CATEGORIES[0].name,
@@ -250,7 +250,7 @@ Component({
     // ---------- 表单操作 ----------
     _resetForm() {
       this.setData({
-        icon: EMOJIS[0],
+        icon: '',
         name: '',
         categoryId: PRESET_CATEGORIES[0].id,
         categoryName: PRESET_CATEGORIES[0].name,
@@ -311,11 +311,24 @@ Component({
     },
 
     onEmojiSelect(e) {
-      this.setData({ icon: e.currentTarget.dataset.emoji, showEmojiPicker: false });
+      // 选图标时清除图片（二选一）
+      const { photoLocalPath } = this.data;
+      const clearPhoto = photoLocalPath ? { photoLocalPath: '', photoId: '', photoPendingUpload: false } : {};
+      this.setData({ icon: e.currentTarget.dataset.emoji, showEmojiPicker: false, ...clearPhoto });
     },
 
     onEmojiPickerClose() {
       this.setData({ showEmojiPicker: false });
+    },
+
+    // 清除图片
+    onPhotoClear() {
+      this.setData({ photoLocalPath: '', photoId: '', photoPendingUpload: false });
+    },
+
+    // 清除图标
+    onIconClear() {
+      this.setData({ icon: '' });
     },
 
     // ---------- 图片上传 ----------
@@ -352,7 +365,8 @@ Component({
 
             wx.hideLoading();
             // photoPendingUpload = true 表示选了新图，保存时要上传
-            this.setData({ photoId, photoLocalPath: savedThumbPath, photoPendingUpload: true });
+            // 同时清除 icon（二选一）
+            this.setData({ photoId, photoLocalPath: savedThumbPath, photoPendingUpload: true, icon: '' });
           } catch (err) {
             wx.hideLoading();
             wx.showToast({ title: '图片处理失败', icon: 'none' });
