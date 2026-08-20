@@ -49,7 +49,7 @@ Component({
       panel.show();
     },
 
-    // 绿色保存按钮 → 触发 panel 保存
+    // 绿色保存按钮 → 触发 panel 保存，FAB/面板关闭由 saveAndClose() 成功后自行处理
     onSave() {
       const pages = getCurrentPages();
       if (!pages.length) return;
