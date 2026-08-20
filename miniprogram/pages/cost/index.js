@@ -335,7 +335,8 @@ Page({
   },
 
   onAddCostSave() {
-    console.warn('[cost] onAddCostSave called, items:', ItemService.getItems().length);
+    const items = ItemService.getItems();
+    console.warn('[cost] onAddCostSave called, items count:', items.length, 'latest:', items[items.length - 1]);
     this.updateDisplay();
   },
 

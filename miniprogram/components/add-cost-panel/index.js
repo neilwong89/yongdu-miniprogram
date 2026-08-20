@@ -201,9 +201,17 @@ Component({
             ? ItemService.updateItem.bind(null, editId, itemData)
             : ItemService.addItem.bind(null, itemData);
 
-          fn().then(() => {
+          fn().then((result) => {
             wx.hideLoading();
-            this.triggerEvent('save', { isEdit });
+            console.warn('[panel] save SUCCESS, result:', result, 'item added, total items:', ItemService.getItems().length);
+            // 刷新页面列表
+            const pages = getCurrentPages();
+            if (pages.length) {
+              const page = pages[pages.length - 1];
+              if (typeof page.onAddCostSave === 'function') {
+                page.onAddCostSave();
+              }
+            }
             this._playOut(() => {
               this._resetForm();
               this.setData({ visible: false, panelVisible: false });
