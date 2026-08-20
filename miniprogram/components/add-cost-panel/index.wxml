@@ -23,7 +23,7 @@
       <view class="photo-full-wrap" wx:if="{{photoLocalPath && !icon}}">
         <image class="photo-full" src="{{photoLocalPath}}" mode="aspectFill" />
         <view class="photo-full-mask">
-          <view class="photo-full-tip songti">为它留下一张照片</view>
+          <view class="photo-full-tip songti">这就是它的样子</view>
         </view>
         <view class="clear-btn" catchtap="onPhotoClear">✕</view>
       </view>
