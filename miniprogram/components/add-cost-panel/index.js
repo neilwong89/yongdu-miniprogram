@@ -426,7 +426,7 @@ Component({
       const cat = e.currentTarget.dataset.cat;
       if (!cat) return;
       if (cat.id === '__custom__') {
-        this.setData({ showCategoryExpanded: false, showCustomCategoryInput: true, dialogFocus: false });
+        this.setData({ showCustomCategoryInput: true, dialogFocus: false });
         // 弹窗渐显动画200ms完成后立即聚焦
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
@@ -439,7 +439,7 @@ Component({
       const cat = this.data.categoryList[idx];
       if (!cat) return;
       if (cat.id === '__custom__') {
-        this.setData({ showCategoryPicker: false, showCustomCategoryInput: true, dialogFocus: false });
+        this.setData({ showCustomCategoryInput: true, dialogFocus: false });
         // 弹窗渐显动画200ms完成后立即聚焦
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
@@ -463,6 +463,7 @@ Component({
       AppStore.set({ categories: [...(state.categories || []), newCat] });
       this.setData({
         showCustomCategoryInput: false,
+        showCategoryExpanded: false,
         customCategoryName: '',
         categoryId: newCat.id,
         categoryName: newCat.name,
@@ -472,7 +473,7 @@ Component({
     },
 
     onCustomCategoryCancel() {
-      this.setData({ showCustomCategoryInput: false, customCategoryName: '' });
+      this.setData({ showCustomCategoryInput: false, showCategoryExpanded: false, customCategoryName: '' });
     },
 
     onStatusTap() {
