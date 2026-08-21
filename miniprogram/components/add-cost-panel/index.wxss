@@ -458,6 +458,19 @@
   color: #ffffff;
 }
 
+/* 自定义类别按钮（虚线边框区分） */
+.category-chip.custom-btn {
+  background: transparent;
+  border: 2rpx dashed #b0b8b3;
+  color: #8b968f;
+}
+
+.category-chip.custom-btn.active {
+  background: #466957;
+  border-color: #466957;
+  color: #ffffff;
+}
+
 /* 圆形展开按钮（固定在右侧，不遮挡） */
 .category-expand-btn {
   position: absolute;

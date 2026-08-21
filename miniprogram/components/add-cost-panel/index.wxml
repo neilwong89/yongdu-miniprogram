@@ -79,7 +79,7 @@
                 <view
                   wx:for="{{categoryList}}"
                   wx:key="id"
-                  class="category-chip {{categoryId === item.id ? 'active' : ''}}"
+                  class="category-chip {{categoryId === item.id ? 'active' : ''}} {{item.id === '__custom__' ? 'custom-btn' : ''}}"
                   data-cat="{{item}}"
                   bindtap="onCategorySelect"
                 >{{item.name}}</view>

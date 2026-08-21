@@ -275,7 +275,7 @@ Component({
     _buildCategoryList() {
       const state = AppStore.getState();
       const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES.find(p => p.id === c.id));
-      this.setData({ categoryList: [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '+ 自定义分类' }] });
+      this.setData({ categoryList: [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '自定义类别' }] });
     },
 
     _loadItem(id) {
