@@ -273,10 +273,18 @@ Component({
       });
     },
 
-    _buildCategoryList() {
+    _buildCategoryList(selectedId) {
       const state = AppStore.getState();
       const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES.find(p => p.id === c.id));
-      this.setData({ categoryList: [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '自定义类别' }] });
+      const all = [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '自定义类别' }];
+      if (selectedId) {
+        const idx = all.findIndex(c => c.id === selectedId);
+        if (idx > 0) {
+          const [selected] = all.splice(idx, 1);
+          all.unshift(selected);
+        }
+      }
+      this.setData({ categoryList: all });
     },
 
     _loadItem(id) {
@@ -418,7 +426,7 @@ Component({
     },
 
     onCategoryTap() {
-      this._buildCategoryList();
+      this._buildCategoryList(this.data.categoryId);
       this.setData({ showCategoryExpanded: !this.data.showCategoryExpanded });
     },
 
@@ -468,7 +476,7 @@ Component({
         categoryId: newCat.id,
         categoryName: newCat.name,
       });
-      this._buildCategoryList();
+      this._buildCategoryList(newCat.id);
       wx.showToast({ title: '分类已添加', icon: 'none' });
     },
 
