@@ -426,15 +426,17 @@
   color: #ffffff;
 }
 
-/* 展开的纵向网格（正常文档流，撑开页面） */
+/* 展开的纵向网格（延迟展开，等滚动条消失后再开始） */
 .category-expand-wrap {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.28s ease-out;
+  transition-delay: 0.25s;
 }
 
 .category-expand-wrap.expanded {
   max-height: 600rpx;
+  transition-delay: 0s;
 }
 
 .category-grid {
