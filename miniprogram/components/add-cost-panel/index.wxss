@@ -431,7 +431,7 @@
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.28s ease-out;
-  transition-delay: 0.25s;
+  transition-delay: 0.22s;
 }
 
 .category-expand-wrap.expanded {
