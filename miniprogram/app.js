@@ -1,6 +1,8 @@
 // 用度·微信小程序
 const AppStore = require('./stores/app-store');
 const ItemService = require('./services/item');
+const SyncManager = require('./services/sync');
+const StorageService = require('./services/storage');
 
 App({
   globalData: {
@@ -12,6 +14,7 @@ App({
     apiBase: 'https://api.newmark.top',
     fontReady: false,
     appReady: false,
+    dataReady: false,  // 数据层初始化完成（首次同步/本地加载）
     // 弹层状态（跨 Tab 保持）
     panelState: null,
   },
@@ -66,17 +69,44 @@ App({
   _initApp() {
     console.log('[app] 并行初始化 openid + store...');
     this.ensureOpenId();
-    this._initStore();
+    // 等 openid 就绪后再初始化数据层
+    (this.globalData.openidReady || Promise.resolve()).then(() => {
+      this._initStore();
+    });
   },
 
   async _initStore() {
-    try {
-      const items = await ItemService.loadItems();
-      const categories = wx.getStorageSync('categories') || [];
-      AppStore.set({ items, categories });
-    } catch (e) {
-      console.error('[app] initStore error', e);
+    const app = this;
+    const openid = app.globalData.openid;
+    if (!openid || openid.startsWith('temp_')) {
+      console.log('[app] _initStore: 无合法 openid，跳过数据加载', openid);
+      return;
     }
+
+    // 初始化同步管理器
+    SyncManager.init(() => ItemService, () => openid);
+
+    const lastSyncAt = StorageService.getSync('lastSyncAt');
+
+    if (!lastSyncAt) {
+      // 首次安装/重装后首次打开：从服务器全量拉取
+      console.log('[app] _initStore: 首次同步，开始全量拉取...');
+      const items = await SyncManager.doFullSync();
+      if (items && items.length) {
+        AppStore.set({ items });
+        console.log('[app] _initStore: 全量拉取完成', items.length, '条');
+      } else {
+        console.log('[app] _initStore: 全量拉取完成，无数据');
+      }
+    } else {
+      // 正常启动：从本地加载
+      console.log('[app] _initStore: 从本地加载，上次同步', new Date(lastSyncAt).toLocaleString());
+      const items = await ItemService.loadItems();
+      AppStore.set({ items });
+    }
+
+    // 标记数据层就绪
+    app.globalData.dataReady = true;
   },
 
   ensureOpenId() {

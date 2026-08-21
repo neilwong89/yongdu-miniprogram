@@ -111,6 +111,19 @@ Page({
   // ---------- 数据加载 ----------
 
   async _loadData() {
+    // 等 app 数据层初始化完成（首次全量同步 or 本地加载）
+    // 防止 initStore 还在跑时，loadItems() 把空数组写进 AppStore，覆盖了刚同步下来的数据
+    const app = getApp();
+    if (!app.globalData.dataReady) {
+      await new Promise(resolve => {
+        const check = () => {
+          if (app.globalData.dataReady) resolve();
+          else setTimeout(check, 100);
+        };
+        check();
+      });
+    }
+
     await ItemService.loadItems();
     const items = ItemService.getItems();
     AppStore.set({ items });
