@@ -68,19 +68,14 @@
           />
         </view>
 
-        <!-- 类别：横向标签（展开为网格） -->
+        <!-- 类别：展开为网格 -->
         <view class="category-section">
           <view class="field-label songti">类别</view>
-          <!-- 横向滚动标签 -->
-          <scroll-view class="category-scroll" scroll-x enable-flex>
-            <view
-              wx:for="{{categoryList}}"
-              wx:key="id"
-              class="category-tag {{categoryId === item.id ? 'active' : ''}} {{item.id === '__custom__' ? 'custom' : ''}}"
-              data-cat="{{item}}"
-              bindtap="onCategorySelect"
-            >{{item.name}}</view>
-          </scroll-view>
+          <!-- 触发按钮：显示当前选中 + 展开箭头 -->
+          <view class="category-trigger {{showCategoryExpanded ? 'expanded' : ''}}" bindtap="onCategoryTap">
+            <text class="category-trigger-text">{{categoryName}}</text>
+            <text class="category-arrow">›</text>
+          </view>
           <!-- 展开的全量网格 -->
           <view class="category-expanded" wx:if="{{showCategoryExpanded}}">
             <view class="category-grid">
