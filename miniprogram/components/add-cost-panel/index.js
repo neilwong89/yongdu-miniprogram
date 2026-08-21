@@ -456,8 +456,13 @@ Component({
         // 弹窗渐显动画200ms完成后立即聚焦
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
-        // 先更新选中状态
-        this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name });
+        // 记录点击时网格是否展开（网格展开时点击才需要居中）
+        const fromGrid = this.data.showCategoryExpanded;
+        this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name }, () => {
+          if (fromGrid) {
+            this._scrollCategoryToCenter(cat.id);
+          }
+        });
       }
     },
 
