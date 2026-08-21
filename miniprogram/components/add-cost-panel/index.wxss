@@ -386,6 +386,8 @@
   padding-left: 0;
   padding-right: 70rpx;
   box-sizing: border-box;
+  align-items: center;
+  display: flex;
 }
 
 .category-tag {
