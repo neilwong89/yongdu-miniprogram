@@ -450,6 +450,36 @@ Component({
       }
     },
 
+    // 长按删除自定义分类
+    onCategoryLongPress(e) {
+      const cat = e.currentTarget.dataset.cat;
+      if (!cat) return;
+      // 只能删除自定义分类（不在预设列表中，且不是 __custom__ 按钮本身）
+      const isPreset = PRESET_CATEGORIES.find(p => p.id === cat.id);
+      if (isPreset) return;
+      if (cat.id === '__custom__') return;
+
+      wx.showModal({
+        title: '删除分类',
+        content: `确定删除分类「${cat.name}」吗？`,
+        confirmText: '删除',
+        confirmColor: '#e53935',
+        success: (res) => {
+          if (!res.confirm) return;
+          // 从 AppStore 删除
+          const state = AppStore.getState();
+          const updated = (state.categories || []).filter(c => c.id !== cat.id);
+          AppStore.set({ categories: updated });
+          // 如果当前选中的正是这个分类，重置为默认
+          if (this.data.categoryId === cat.id) {
+            this.setData({ categoryId: PRESET_CATEGORIES[0].id, categoryName: PRESET_CATEGORIES[0].name });
+          }
+          this._buildCategoryList();
+          wx.showToast({ title: '已删除', icon: 'none' });
+        }
+      });
+    },
+
     onCategoryPickerChange(e) {
       const idx = parseInt(e.detail.value, 10);
       const cat = this.data.categoryList[idx];

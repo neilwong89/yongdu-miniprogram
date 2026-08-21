@@ -418,6 +418,12 @@
   color: #8b968f;
 }
 
+/* 长按删除反馈 */
+.category-tag.deleting {
+  opacity: 0.5;
+  background: #fce4e4;
+}
+
 .category-tag.custom-btn.active {
   background: #466957;
   border-color: #466957;

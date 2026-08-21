@@ -92,9 +92,10 @@
                   wx:for="{{categoryList}}"
                   wx:key="id"
                   id="cat_{{item.id}}"
-                  class="category-tag {{categoryId === item.id ? 'active' : ''}} {{item.id === '__custom__' ? 'custom-btn' : ''}}"
+                  class="category-tag {{categoryId === item.id ? 'active' : ''}} {{item.id === '__custom__' ? 'custom-btn' : ''}} {{item._deleting ? 'deleting' : ''}}"
                   data-cat="{{item}}"
                   bindtap="onCategorySelect"
+                  bindlongpress="onCategoryLongPress"
                 >{{item.name}}</view>
               </scroll-view>
               <!-- 圆形展开按钮 -->
