@@ -283,7 +283,6 @@ Component({
     // 让选中分类在滚动条中居中
     _scrollCategoryToCenter(catId) {
       const id = 'cat_' + catId;
-      const pixelRatio = wx.getSystemInfoSync().pixelRatio || 1;
       this.createSelectorQuery()
         .select('#' + id)
         .boundingClientRect(rect => {
@@ -295,7 +294,7 @@ Component({
               // 元素中心 - scroll区一半 = 需滚动的距离
               const targetLeft = rect.left - scrollRect.left;
               const centerOffset = scrollRect.width / 2;
-              const newScrollLeft = (targetLeft + rect.width / 2 - centerOffset) / pixelRatio;
+              const newScrollLeft = targetLeft + rect.width / 2 - centerOffset;
               this.setData({ scrollLeft: Math.max(0, newScrollLeft) });
             })
             .exec();
