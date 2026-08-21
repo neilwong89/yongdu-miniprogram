@@ -356,49 +356,57 @@
   margin: 24rpx 0;
 }
 
-/* 触发按钮：和 field-select 保持一致 */
-.category-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f0f2ec;
-  border-radius: 20rpx;
-  padding: 22rpx 24rpx;
+.category-row {
+  position: relative;
   margin-top: 12rpx;
 }
 
-.category-trigger-text {
-  font-size: 30rpx;
-  color: #32423b;
+/* 横向滚动区 */
+.category-scroll {
+  white-space: nowrap;
+  transition: opacity 0.25s;
 }
 
-.category-arrow {
-  font-size: 32rpx;
-  color: #9da79f;
-  transition: transform 0.2s;
+.category-scroll.hidden {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-.category-trigger.expanded .category-arrow {
-  transform: rotate(90deg);
-}
-
-/* 展开的全量网格 */
-.category-expanded {
-  margin-top: 12rpx;
+.category-tag {
+  display: inline-block;
+  padding: 14rpx 28rpx;
   background: #f0f2ec;
   border-radius: 20rpx;
-  padding: 24rpx;
+  font-size: 26rpx;
+  color: #8b968f;
+  font-family: 'SimSun', Georgia, serif;
+  margin-right: 12rpx;
+  flex-shrink: 0;
 }
 
+.category-tag.active {
+  background: #466957;
+  color: #ffffff;
+}
+
+/* 展开的纵向网格 */
 .category-grid {
-  display: flex;
+  display: none;
   flex-wrap: wrap;
   gap: 12rpx;
+  transition: opacity 0.25s;
+}
+
+.category-grid.visible {
+  display: flex;
 }
 
 .category-chip {
   padding: 14rpx 28rpx;
-  background: #ffffff;
+  background: #f0f2ec;
   border-radius: 20rpx;
   font-size: 26rpx;
   color: #32423b;
@@ -408,6 +416,33 @@
 .category-chip.active {
   background: #466957;
   color: #ffffff;
+}
+
+/* 圆形展开按钮 */
+.category-expand-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 64rpx;
+  height: 64rpx;
+  background: #e6eee7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.category-expand-arrow {
+  font-size: 32rpx;
+  color: #466957;
+  transition: transform 0.25s;
+  display: inline-block;
+}
+
+.category-expand-btn.expanded .category-expand-arrow {
+  transform: rotate(90deg);
 }
 
 /* === 分摊方式卡片 === */
