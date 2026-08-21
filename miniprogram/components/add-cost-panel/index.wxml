@@ -87,10 +87,11 @@
             </view>
             <!-- 滚动条（absolute浮在上方，不占文档流位） -->
             <view class="category-row-overlay {{showCategoryExpanded ? 'hidden' : ''}}">
-              <scroll-view class="category-scroll" scroll-x>
+              <scroll-view class="category-scroll" scroll-x scroll-with-animation scroll-into-view="cat_{{currentCategoryId}}" scroll-left="{{scrollLeft}}">
                 <view
                   wx:for="{{categoryList}}"
                   wx:key="id"
+                  id="cat_{{item.id}}"
                   class="category-tag {{categoryId === item.id ? 'active' : ''}} {{item.id === '__custom__' ? 'custom-btn' : ''}}"
                   data-cat="{{item}}"
                   bindtap="onCategorySelect"

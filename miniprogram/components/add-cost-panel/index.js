@@ -76,6 +76,7 @@ Component({
     emojiMaskAnimating: false,
     // 类别横向展开
     showCategoryExpanded: false,
+    scrollLeft: 0,
   },
 
   lifetimes: {
@@ -273,18 +274,32 @@ Component({
       });
     },
 
-    _buildCategoryList(selectedId) {
+    _buildCategoryList() {
       const state = AppStore.getState();
       const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES.find(p => p.id === c.id));
-      const all = [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '自定义类别' }];
-      if (selectedId) {
-        const idx = all.findIndex(c => c.id === selectedId);
-        if (idx > 0) {
-          const [selected] = all.splice(idx, 1);
-          all.unshift(selected);
-        }
-      }
-      this.setData({ categoryList: all });
+      this.setData({ categoryList: [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '自定义类别' }] });
+    },
+
+    // 让选中分类在滚动条中居中
+    _scrollCategoryToCenter(catId) {
+      const id = 'cat_' + catId;
+      this.createSelectorQuery()
+        .select('#' + id)
+        .boundingClientRect(rect => {
+          if (!rect) return;
+          this.createSelectorQuery()
+            .select('.category-scroll')
+            .boundingClientRect(scrollRect => {
+              if (!scrollRect) return;
+              // 元素中心 - scroll区一半 = 需滚动的距离
+              const targetLeft = rect.left - scrollRect.left;
+              const centerOffset = scrollRect.width / 2;
+              const newScrollLeft = targetLeft + rect.width / 2 - centerOffset;
+              this.setData({ scrollLeft: Math.max(0, newScrollLeft) });
+            })
+            .exec();
+        })
+        .exec();
     },
 
     _loadItem(id) {
@@ -426,8 +441,13 @@ Component({
     },
 
     onCategoryTap() {
-      this._buildCategoryList(this.data.categoryId);
-      this.setData({ showCategoryExpanded: !this.data.showCategoryExpanded });
+      this._buildCategoryList();
+      const willExpand = !this.data.showCategoryExpanded;
+      this.setData({ showCategoryExpanded: willExpand });
+      if (willExpand) {
+        // 打开时让当前选中项居中
+        this._scrollCategoryToCenter(this.data.categoryId);
+      }
     },
 
     onCategorySelect(e) {
@@ -439,6 +459,8 @@ Component({
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
         this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name });
+        // 选中后让标签在滚动条中居中
+        this._scrollCategoryToCenter(cat.id);
       }
     },
 
@@ -452,6 +474,8 @@ Component({
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
         this.setData({ showCategoryPicker: false, categoryId: cat.id, categoryName: cat.name });
+        // 选中后让标签在滚动条中居中
+        this._scrollCategoryToCenter(cat.id);
       }
     },
 
@@ -476,7 +500,7 @@ Component({
         categoryId: newCat.id,
         categoryName: newCat.name,
       });
-      this._buildCategoryList(newCat.id);
+      this._buildCategoryList();
       wx.showToast({ title: '分类已添加', icon: 'none' });
     },
 
