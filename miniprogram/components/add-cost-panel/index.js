@@ -293,11 +293,11 @@ Component({
             .boundingClientRect(scrollRect => {
               if (!scrollRect) return;
               // boundingClientRect 返回设备像素，scrollLeft 用 CSS 像素，需转换
-              const rectLeft = rect.left / pixelRatio;
-              const rectWidth = rect.width / pixelRatio;
-              const scrollWidth = scrollRect.width / pixelRatio;
-              const targetLeft = rectLeft;
-              const newScrollLeft = Math.max(0, targetLeft + rectWidth / 2 - scrollWidth / 2);
+              // 元素在 content 中的相对位置 = rect.left - scrollRect.left
+              const relativeLeft = (rect.left - scrollRect.left) / pixelRatio;
+              const elementWidth = rect.width / pixelRatio;
+              const containerWidth = scrollRect.width / pixelRatio;
+              const newScrollLeft = Math.max(0, relativeLeft + elementWidth / 2 - containerWidth / 2);
               this.setData({ scrollLeft: newScrollLeft });
             })
             .exec();
