@@ -371,11 +371,8 @@
   right: 0;
   z-index: 2;
   background: #fbfaf6;
-  padding-left: 0;
   transition: opacity 0.22s ease-out;
   height: 72rpx;
-  display: flex;
-  align-items: flex-start;
 }
 
 .category-row-overlay.hidden {
@@ -386,11 +383,10 @@
 /* 横向滚动区 */
 .category-scroll {
   white-space: nowrap;
-  padding-left: 0;
   padding-right: 70rpx;
   box-sizing: border-box;
-  display: flex;
-  align-items: flex-start;
+  height: 72rpx;
+  display: block;
 }
 
 .category-tag {
@@ -405,6 +401,7 @@
   box-sizing: border-box;
   height: 54rpx;
   line-height: 1;
+  vertical-align: top;
 }
 
 .category-tag.active {
@@ -425,12 +422,11 @@
   color: #ffffff;
 }
 
-/* 圆形展开按钮（与标签高度一致） */
+/* 圆形展开按钮（固定在右侧，绝对定位） */
 .category-expand-btn {
   position: absolute;
   right: 0;
-  top: 50%;
-  margin-top: -27rpx;
+  top: 9rpx;
   width: 54rpx;
   height: 54rpx;
   background: #e6eee7;
@@ -438,6 +434,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 3;
 }
 
 .category-expand-arrow {

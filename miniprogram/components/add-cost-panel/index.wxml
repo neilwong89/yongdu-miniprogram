@@ -87,7 +87,7 @@
             </view>
             <!-- 滚动条（absolute浮在上方，不占文档流位） -->
             <view class="category-row-overlay {{showCategoryExpanded ? 'hidden' : ''}}">
-              <scroll-view class="category-scroll" scroll-x enable-flex>
+              <scroll-view class="category-scroll" scroll-x>
                 <view
                   wx:for="{{categoryList}}"
                   wx:key="id"
