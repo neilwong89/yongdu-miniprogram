@@ -206,10 +206,10 @@
 </view>
 
 <!-- 自定义类别弹窗 -->
-<view class="dialog-mask {{showCustomCategoryInput ? 'show' : ''}}" hidden="{{!showCustomCategoryInput}}" bindtap="onCustomCategoryCancel">
+<view class="dialog-mask {{showCustomCategoryInput ? 'show' : ''}}" bindtap="onCustomCategoryCancel">
   <view class="dialog" catchtap="noop">
     <view class="dialog-title songti">自定义类别</view>
-    <input class="dialog-input" placeholder="请输入分类名称（最多10字）" maxlength="10" focus="{{true}}" value="{{customCategoryName}}" bindinput="onCustomCategoryInput" />
+    <input class="dialog-input" placeholder="请输入分类名称（最多10字）" maxlength="10" focus="{{showCustomCategoryInput}}" value="{{customCategoryName}}" bindinput="onCustomCategoryInput" />
     <view class="dialog-btns">
       <view class="dialog-btn cancel" bindtap="onCustomCategoryCancel">取消</view>
       <view class="dialog-btn confirm" bindtap="onCustomCategoryConfirm">确定</view>

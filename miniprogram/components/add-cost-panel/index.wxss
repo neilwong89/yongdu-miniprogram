@@ -606,11 +606,13 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.2s ease-out;
 }
 
 .dialog-mask.show {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .dialog {
