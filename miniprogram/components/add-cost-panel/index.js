@@ -441,12 +441,10 @@ Component({
     },
 
     onCategoryTap() {
-      this._buildCategoryList();
       const willExpand = !this.data.showCategoryExpanded;
       this.setData({ showCategoryExpanded: willExpand });
       if (willExpand) {
-        // 打开时让当前选中项居中
-        this._scrollCategoryToCenter(this.data.categoryId);
+        this._buildCategoryList();
       }
     },
 
@@ -458,10 +456,8 @@ Component({
         // 弹窗渐显动画200ms完成后立即聚焦
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
-        // 先更新选中状态，再在回调里让标签居中（延迟50ms等DOM渲染稳定）
-        this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name }, () => {
-          setTimeout(() => this._scrollCategoryToCenter(cat.id), 50);
-        });
+        // 先更新选中状态
+        this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name });
       }
     },
 
