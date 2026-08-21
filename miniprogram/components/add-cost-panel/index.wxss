@@ -376,7 +376,6 @@
   border-radius: 20rpx;
   font-size: 26rpx;
   color: #8b968f;
-  font-family: 'SimSun', Georgia, serif;
   margin-right: 12rpx;
   flex-shrink: 0;
 }
@@ -412,7 +411,6 @@
   border-radius: 20rpx;
   font-size: 26rpx;
   color: #32423b;
-  font-family: 'SimSun', Georgia, serif;
 }
 
 .category-chip.active {
