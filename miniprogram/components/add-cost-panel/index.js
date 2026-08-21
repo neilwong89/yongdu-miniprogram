@@ -495,7 +495,6 @@ Component({
       AppStore.set({ categories: [...(state.categories || []), newCat] });
       this.setData({
         showCustomCategoryInput: false,
-        showCategoryExpanded: false,
         customCategoryName: '',
         categoryId: newCat.id,
         categoryName: newCat.name,
