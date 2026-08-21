@@ -428,17 +428,15 @@
   transform: rotate(90deg);
 }
 
-/* 展开的纵向网格（文档流内，撑开页面，延迟展开） */
+/* 展开的纵向网格（文档流内，撑开页面） */
 .category-expand-wrap {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.28s ease-out;
-  transition-delay: 0.22s;
 }
 
 .category-expand-wrap.expanded {
   max-height: 600rpx;
-  transition-delay: 0s;
 }
 
 .category-grid {
