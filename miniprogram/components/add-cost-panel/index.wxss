@@ -440,17 +440,11 @@
 }
 
 .category-expand-arrow {
-  width: 0;
-  height: 0;
-  border-top: 10rpx solid transparent;
-  border-right: 10rpx solid #466957;
-  border-bottom: 10rpx solid transparent;
-  border-left: 10rpx solid transparent;
-  transition: transform 0.22s ease-out;
-}
-
-.category-expand-arrow.rotated {
-  transform: rotate(90deg);
+  font-size: 32rpx;
+  color: #466957;
+  line-height: 1;
+  position: relative;
+  top: -3rpx;
 }
 
 .category-grid {

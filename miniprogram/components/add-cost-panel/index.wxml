@@ -98,7 +98,7 @@
               </scroll-view>
               <!-- 圆形展开按钮 -->
               <view class="category-expand-btn" bindtap="onCategoryTap">
-                <view class="category-expand-arrow {{showCategoryExpanded ? 'rotated' : ''}}"></view>
+                <text class="category-expand-arrow">›</text>
               </view>
             </view>
           </view>
