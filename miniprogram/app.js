@@ -117,30 +117,39 @@ App({
     this.globalData.openidReady = promise;
 
     const login = () => {
+      console.log('[openid] 调用 wx.login...');
       wx.login({
         success: (res) => {
+          console.log('[openid] wx.login 成功, code:', res.code ? '已获取' : '为空');
           if (!res.code) {
+            console.warn('[openid] ❌ res.code 为空，回退 temp openid');
             this.globalData.openidReady.resolve('temp_' + Date.now());
             return;
           }
+          console.log('[openid] 调用 code2session API, code:', res.code);
           wx.request({
             url: `${this.globalData.apiBase}/api/code2session`,
             data: { code: res.code },
             success: (r) => {
+              console.log('[openid] code2session 响应 status:', r.statusCode, 'data:', JSON.stringify(r.data));
               const data = r.data;
               if (data.openid) {
+                console.log('[openid] ✅ openid 获取成功:', data.openid);
                 this.globalData.openid = data.openid;
                 this.globalData.openidReady?.resolve?.(data.openid);
               } else {
+                console.warn('[openid] ❌ 响应无 openid，回退 temp openid');
                 this.globalData.openidReady?.resolve?.('temp_' + Date.now());
               }
             },
-            fail: () => {
+            fail: (err) => {
+              console.error('[openid] ❌ code2session 请求失败:', err.errMsg);
               this.globalData.openidReady?.resolve?.('temp_' + Date.now());
             }
           });
         },
-        fail: () => {
+        fail: (err) => {
+          console.error('[openid] ❌ wx.login 失败:', err.errMsg);
           this.globalData.openidReady?.resolve?.('temp_' + Date.now());
         }
       });
