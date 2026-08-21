@@ -592,6 +592,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+.dialog-mask.show {
+  opacity: 1;
 }
 
 .dialog {
@@ -599,6 +605,12 @@
   background: #fbfaf6;
   border-radius: 20rpx;
   padding: 48rpx 40rpx;
+  transform: scale(0.95);
+  transition: transform 0.2s ease-out;
+}
+
+.dialog-mask.show .dialog {
+  transform: scale(1);
 }
 
 .dialog-title {
@@ -618,6 +630,8 @@
   margin-bottom: 36rpx;
   width: 100%;
   box-sizing: border-box;
+  line-height: 1.5;
+  height: auto;
 }
 
 .dialog-input::placeholder {

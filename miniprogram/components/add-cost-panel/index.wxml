@@ -205,10 +205,10 @@
   </view>
 </view>
 
-<!-- 自定义分类弹窗 -->
-<view class="dialog-mask" wx:if="{{showCustomCategoryInput}}" bindtap="onCustomCategoryCancel">
+<!-- 自定义类别弹窗 -->
+<view class="dialog-mask {{showCustomCategoryInput ? 'show' : ''}}" hidden="{{!showCustomCategoryInput}}" bindtap="onCustomCategoryCancel">
   <view class="dialog" catchtap="noop">
-    <view class="dialog-title songti">自定义分类</view>
+    <view class="dialog-title songti">自定义类别</view>
     <input class="dialog-input" placeholder="请输入分类名称（最多10字）" maxlength="10" focus="{{true}}" value="{{customCategoryName}}" bindinput="onCustomCategoryInput" />
     <view class="dialog-btns">
       <view class="dialog-btn cancel" bindtap="onCustomCategoryCancel">取消</view>
