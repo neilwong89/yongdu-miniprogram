@@ -373,6 +373,9 @@
   background: #fbfaf6;
   padding-left: 0;
   transition: opacity 0.22s ease-out;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
 }
 
 .category-row-overlay.hidden {
@@ -399,6 +402,10 @@
   color: #32423b;
   margin-right: 12rpx;
   flex-shrink: 0;
+  box-sizing: border-box;
+  height: 54rpx;
+  line-height: 1;
+  vertical-align: top;
 }
 
 .category-tag.active {
@@ -470,6 +477,10 @@
   font-size: 26rpx;
   color: #32423b;
   flex-shrink: 0;
+  box-sizing: border-box;
+  height: 54rpx;
+  line-height: 1;
+  vertical-align: top;
 }
 
 .category-chip.active {
@@ -477,7 +488,7 @@
   color: #ffffff;
 }
 
-/* 自定义类别按钮（虚线边框区分） */
+/* 自定义类别按钮（网格内虚线样式） */
 .category-chip.custom-btn {
   background: transparent;
   border: 2rpx dashed #b0b8b3;
