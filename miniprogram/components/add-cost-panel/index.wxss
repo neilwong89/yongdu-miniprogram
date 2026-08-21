@@ -422,11 +422,11 @@
   color: #ffffff;
 }
 
-/* 圆形展开按钮（固定在右侧，绝对定位） */
+/* 圆形展开按钮（固定在右侧，绝对定位，与标签顶部对齐） */
 .category-expand-btn {
   position: absolute;
   right: 0;
-  top: 9rpx;
+  top: 0;
   width: 54rpx;
   height: 54rpx;
   background: #e6eee7;
