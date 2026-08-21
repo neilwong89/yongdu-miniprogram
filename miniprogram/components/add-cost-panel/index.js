@@ -283,7 +283,6 @@ Component({
     // 让选中分类在滚动条中居中
     _scrollCategoryToCenter(catId) {
       const id = 'cat_' + catId;
-      const pixelRatio = wx.getSystemInfoSync().pixelRatio;
       this.createSelectorQuery()
         .select('#' + id)
         .boundingClientRect(rect => {
@@ -292,12 +291,10 @@ Component({
             .select('.category-scroll')
             .boundingClientRect(scrollRect => {
               if (!scrollRect) return;
-              // boundingClientRect 返回设备像素，scrollLeft 用 CSS 像素，需转换
+              // boundingClientRect 在移动端 webview 返回 CSS 像素（与 windowWidth/scrollLeft 单位一致）
               // 元素在 content 中的相对位置 = rect.left - scrollRect.left
-              const relativeLeft = (rect.left - scrollRect.left) / pixelRatio;
-              const elementWidth = rect.width / pixelRatio;
-              const containerWidth = scrollRect.width / pixelRatio;
-              const newScrollLeft = Math.max(0, relativeLeft + elementWidth / 2 - containerWidth / 2);
+              const relativeLeft = rect.left - scrollRect.left;
+              const newScrollLeft = Math.max(0, relativeLeft + rect.width / 2 - scrollRect.width / 2);
               this.setData({ scrollLeft: newScrollLeft });
             })
             .exec();
