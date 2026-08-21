@@ -458,9 +458,10 @@ Component({
         // 弹窗渐显动画200ms完成后立即聚焦
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
-        this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name });
-        // 选中后让标签在滚动条中居中
-        this._scrollCategoryToCenter(cat.id);
+        // 先更新选中状态，再在回调里让标签居中（延迟50ms等DOM渲染稳定）
+        this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name }, () => {
+          setTimeout(() => this._scrollCategoryToCenter(cat.id), 50);
+        });
       }
     },
 
