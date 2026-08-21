@@ -71,32 +71,35 @@
         <!-- 类别：横向滚动标签 + 展开按钮 -->
         <view class="category-section">
           <view class="field-label songti">类别</view>
-          <view class="category-row">
-            <!-- 横向滚动标签（展开时收缩消失） -->
-            <scroll-view class="category-scroll {{showCategoryExpanded ? 'fading' : ''}}" scroll-x enable-flex>
-              <view
-                wx:for="{{categoryList}}"
-                wx:key="id"
-                class="category-tag {{categoryId === item.id ? 'active' : ''}}"
-                data-cat="{{item}}"
-                bindtap="onCategorySelect"
-              >{{item.name}}</view>
-            </scroll-view>
-            <!-- 圆形展开按钮（展开时收缩消失） -->
-            <view class="category-expand-btn {{showCategoryExpanded ? 'fading' : ''}}" bindtap="onCategoryTap">
-              <text class="category-expand-arrow">›</text>
+          <!-- 滚动条（绝对定位，覆盖在行上方）+ 网格（在底层文档流内展开） -->
+          <view class="category-overlayer">
+            <!-- 滚动条（绝对定位，浮在上层） -->
+            <view class="category-row-overlay {{showCategoryExpanded ? 'hidden' : ''}}">
+              <scroll-view class="category-scroll" scroll-x enable-flex>
+                <view
+                  wx:for="{{categoryList}}"
+                  wx:key="id"
+                  class="category-tag {{categoryId === item.id ? 'active' : ''}}"
+                  data-cat="{{item}}"
+                  bindtap="onCategorySelect"
+                >{{item.name}}</view>
+              </scroll-view>
+              <!-- 圆形展开按钮 -->
+              <view class="category-expand-btn" bindtap="onCategoryTap">
+                <text class="category-expand-arrow {{showCategoryExpanded ? 'rotated' : ''}}">›</text>
+              </view>
             </view>
-          </view>
-          <!-- 展开的纵向网格（正常文档流，撑开页面） -->
-          <view class="category-expand-wrap {{showCategoryExpanded ? 'expanded' : ''}}">
-            <view class="category-grid">
-              <view
-                wx:for="{{categoryList}}"
-                wx:key="id"
-                class="category-chip {{categoryId === item.id ? 'active' : ''}}"
-                data-cat="{{item}}"
-                bindtap="onCategorySelect"
-              >{{item.name}}</view>
+            <!-- 展开的纵向网格（在底层文档流内，向下展开） -->
+            <view class="category-expand-wrap {{showCategoryExpanded ? 'expanded' : ''}}">
+              <view class="category-grid">
+                <view
+                  wx:for="{{categoryList}}"
+                  wx:key="id"
+                  class="category-chip {{categoryId === item.id ? 'active' : ''}}"
+                  data-cat="{{item}}"
+                  bindtap="onCategorySelect"
+                >{{item.name}}</view>
+              </view>
             </view>
           </view>
         </view>
