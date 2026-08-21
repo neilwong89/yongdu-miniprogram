@@ -373,6 +373,8 @@
   background: #fbfaf6;
   transition: opacity 0.22s ease-out;
   height: 72rpx;
+  display: flex;
+  align-items: center;
 }
 
 .category-row-overlay.hidden {
@@ -382,11 +384,11 @@
 
 /* 横向滚动区 */
 .category-scroll {
+  flex: 1;
+  height: 72rpx;
   white-space: nowrap;
   padding-right: 70rpx;
   box-sizing: border-box;
-  height: 72rpx;
-  display: block;
 }
 
 .category-tag {
