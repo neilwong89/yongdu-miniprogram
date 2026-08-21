@@ -499,8 +499,11 @@ Component({
         customCategoryName: '',
         categoryId: newCat.id,
         categoryName: newCat.name,
+      }, () => {
+        this._buildCategoryList();
+        // 等列表渲染完成后让新分类居中
+        setTimeout(() => this._scrollCategoryToCenter(newCat.id), 50);
       });
-      this._buildCategoryList();
       wx.showToast({ title: '分类已添加', icon: 'none' });
     },
 
