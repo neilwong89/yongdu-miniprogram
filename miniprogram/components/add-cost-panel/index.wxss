@@ -451,17 +451,6 @@
   transform: rotate(90deg);
 }
 
-/* 展开的纵向网格（文档流内，撑开页面） */
-.category-expand-wrap {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.28s ease-out;
-}
-
-.category-expand-wrap.expanded {
-  max-height: 600rpx;
-}
-
 .category-grid {
   display: flex;
   flex-wrap: wrap;
@@ -501,29 +490,15 @@
   color: #ffffff;
 }
 
-/* 圆形展开按钮（固定在右侧，不遮挡） */
-.category-expand-btn {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  margin-top: -32rpx;
-  width: 64rpx;
-  height: 64rpx;
-  background: #e6eee7;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  z-index: 2;
+/* 展开的纵向网格（文档流内，撑开页面） */
+.category-expand-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease-out;
 }
 
-.category-expand-arrow {
-  font-size: 32rpx;
-  color: #466957;
-  transition: transform 0.25s ease-out;
-  display: inline-block;
-  line-height: 1;
+.category-expand-wrap.expanded {
+  max-height: 600rpx;
 }
 
 .category-expand-btn.expanded .category-expand-arrow {
