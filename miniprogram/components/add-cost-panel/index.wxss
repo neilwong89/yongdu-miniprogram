@@ -351,6 +351,67 @@
   color: #9da79f;
 }
 
+/* === 类别横向标签 === */
+.category-section {
+  margin: 24rpx 0;
+}
+
+.category-scroll {
+  white-space: nowrap;
+  margin-top: 12rpx;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 14rpx 28rpx;
+  background: #f0f2ec;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #8b968f;
+  font-family: 'SimSun', Georgia, serif;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.category-tag.active {
+  background: #466957;
+  color: #ffffff;
+}
+
+.category-tag.custom {
+  color: #8b968f;
+  border: 1.5rpx dashed #c5cdc4;
+  background: transparent;
+}
+
+/* 展开的全量网格 */
+.category-expanded {
+  margin-top: 16rpx;
+  background: #f0f2ec;
+  border-radius: 20rpx;
+  padding: 24rpx;
+}
+
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.category-chip {
+  padding: 14rpx 28rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #32423b;
+  font-family: 'SimSun', Georgia, serif;
+}
+
+.category-chip.active {
+  background: #466957;
+  color: #ffffff;
+}
+
 /* === 分摊方式卡片 === */
 .method-card {
   background: #e6eee7;

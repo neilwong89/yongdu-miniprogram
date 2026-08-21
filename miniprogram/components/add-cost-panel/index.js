@@ -73,6 +73,8 @@ Component({
     showCustomCategoryInput: false,
     showEmojiPicker: false,
     emojiMaskAnimating: false,
+    // 类别横向展开
+    showCategoryExpanded: false,
   },
 
   lifetimes: {
@@ -416,7 +418,17 @@ Component({
 
     onCategoryTap() {
       this._buildCategoryList();
-      this.setData({ showCategoryPicker: true });
+      this.setData({ showCategoryExpanded: !this.data.showCategoryExpanded });
+    },
+
+    onCategorySelect(e) {
+      const cat = e.currentTarget.dataset.cat;
+      if (!cat) return;
+      if (cat.id === '__custom__') {
+        this.setData({ showCategoryExpanded: false, showCustomCategoryInput: true });
+      } else {
+        this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name });
+      }
     },
 
     onCategoryPickerChange(e) {
@@ -431,7 +443,7 @@ Component({
     },
 
     onCategoryPickerCancel() {
-      this.setData({ showCategoryPicker: false });
+      this.setData({ showCategoryPicker: false, showCategoryExpanded: false });
     },
 
     onCustomCategoryInput(e) {

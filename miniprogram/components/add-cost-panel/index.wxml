@@ -68,21 +68,39 @@
           />
         </view>
 
-        <!-- 类别 + 状态 -->
-        <view class="field-row cols-2">
-          <view class="field-group">
-            <view class="field-label songti">类别</view>
-            <view class="field-select" bindtap="onCategoryTap">
-              <text class="field-select-val">{{categoryName}}</text>
-              <text class="field-arrow">›</text>
+        <!-- 类别：横向标签（展开为网格） -->
+        <view class="category-section">
+          <view class="field-label songti">类别</view>
+          <!-- 横向滚动标签 -->
+          <scroll-view class="category-scroll" scroll-x enable-flex>
+            <view
+              wx:for="{{categoryList}}"
+              wx:key="id"
+              class="category-tag {{categoryId === item.id ? 'active' : ''}} {{item.id === '__custom__' ? 'custom' : ''}}"
+              data-cat="{{item}}"
+              bindtap="onCategorySelect"
+            >{{item.name}}</view>
+          </scroll-view>
+          <!-- 展开的全量网格 -->
+          <view class="category-expanded" wx:if="{{showCategoryExpanded}}">
+            <view class="category-grid">
+              <view
+                wx:for="{{categoryList}}"
+                wx:key="id"
+                class="category-chip {{categoryId === item.id ? 'active' : ''}}"
+                data-cat="{{item}}"
+                bindtap="onCategorySelect"
+              >{{item.name}}</view>
             </view>
           </view>
-          <view class="field-group">
-            <view class="field-label songti">状态</view>
-            <view class="field-select" bindtap="onStatusTap">
-              <text class="field-select-val">{{statusLabel}}</text>
-              <text class="field-arrow">›</text>
-            </view>
+        </view>
+
+        <!-- 状态 -->
+        <view class="field-row">
+          <view class="field-label songti">状态</view>
+          <view class="field-select" bindtap="onStatusTap">
+            <text class="field-select-val">{{statusLabel}}</text>
+            <text class="field-arrow">›</text>
           </view>
         </view>
 
