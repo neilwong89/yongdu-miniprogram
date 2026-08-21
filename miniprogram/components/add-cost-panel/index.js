@@ -51,6 +51,7 @@ Component({
     name: '',
     categoryId: PRESET_CATEGORIES[0].id,
     categoryName: PRESET_CATEGORIES[0].name,
+    currentCategoryId: '',
     customCategoryName: '',
     status: 'using',
     statusLabel: '使用中',
@@ -280,26 +281,9 @@ Component({
       this.setData({ categoryList: [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '自定义类别' }] });
     },
 
-    // 让选中分类在滚动条中居中
+    // 让选中分类在滚动条中居中：用 scroll-into-view 滚动到可见位置
     _scrollCategoryToCenter(catId) {
-      const id = 'cat_' + catId;
-      this.createSelectorQuery()
-        .select('#' + id)
-        .boundingClientRect(rect => {
-          if (!rect) return;
-          this.createSelectorQuery()
-            .select('.category-scroll')
-            .boundingClientRect(scrollRect => {
-              if (!scrollRect) return;
-              // boundingClientRect 在移动端 webview 返回 CSS 像素（与 windowWidth/scrollLeft 单位一致）
-              // 元素在 content 中的相对位置 = rect.left - scrollRect.left
-              const relativeLeft = rect.left - scrollRect.left;
-              const newScrollLeft = Math.max(0, relativeLeft + rect.width / 2 - scrollRect.width / 2);
-              this.setData({ scrollLeft: newScrollLeft });
-            })
-            .exec();
-        })
-        .exec();
+      this.setData({ currentCategoryId: catId });
     },
 
     _loadItem(id) {
