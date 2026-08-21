@@ -50,6 +50,14 @@ const AppStore = {
     } else {
       this._state = { ...this._state, ...updates };
     }
+    // categories 变更时自动同步到本地存储
+    if (this._state.categories !== prev.categories) {
+      try {
+        wx.setStorageSync('categories', this._state.categories);
+      } catch (e) {
+        console.error('[AppStore] failed to save categories', e);
+      }
+    }
     this.notify(prev);
   },
 

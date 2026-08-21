@@ -72,7 +72,8 @@ App({
   async _initStore() {
     try {
       const items = await ItemService.loadItems();
-      AppStore.set({ items });
+      const categories = wx.getStorageSync('categories') || [];
+      AppStore.set({ items, categories });
     } catch (e) {
       console.error('[app] initStore error', e);
     }
