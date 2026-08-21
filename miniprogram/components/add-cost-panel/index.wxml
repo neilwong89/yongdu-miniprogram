@@ -39,12 +39,12 @@
       <view class="photo-upload" wx:if="{{(!photoLocalPath && !icon) || (!photoLocalPath && icon === '🎁')}}">
         <!-- 左侧：添加照片 -->
         <view class="photo-btn" bindtap="onPhotoTap">
-          <view class="photo-btn-text songti">为他拍摄一张照片</view>
+          <view class="photo-btn-text songti">留下一瞬影像</view>
         </view>
 
         <!-- 右侧：设置图标 -->
         <view class="icon-btn" bindtap="onIconButtonTap">
-          <view class="icon-btn-text songti">为他选择一个图标</view>
+          <view class="icon-btn-text songti">选择一个图标</view>
         </view>
 
         <!-- 中间：或字圆形徽章 -->
