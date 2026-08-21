@@ -473,7 +473,7 @@ Component({
     },
 
     onCustomCategoryCancel() {
-      this.setData({ showCustomCategoryInput: false, showCategoryExpanded: false, customCategoryName: '' });
+      this.setData({ showCustomCategoryInput: false, customCategoryName: '' });
     },
 
     onStatusTap() {
