@@ -645,6 +645,8 @@
   margin-bottom: 36rpx;
   width: 100%;
   box-sizing: border-box;
+  line-height: normal;
+  height: 80rpx;
 }
 
 .dialog-input::placeholder {
