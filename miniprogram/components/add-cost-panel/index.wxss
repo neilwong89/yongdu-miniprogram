@@ -382,7 +382,7 @@
 /* 横向滚动区 */
 .category-scroll {
   white-space: nowrap;
-  padding-right: 80rpx;
+  padding-right: 70rpx;
   box-sizing: border-box;
 }
 
@@ -402,14 +402,14 @@
   color: #ffffff;
 }
 
-/* 圆形展开按钮 */
+/* 圆形展开按钮（与标签高度一致） */
 .category-expand-btn {
   position: absolute;
   right: 0;
   top: 50%;
-  margin-top: -32rpx;
-  width: 64rpx;
-  height: 64rpx;
+  margin-top: -27rpx;
+  width: 54rpx;
+  height: 54rpx;
   background: #e6eee7;
   border-radius: 50%;
   display: flex;
@@ -418,7 +418,7 @@
 }
 
 .category-expand-arrow {
-  font-size: 36rpx;
+  font-size: 32rpx;
   color: #466957;
   line-height: 1;
   transition: transform 0.22s ease-out;
