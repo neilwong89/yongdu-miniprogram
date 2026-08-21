@@ -476,8 +476,6 @@ Component({
         setTimeout(() => this.setData({ dialogFocus: true }), 200);
       } else {
         this.setData({ showCategoryPicker: false, categoryId: cat.id, categoryName: cat.name });
-        // 选中后让标签在滚动条中居中
-        this._scrollCategoryToCenter(cat.id);
       }
     },
 
@@ -502,8 +500,7 @@ Component({
         categoryName: newCat.name,
       }, () => {
         this._buildCategoryList();
-        // 等列表渲染完成后让新分类居中
-        setTimeout(() => this._scrollCategoryToCenter(newCat.id), 50);
+        this._scrollCategoryToCenter(newCat.id);
       });
       wx.showToast({ title: '分类已添加', icon: 'none' });
     },
