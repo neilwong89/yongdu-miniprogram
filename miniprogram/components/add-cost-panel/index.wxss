@@ -367,6 +367,11 @@
 /* 横向滚动区 */
 .category-scroll {
   white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.category-scroll.fading {
+  opacity: 0;
 }
 
 .category-tag {

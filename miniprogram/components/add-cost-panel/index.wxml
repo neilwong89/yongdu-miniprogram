@@ -72,8 +72,8 @@
         <view class="category-section">
           <view class="field-label songti">类别</view>
           <view class="category-row">
-            <!-- 横向滚动标签（展开时隐藏） -->
-            <scroll-view class="category-scroll" wx:if="{{!showCategoryExpanded}}" scroll-x enable-flex>
+            <!-- 横向滚动标签（展开时渐隐） -->
+            <scroll-view class="category-scroll {{showCategoryExpanded ? 'fading' : ''}}" scroll-x enable-flex>
               <view
                 wx:for="{{categoryList}}"
                 wx:key="id"
