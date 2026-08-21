@@ -35,7 +35,7 @@
         <view class="clear-btn" catchtap="onIconClear">✕</view>
       </view>
 
-      <!-- 状态三：默认 → 两个按钮并排 -->
+      <!-- 状态三：默认 → 两个按钮并排，中间斜杠 + 或字 -->
       <view class="photo-upload" wx:if="{{(!photoLocalPath && !icon) || (!photoLocalPath && icon === '🎁')}}">
         <!-- 左侧：添加照片 -->
         <view class="photo-btn" bindtap="onPhotoTap">
@@ -45,6 +45,11 @@
         <!-- 右侧：设置图标 -->
         <view class="icon-btn" bindtap="onIconButtonTap">
           <view class="icon-btn-text songti">为他选择一个图标</view>
+        </view>
+
+        <!-- 中间：或字圆形徽章 -->
+        <view class="or-badge">
+          <text class="or-text songti">或</text>
         </view>
       </view>
 

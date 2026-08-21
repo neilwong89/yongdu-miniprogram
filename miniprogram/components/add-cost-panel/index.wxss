@@ -116,7 +116,7 @@
   padding-right: 36rpx;
 }
 
-/* 斜向分割线：从右上到左下，留 6rpx 宽的小缝 */
+/* 斜向分割线 + 或字容器 */
 .photo-upload::after {
   content: '';
   position: absolute;
@@ -128,6 +128,30 @@
   transform: translate(-50%, -50%) rotate(20deg);
   border-radius: 100rpx;
   z-index: 1;
+}
+
+/* 或字圆形背景 */
+.or-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(20deg);
+  width: 48rpx;
+  height: 48rpx;
+  background: #fbfaf6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.or-text {
+  font-size: 20rpx;
+  color: #8b968f;
+  font-family: 'SimSun', Georgia, serif;
+  letter-spacing: 0;
+  line-height: 1;
 }
 
 .photo-btn-text,
