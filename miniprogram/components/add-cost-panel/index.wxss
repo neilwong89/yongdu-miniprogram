@@ -440,9 +440,12 @@
 }
 
 .category-expand-arrow {
-  font-size: 32rpx;
-  color: #466957;
-  line-height: 1;
+  width: 0;
+  height: 0;
+  border-top: 10rpx solid #466957;
+  border-right: 10rpx solid transparent;
+  border-bottom: 10rpx solid transparent;
+  border-left: 10rpx solid transparent;
   transition: transform 0.22s ease-out;
 }
 
