@@ -371,6 +371,7 @@
   right: 0;
   z-index: 2;
   background: #fbfaf6;
+  padding-left: 0;
   transition: opacity 0.22s ease-out;
 }
 
@@ -382,6 +383,7 @@
 /* 横向滚动区 */
 .category-scroll {
   white-space: nowrap;
+  padding-left: 0;
   padding-right: 70rpx;
   box-sizing: border-box;
 }
@@ -459,11 +461,13 @@
 }
 
 .category-chip {
+  display: inline-block;
   padding: 14rpx 28rpx;
   background: #f0f2ec;
   border-radius: 20rpx;
   font-size: 26rpx;
   color: #32423b;
+  flex-shrink: 0;
 }
 
 .category-chip.active {
