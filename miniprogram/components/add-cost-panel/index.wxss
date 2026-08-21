@@ -135,7 +135,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(20deg);
+  transform: translate(-50%, -50%);
   width: 48rpx;
   height: 48rpx;
   background: #fbfaf6;
@@ -147,7 +147,7 @@
 }
 
 .or-text {
-  font-size: 20rpx;
+  font-size: 28rpx;
   color: #8b968f;
   font-family: 'SimSun', Georgia, serif;
   letter-spacing: 0;
