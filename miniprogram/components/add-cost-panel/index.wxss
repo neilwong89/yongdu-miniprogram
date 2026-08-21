@@ -426,20 +426,15 @@
   color: #ffffff;
 }
 
-/* 展开的纵向网格（绝对定位，从滚动标签同位置展开） */
+/* 展开的纵向网格（正常文档流，撑开页面） */
 .category-expand-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 80rpx;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.28s ease-out;
-  z-index: 1;
 }
 
 .category-expand-wrap.expanded {
-  max-height: 400rpx;
+  max-height: 600rpx;
 }
 
 .category-grid {
