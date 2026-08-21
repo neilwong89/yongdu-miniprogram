@@ -71,9 +71,21 @@
         <!-- 类别：横向滚动标签 + 展开按钮 -->
         <view class="category-section">
           <view class="field-label songti">类别</view>
-          <!-- 滚动条（绝对定位，覆盖在行上方）+ 网格（在底层文档流内展开） -->
+          <!-- 网格（在文档流内，撑开页面）+ 滚动条（浮在上方固定） -->
           <view class="category-overlayer">
-            <!-- 滚动条（绝对定位，浮在上层） -->
+            <!-- 展开的纵向网格（底层文档流，先出现，撑开页面） -->
+            <view class="category-expand-wrap {{showCategoryExpanded ? 'expanded' : ''}}">
+              <view class="category-grid">
+                <view
+                  wx:for="{{categoryList}}"
+                  wx:key="id"
+                  class="category-chip {{categoryId === item.id ? 'active' : ''}}"
+                  data-cat="{{item}}"
+                  bindtap="onCategorySelect"
+                >{{item.name}}</view>
+              </view>
+            </view>
+            <!-- 滚动条（绝对定位浮在上层，固定在网格顶部位置） -->
             <view class="category-row-overlay {{showCategoryExpanded ? 'hidden' : ''}}">
               <scroll-view class="category-scroll" scroll-x enable-flex>
                 <view
@@ -87,18 +99,6 @@
               <!-- 圆形展开按钮 -->
               <view class="category-expand-btn" bindtap="onCategoryTap">
                 <text class="category-expand-arrow {{showCategoryExpanded ? 'rotated' : ''}}">›</text>
-              </view>
-            </view>
-            <!-- 展开的纵向网格（在底层文档流内，向下展开） -->
-            <view class="category-expand-wrap {{showCategoryExpanded ? 'expanded' : ''}}">
-              <view class="category-grid">
-                <view
-                  wx:for="{{categoryList}}"
-                  wx:key="id"
-                  class="category-chip {{categoryId === item.id ? 'active' : ''}}"
-                  data-cat="{{item}}"
-                  bindtap="onCategorySelect"
-                >{{item.name}}</view>
               </view>
             </view>
           </view>
