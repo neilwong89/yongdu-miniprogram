@@ -91,7 +91,7 @@
                 <view
                   wx:for="{{categoryList}}"
                   wx:key="id"
-                  class="category-tag {{categoryId === item.id ? 'active' : ''}}"
+                  class="category-tag {{categoryId === item.id ? 'active' : ''}} {{item.id === '__custom__' ? 'custom-btn' : ''}}"
                   data-cat="{{item}}"
                   bindtap="onCategorySelect"
                 >{{item.name}}</view>
