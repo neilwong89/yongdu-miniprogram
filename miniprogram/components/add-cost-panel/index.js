@@ -426,10 +426,10 @@ Component({
       if (!cat) return;
       if (cat.id === '__custom__') {
         this.setData({ showCategoryExpanded: false, showCustomCategoryInput: true });
-        // 延迟250ms，等弹窗动画完成后再聚焦
+        // 弹窗渐显动画200ms完成后立即聚焦
         setTimeout(() => {
           this.selectComponent('#customCategoryInput') && this.selectComponent('#customCategoryInput').getFieldNode && this.selectComponent('#customCategoryInput').getFieldNode().focus();
-        }, 250);
+        }, 200);
       } else {
         this.setData({ showCategoryExpanded: false, categoryId: cat.id, categoryName: cat.name });
       }
@@ -441,10 +441,10 @@ Component({
       if (!cat) return;
       if (cat.id === '__custom__') {
         this.setData({ showCategoryPicker: false, showCustomCategoryInput: true });
-        // 延迟250ms，等弹窗动画完成后再聚焦
+        // 弹窗渐显动画200ms完成后立即聚焦
         setTimeout(() => {
           this.selectComponent('#customCategoryInput') && this.selectComponent('#customCategoryInput').getFieldNode && this.selectComponent('#customCategoryInput').getFieldNode().focus();
-        }, 250);
+        }, 200);
       } else {
         this.setData({ showCategoryPicker: false, categoryId: cat.id, categoryName: cat.name });
       }
