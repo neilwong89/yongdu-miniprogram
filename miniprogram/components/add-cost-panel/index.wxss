@@ -359,20 +359,14 @@
 .category-row {
   position: relative;
   margin-top: 12rpx;
+  /* 给展开按钮留出空间，不遮挡标签 */
+  padding-right: 80rpx;
+  box-sizing: border-box;
 }
 
 /* 横向滚动区 */
 .category-scroll {
   white-space: nowrap;
-  transition: opacity 0.25s;
-}
-
-.category-scroll.hidden {
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 
 .category-tag {
@@ -393,15 +387,23 @@
 }
 
 /* 展开的纵向网格 */
-.category-grid {
-  display: none;
-  flex-wrap: wrap;
-  gap: 12rpx;
-  transition: opacity 0.25s;
+.category-expand-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.25s;
+  opacity: 0;
 }
 
-.category-grid.visible {
+.category-expand-wrap.expanded {
+  max-height: 400rpx;
+  opacity: 1;
+}
+
+.category-grid {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  padding-top: 16rpx;
 }
 
 .category-chip {
@@ -418,11 +420,12 @@
   color: #ffffff;
 }
 
-/* 圆形展开按钮 */
+/* 圆形展开按钮（固定在右侧，不遮挡） */
 .category-expand-btn {
   position: absolute;
   right: 0;
-  top: 0;
+  top: 50%;
+  margin-top: -32rpx;
   width: 64rpx;
   height: 64rpx;
   background: #e6eee7;
@@ -431,14 +434,15 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.2s;
+  z-index: 2;
 }
 
 .category-expand-arrow {
   font-size: 32rpx;
   color: #466957;
-  transition: transform 0.25s;
+  transition: transform 0.25s ease-out;
   display: inline-block;
+  line-height: 1;
 }
 
 .category-expand-btn.expanded .category-expand-arrow {
