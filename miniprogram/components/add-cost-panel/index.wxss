@@ -392,7 +392,7 @@
   background: #f0f2ec;
   border-radius: 20rpx;
   font-size: 26rpx;
-  color: #8b968f;
+  color: #32423b;
   margin-right: 12rpx;
   flex-shrink: 0;
 }
