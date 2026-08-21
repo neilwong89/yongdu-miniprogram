@@ -72,7 +72,7 @@
         <view class="category-section">
           <view class="field-label songti">类别</view>
           <view class="category-row">
-            <!-- 横向滚动标签（展开时渐隐） -->
+            <!-- 横向滚动标签（展开时消失） -->
             <scroll-view class="category-scroll {{showCategoryExpanded ? 'fading' : ''}}" scroll-x enable-flex>
               <view
                 wx:for="{{categoryList}}"
@@ -82,7 +82,7 @@
                 bindtap="onCategorySelect"
               >{{item.name}}</view>
             </scroll-view>
-            <!-- 展开的纵向网格（绝对定位，从滚动标签同位置向下展开） -->
+            <!-- 展开的纵向网格（绝对定位，从滚动标签同位置展开） -->
             <view class="category-expand-wrap {{showCategoryExpanded ? 'expanded' : ''}}">
               <view class="category-grid">
                 <view
@@ -94,8 +94,8 @@
                 >{{item.name}}</view>
               </view>
             </view>
-            <!-- 圆形展开按钮 -->
-            <view class="category-expand-btn {{showCategoryExpanded ? 'expanded' : ''}}" bindtap="onCategoryTap">
+            <!-- 圆形展开按钮（展开时消失） -->
+            <view class="category-expand-btn {{showCategoryExpanded ? 'fading' : ''}}" bindtap="onCategoryTap">
               <text class="category-expand-arrow">›</text>
             </view>
           </view>
