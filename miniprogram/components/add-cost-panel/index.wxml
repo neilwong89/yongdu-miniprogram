@@ -72,8 +72,8 @@
         <view class="category-section">
           <view class="field-label songti">类别</view>
           <view class="category-row">
-            <!-- 横向滚动标签（展开时渐隐） -->
-            <scroll-view class="category-scroll {{showCategoryExpanded ? 'fading' : ''}}" scroll-x enable-flex>
+            <!-- 横向滚动标签（展开时隐藏） -->
+            <scroll-view class="category-scroll" wx:if="{{!showCategoryExpanded}}" scroll-x enable-flex>
               <view
                 wx:for="{{categoryList}}"
                 wx:key="id"
@@ -82,21 +82,21 @@
                 bindtap="onCategorySelect"
               >{{item.name}}</view>
             </scroll-view>
-            <!-- 展开的纵向网格（和滚动区同一高度，向下展开） -->
-            <view class="category-expand-wrap {{showCategoryExpanded ? 'expanded' : ''}}">
-              <view class="category-grid">
-                <view
-                  wx:for="{{categoryList}}"
-                  wx:key="id"
-                  class="category-chip {{categoryId === item.id ? 'active' : ''}}"
-                  data-cat="{{item}}"
-                  bindtap="onCategorySelect"
-                >{{item.name}}</view>
-              </view>
-            </view>
             <!-- 圆形展开按钮 -->
             <view class="category-expand-btn {{showCategoryExpanded ? 'expanded' : ''}}" bindtap="onCategoryTap">
               <text class="category-expand-arrow">›</text>
+            </view>
+          </view>
+          <!-- 展开的纵向网格（正常文档流，撑开页面） -->
+          <view class="category-expand-wrap {{showCategoryExpanded ? 'expanded' : ''}}">
+            <view class="category-grid">
+              <view
+                wx:for="{{categoryList}}"
+                wx:key="id"
+                class="category-chip {{categoryId === item.id ? 'active' : ''}}"
+                data-cat="{{item}}"
+                bindtap="onCategorySelect"
+              >{{item.name}}</view>
             </view>
           </view>
         </view>
