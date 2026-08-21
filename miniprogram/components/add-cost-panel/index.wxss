@@ -356,25 +356,27 @@
   margin: 24rpx 0;
 }
 
-/* 外层容器（相对定位，让内部绝对定位相对于它） */
+/* 外层容器（相对定位，内部absolute相对于它） */
 .category-overlayer {
   position: relative;
   margin-top: 12rpx;
+  min-height: 72rpx;
 }
 
-/* 滚动条浮层（绝对定位，浮在网格上方） */
+/* 滚动条浮层（absolute浮在上方，不占文档流位） */
 .category-row-overlay {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 2;
   background: #fbfaf6;
-  transition: opacity 0.22s ease-out, max-height 0.22s ease-out;
-  max-height: 80rpx;
-  overflow: hidden;
+  transition: opacity 0.22s ease-out;
 }
 
 .category-row-overlay.hidden {
   opacity: 0;
-  max-height: 0;
+  pointer-events: none;
 }
 
 /* 横向滚动区 */
