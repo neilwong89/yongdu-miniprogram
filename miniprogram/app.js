@@ -67,12 +67,8 @@ App({
   },
 
   _initApp() {
-    console.log('[app] 并行初始化 openid + store...');
+    console.log('[app] 初始化 openid...');
     this.ensureOpenId();
-    // 等 openid 就绪后再初始化数据层
-    (this.globalData.openidReady || Promise.resolve()).then(() => {
-      this._initStore();
-    });
   },
 
   async _initStore() {
@@ -117,6 +113,7 @@ App({
       console.log('[openid] 从缓存读取 openid:', cachedOpenid);
       this.globalData.openid = cachedOpenid;
       this.globalData.openidReady = Promise.resolve(cachedOpenid);
+      this._initStore();  // 缓存命中时同步调用
       return;
     }
 
@@ -147,6 +144,8 @@ App({
                 this.globalData.openid = data.openid;
                 StorageService.setSync('openid', data.openid);  // 缓存到本地，下次启动直接用
                 this.globalData.openidReady?.resolve?.(data.openid);
+                // openid 就绪后初始化数据层（首次从网络获取）
+                this._initStore();
               } else {
                 console.warn('[openid] ❌ 响应无 openid，回退 temp openid');
                 this.globalData.openidReady?.resolve?.('temp_' + Date.now());
