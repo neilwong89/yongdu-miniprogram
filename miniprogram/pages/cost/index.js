@@ -297,7 +297,8 @@ Page({
   _fetchThumb(photoId, thumbUrl) {
     downloadAndCache(photoId, thumbUrl).then(localPath => {
       const items = this.data.items;
-      const idx = items.findIndex(i => i.id === photoId);
+      // 用 photoId 匹配（items 里存的是 item.photoId）
+      const idx = items.findIndex(i => i.photoId === photoId);
       if (idx !== -1) {
         const updated = [...items];
         updated[idx] = { ...updated[idx], hasImage: true, imageUrl: localPath };

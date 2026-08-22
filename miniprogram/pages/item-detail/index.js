@@ -129,7 +129,7 @@ Page({
   },
 
   onEditSave() {
-    this._loadItem(this.data.itemId);
+    this.loadItem(this.data.itemId);
   },
 
   // 后台异步下载大图，完成后更新 item 显示
