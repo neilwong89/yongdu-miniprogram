@@ -12,7 +12,7 @@ rm -rf dist
 mkdir -p dist
 
 echo "[Build] 复制文件到 dist..."
-cp -r pages components services stores utils types config subpackages custom-tab-bar fonts dist/
+cp -r pages components services stores utils types config subpackages custom-tab-bar fonts constants dist/
 cp app.js app.json app.wxss sitemap.json project.config.json dist/
 
 echo "[Build] 完成，输出目录：dist/"

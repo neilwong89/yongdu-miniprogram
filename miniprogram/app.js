@@ -82,6 +82,12 @@ App({
     // 初始化同步管理器
     SyncManager.init(() => ItemService, () => openid);
 
+    // 读取本地存储的 categories（含自定义分类），恢复用户数据
+    const localCategories = StorageService.getSync('categories');
+    if (localCategories && localCategories.length > 0) {
+      AppStore.set({ categories: localCategories });
+    }
+
     const lastSyncAt = StorageService.getSync('lastSyncAt');
 
     if (!lastSyncAt) {

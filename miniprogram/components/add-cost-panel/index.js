@@ -8,22 +8,10 @@ const { today } = require('../../utils/date');
 const { compressMain, compressThumb } = require('../../utils/image-compress');
 const { saveLocalThumb } = require('../../utils/photo-cache');
 const API_BASE = 'https://api.newmark.top';
-
+const { PRESET_CATEGORIES, PRESET_CATEGORIES_WITHOUT_ALL } = require('../../constants/categories');
 const EMOJIS = ['📱', '💻', '⌚', '🎧', '📷', '🚗', '💊', '🍔', '👕', '🏋️', '📚', '🎮', '🎵', '💰', '🔧', '📦'];
-
-const PRESET_CATEGORIES = [
-  { id: 'digital', name: '数码设备' },
-  { id: 'daily', name: '日用品' },
-  { id: 'food', name: '食品饮料' },
-  { id: 'clothing', name: '服饰鞋包' },
-  { id: 'books', name: '图书文具' },
-  { id: 'sports', name: '运动户外' },
-  { id: 'home', name: '家居家电' },
-  { id: 'beauty', name: '美妆护肤' },
-  { id: 'pet', name: '宠物用品' },
-  { id: 'toys', name: '玩具手办' },
-  { id: 'other', name: '其他' },
-];
+// panel 添加/编辑时的默认分类（第一个非 all 的预设分类）
+const DEFAULT_CATEGORY = PRESET_CATEGORIES_WITHOUT_ALL[0];
 
 const STATUS_OPTIONS = [
   { value: 'using', label: '使用中' },
@@ -49,8 +37,8 @@ Component({
     // 表单数据
     icon: '',
     name: '',
-    categoryId: PRESET_CATEGORIES[0].id,
-    categoryName: PRESET_CATEGORIES[0].name,
+    categoryId: DEFAULT_CATEGORY.id,
+    categoryName: DEFAULT_CATEGORY.name,
     currentCategoryId: '',
     customCategoryName: '',
     status: 'using',
@@ -258,8 +246,8 @@ Component({
       this.setData({
         icon: '🎁',
         name: '',
-        categoryId: PRESET_CATEGORIES[0].id,
-        categoryName: PRESET_CATEGORIES[0].name,
+        categoryId: DEFAULT_CATEGORY.id,
+        categoryName: DEFAULT_CATEGORY.name,
         status: 'using',
         statusLabel: '使用中',
         purchaseDate: today(),
@@ -277,8 +265,8 @@ Component({
 
     _buildCategoryList() {
       const state = AppStore.getState();
-      const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES.find(p => p.id === c.id));
-      this.setData({ categoryList: [...PRESET_CATEGORIES, ...customCats, { id: '__custom__', name: '自定义类别' }] });
+      const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES_WITHOUT_ALL.find(p => p.id === c.id));
+      this.setData({ categoryList: [...PRESET_CATEGORIES_WITHOUT_ALL, ...customCats, { id: '__custom__', name: '自定义类别' }] });
     },
 
     // 让选中分类在滚动条中居中：用 scroll-into-view 滚动到可见位置
@@ -296,8 +284,8 @@ Component({
       this.setData({
         icon: item.icon || EMOJIS[0],
         name: item.name || '',
-        categoryId: item.categoryId || PRESET_CATEGORIES[0].id,
-        categoryName: item.categoryName || PRESET_CATEGORIES[0].name,
+        categoryId: item.categoryId || DEFAULT_CATEGORY.id,
+        categoryName: item.categoryName || DEFAULT_CATEGORY.name,
         status: item.status || 'using',
         statusLabel: statusOption.label,
         purchaseDate: item.purchaseDate || today(),
@@ -455,7 +443,7 @@ Component({
       const cat = e.currentTarget.dataset.cat;
       if (!cat) return;
       // 只能删除自定义分类（不在预设列表中，且不是 __custom__ 按钮本身）
-      const isPreset = PRESET_CATEGORIES.find(p => p.id === cat.id);
+      const isPreset = PRESET_CATEGORIES_WITHOUT_ALL.find(p => p.id === cat.id);
       if (isPreset) return;
       if (cat.id === '__custom__') return;
 
@@ -472,7 +460,7 @@ Component({
           AppStore.set({ categories: updated });
           // 如果当前选中的正是这个分类，重置为默认
           if (this.data.categoryId === cat.id) {
-            this.setData({ categoryId: PRESET_CATEGORIES[0].id, categoryName: PRESET_CATEGORIES[0].name });
+            this.setData({ categoryId: DEFAULT_CATEGORY.id, categoryName: DEFAULT_CATEGORY.name });
           }
           this._buildCategoryList();
           wx.showToast({ title: '已删除', icon: 'none' });

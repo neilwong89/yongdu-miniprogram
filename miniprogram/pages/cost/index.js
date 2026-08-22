@@ -7,15 +7,7 @@ const AppStore = require('../../stores/app-store');
 const ItemService = require('../../services/item');
 const CostCalculator = require('../../services/calculator');
 const { getLocalPath } = require('../../utils/photo-cache');
-
-// 预置分类（按设计稿）
-const PRESET_CATEGORIES = [
-  { id: 'all', name: '全部' },
-  { id: 'digital', name: '数码' },
-  { id: 'member', name: '会员' },
-  { id: 'transport', name: '交通' },
-  { id: 'life', name: '生活' },
-];
+const { PRESET_CATEGORIES } = require('../../constants/categories');
 
 // 状态选项
 const STATUS_OPTIONS = [
@@ -48,7 +40,6 @@ Page({
     items: [],
 
     // 筛选/排序
-    categories: PRESET_CATEGORIES,
     statusOptions: STATUS_OPTIONS,
     sortOptions: SORT_OPTIONS,
     selectedStatus: 'all',
@@ -136,7 +127,20 @@ Page({
 
   _refreshData() {
     const items = ItemService.getItems();
+    const allItems = ItemService.getItems();
+    // 同步合并预设+自定义+物品用到的已删除自定义分类到视图
+    const state = AppStore.getState();
+    const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES.find(p => p.id === c.id));
+    const usedCustomCatIds = [...new Set(allItems.map(i => i.categoryId).filter(id => id && id.startsWith('custom_')))];
+    const usedCustomCats = usedCustomCatIds
+      .filter(id => !customCats.find(c => c.id === id))
+      .map(id => {
+        const item = allItems.find(i => i.categoryId === id);
+        return { id, name: item ? item.categoryName : id };
+      });
+    const categories = [...PRESET_CATEGORIES, ...customCats, ...usedCustomCats];
     AppStore.set({ items });
+    this.setData({ categories });
     this._renderItems();
   },
 
@@ -192,6 +196,17 @@ Page({
 
     const processedItems = items.map(item => this._processItem(item));
 
+    // 合并分类：预设 + AppStore自定义 + 物品用到的已删除自定义分类
+    const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES.find(p => p.id === c.id));
+    const usedCustomCatIds = [...new Set(allItems.map(i => i.categoryId).filter(id => id && id.startsWith('custom_')))];
+    const usedCustomCats = usedCustomCatIds
+      .filter(id => !customCats.find(c => c.id === id))
+      .map(id => {
+        const item = allItems.find(i => i.categoryId === id);
+        return { id, name: item ? item.categoryName : id };
+      });
+    const categories = [...PRESET_CATEGORIES, ...customCats, ...usedCustomCats];
+
     this.setData({
       items: processedItems,
       todayCost: todayCost.toFixed(2),
@@ -199,6 +214,7 @@ Page({
       remainCost: Math.round(remainCost).toLocaleString('zh-CN'),
       usingCount: usingItems.length,
       isEmpty: items.length === 0,
+      categories,
     });
   },
 

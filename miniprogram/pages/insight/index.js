@@ -6,15 +6,7 @@ const AppStore = require('../../stores/app-store');
 const ItemService = require('../../services/item');
 const CostCalculator = require('../../services/calculator');
 const { calcDaysUsed } = require('../../utils/date');
-
-// 预置分类（按设计稿，与 cost 页一致）
-const PRESET_CATEGORIES = [
-  { id: 'all', name: '全部' },
-  { id: 'digital', name: '数码' },
-  { id: 'member', name: '会员' },
-  { id: 'transport', name: '交通' },
-  { id: 'life', name: '生活' },
-];
+const { PRESET_CATEGORIES } = require('../../constants/categories');
 
 // 状态映射
 const STATUS_MAP = {
@@ -32,7 +24,6 @@ Page({
     todayCost: '0.00',
 
     // ---------- 分类筛选 ----------
-    categories: PRESET_CATEGORIES,
     selectedCategory: 'all',
 
     // ---------- 用度曲线 ----------
@@ -193,6 +184,17 @@ Page({
     // --- 用度曲线 SVG ---
     const { curvePath, curveFillPath, startLabel, endLabel } = this._calcCurvePath(items);
 
+    // 合并分类：预设 + AppStore自定义 + 物品用到的已删除自定义分类
+    const customCats = (state.categories || []).filter(c => !PRESET_CATEGORIES.find(p => p.id === c.id));
+    const usedCustomCatIds = [...new Set(items.map(i => i.categoryId).filter(id => id && id.startsWith('custom_')))];
+    const usedCustomCats = usedCustomCatIds
+      .filter(id => !customCats.find(c => c.id === id))
+      .map(id => {
+        const item = items.find(i => i.categoryId === id);
+        return { id, name: item ? item.categoryName : id };
+      });
+    const categories = [...PRESET_CATEGORIES, ...customCats, ...usedCustomCats];
+
     this.setData({
       isEmpty: items.length === 0,
       itemCount: items.length,
@@ -206,6 +208,7 @@ Page({
       curveFillPath,
       chartStartLabel: startLabel,
       chartEndLabel: endLabel,
+      categories,
     });
   },
 
