@@ -67,16 +67,10 @@ async function doSync(_ignored) {
     });
 
     if (res.code === 0) {
-      // 合并服务端变更到本地（serverChanges里的item.data是JSON字符串，需先解析）
+      // serverChanges 里的 item 已经是解析好的对象，data 字段已废弃
       const IS = _itemServiceGetter ? _itemServiceGetter() : null;
       if (IS && res.serverChanges && res.serverChanges.length) {
-        const parsedChanges = res.serverChanges.map(change => {
-          if (change.type === 'upsert' && change.item && typeof change.item.data === 'string') {
-            return { ...change, item: { ...change.item, data: JSON.parse(change.item.data) } };
-          }
-          return change;
-        });
-        IS.mergeServerChanges(parsedChanges);
+        IS.mergeServerChanges(res.serverChanges);
       }
       _lastSyncAt = res.serverTime || Date.now();
       await StorageService.set('lastSyncAt', _lastSyncAt);

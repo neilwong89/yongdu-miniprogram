@@ -71,13 +71,20 @@ router.post('/sync', (req, res) => {
     ORDER BY updated_at ASC
   `).all(openid, lastSyncAt / 1000); // convert ms to seconds
 
-  const formattedChanges = serverChanges.map(row => ({
-    id: row.id,
-    data: row.data,
-    deleted_at: row.deleted_at,
-    updated_at: row.updated_at * 1000, // convert to ms
-    created_at: row.created_at * 1000  // convert to ms
-  }));
+  const formattedChanges = serverChanges.map(row => {
+    let item = row.data;
+    if (typeof item === 'string') {
+      try { item = JSON.parse(item); } catch { item = {}; }
+    }
+    return {
+      id: row.id,
+      item,
+      type: row.deleted_at == 0 ? 'upsert' : 'delete',
+      deleted_at: row.deleted_at,
+      updated_at: row.updated_at * 1000,
+      created_at: row.created_at * 1000,
+    };
+  });
 
   res.json({ code: 0, serverChanges: formattedChanges, serverTime });
 });

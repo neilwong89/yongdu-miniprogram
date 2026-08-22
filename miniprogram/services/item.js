@@ -141,14 +141,14 @@ async function useOnce(id) {
  */
 function mergeServerChanges(serverChanges) {
   for (const change of serverChanges) {
-    if (change.type === 'upsert') {
+    if (change.type === 'upsert' && change.item) {
       const idx = _items.findIndex(i => i.id === change.item.id);
       if (idx >= 0) {
         _items[idx] = change.item;
       } else {
         _items.push(change.item);
       }
-    } else if (change.type === 'delete') {
+    } else if (change.type === 'delete' && change.item) {
       _items = _items.filter(i => i.id !== change.item.id);
     }
   }
