@@ -6,7 +6,9 @@ const ItemService = require('../../services/item');
 const AppStore = require('../../stores/app-store');
 const { calcDaysUsed } = require('../../utils/date');
 const { formatMoney } = require('../../utils/format');
-const { getLocalPath } = require('../../utils/photo-cache');
+const { getMainImageLocalPath, downloadAndCacheMain } = require('../../utils/photo-cache');
+
+const API_BASE = 'https://api.newmark.top';
 
 Page({
   data: {
@@ -98,13 +100,21 @@ Page({
     item.expectedDays = item.expectedDays || 0;
     item.progressPercent = progressPercent;
 
-    // 图片：优先读本地缓存
+    // 图片：优先本地大图，本地没有则后台异步下载大图，进度中显示 emoji 占位
     if (item.photoId) {
-      const localPath = getLocalPath(item.photoId);
-      if (localPath) {
-        item.imageUrl = localPath;
+      const mainLocalPath = getMainImageLocalPath(item.photoId);
+      if (mainLocalPath) {
+        item.imageUrl = mainLocalPath;
         item.hasImage = true;
+      } else {
+        // 本地没有任何图片，显示 emoji 占位，后台下载大图
+        item.imageUrl = '';
+        item.hasImage = false;
+        this._fetchMainImage(item.photoId);
       }
+    } else {
+      item.imageUrl = '';
+      item.hasImage = false;
     }
 
     this.setData({ item });
@@ -120,6 +130,19 @@ Page({
 
   onEditSave() {
     this._loadItem(this.data.itemId);
+  },
+
+  // 后台异步下载大图，完成后更新 item 显示
+  _fetchMainImage(photoId) {
+    const mainUrl = `${API_BASE}/uploads/photos/${photoId}_main.jpg`;
+    downloadAndCacheMain(photoId, mainUrl).then(localPath => {
+      const item = this.data.item;
+      if (item && item.photoId === photoId) {
+        this.setData({ item: { ...item, imageUrl: localPath, hasImage: true } });
+      }
+    }).catch(err => {
+      console.warn('[item-detail] main image download failed for', photoId, err);
+    });
   },
 
   onDelete() {

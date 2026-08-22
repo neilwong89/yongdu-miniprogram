@@ -1,6 +1,8 @@
 /**
  * photo-cache.js
- * 本地图片缓存工具：优先读本地缓存，读不到再下载
+ * 本地图片缓存工具：缩略图（列表用）和大图（详情用）分开存储
+ * - 缩略图：{photoId}.jpg（200px，由客户端压缩上传时保存）
+ * - 大图：{photoId}_main.jpg（1200px，列表页后台下载，或详情页按需下载）
  */
 
 const API_BASE = 'https://api.newmark.top';
@@ -18,7 +20,7 @@ function ensureCacheDir() {
 }
 
 /**
- * 获取本地缓存路径
+ * 获取本地缩略图路径（同步，列表页用）
  * @param {string} photoId
  * @returns {string|null} 本地路径，不存在返回 null
  */
@@ -33,7 +35,25 @@ function getLocalPath(photoId) {
 }
 
 /**
- * 下载并缓存图片（供展示列表用）
+ * 获取本地大图路径（同步，详情页用）
+ * 优先返回大图，本地没有则返回缩略图（向下兼容旧缓存）
+ * @param {string} photoId
+ * @returns {string|null} 本地大图路径，没有则返回缩略图路径，均不存在返回 null
+ */
+function getMainImageLocalPath(photoId) {
+  // 优先检查大图
+  const mainPath = `${CACHE_DIR}/${photoId}_main.jpg`;
+  try {
+    wx.getFileSystemManager().accessSync(mainPath);
+    return mainPath;
+  } catch (_) {
+    // 大图没有，返回缩略图（向下兼容）
+    return getLocalPath(photoId);
+  }
+}
+
+/**
+ * 下载并缓存缩略图（供列表页后台预加载用）
  * @param {string} photoId
  * @param {string} thumbUrl  相对路径，如 /uploads/photos/xxx_thumb.jpg
  * @returns {Promise<string>} 本地缓存路径
@@ -62,6 +82,45 @@ function downloadAndCache(photoId, thumbUrl) {
       },
       fail: (err) => {
         console.error('[photo-cache] download failed:', err);
+        reject(err);
+      }
+    });
+  });
+}
+
+/**
+ * 下载并缓存大图（供详情页用）
+ * @param {string} photoId
+ * @param {string} mainUrl  相对路径，如 /uploads/photos/xxx_main.jpg
+ * @returns {Promise<string>} 本地大图缓存路径
+ */
+function downloadAndCacheMain(photoId, mainUrl) {
+  return new Promise((resolve, reject) => {
+    // 本地已有大图直接返回
+    const mainPath = `${CACHE_DIR}/${photoId}_main.jpg`;
+    try {
+      wx.getFileSystemManager().accessSync(mainPath);
+      resolve(mainPath);
+      return;
+    } catch (_) {
+      // 继续下载
+    }
+
+    ensureCacheDir();
+    const url = mainUrl.startsWith('http') ? mainUrl : API_BASE + mainUrl;
+
+    wx.downloadFile({
+      url,
+      filePath: mainPath,
+      success: (res) => {
+        if (res.statusCode === 200) {
+          resolve(res.filePath);
+        } else {
+          reject(new Error(`download main failed: ${res.statusCode}`));
+        }
+      },
+      fail: (err) => {
+        console.error('[photo-cache] download main failed:', err);
         reject(err);
       }
     });
@@ -155,8 +214,10 @@ async function getDisplayPath(photoId, thumbUrl) {
 
 module.exports = {
   getLocalPath,
+  getMainImageLocalPath,
   saveLocalThumb,
   downloadAndCache,
+  downloadAndCacheMain,
   pruneCache,
   getDisplayPath
 };

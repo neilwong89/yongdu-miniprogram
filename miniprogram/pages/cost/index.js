@@ -6,8 +6,9 @@
 const AppStore = require('../../stores/app-store');
 const ItemService = require('../../services/item');
 const CostCalculator = require('../../services/calculator');
-const { getLocalPath } = require('../../utils/photo-cache');
+const { getLocalPath, downloadAndCache } = require('../../utils/photo-cache');
 const { PRESET_CATEGORIES } = require('../../constants/categories');
+const API_BASE = 'https://api.newmark.top';
 
 // 状态选项
 const STATUS_OPTIONS = [
@@ -259,10 +260,17 @@ Page({
       ? (item.price / 100).toLocaleString('zh-CN', { minimumFractionDigits: 0 })
       : '0';
 
-    // 图片：优先读本地缓存
+    // 图片：优先读本地缩略图，没有则后台下载
     const photoId = item.photoId;
     const photoLocalPath = photoId ? getLocalPath(photoId) : null;
     const hasImage = !!photoLocalPath;
+    // 缩略图 URL（用于后台异步下载）
+    const thumbUrl = photoId ? `${API_BASE}/uploads/photos/${photoId}_thumb.jpg` : null;
+
+    // 没有本地缓存时，后台触发缩略图下载
+    if (photoId && !photoLocalPath) {
+      this._fetchThumb(photoId, thumbUrl);
+    }
 
     return {
       id: item.id,
@@ -271,6 +279,7 @@ Page({
       categoryName: category.name || '其他',
       hasImage,
       imageUrl: photoLocalPath || '',
+      thumbUrl,
       status: item.status,
       statusLabel: statusMap[item.status] || item.status,
       statusClass: statusClassMap[item.status] || '',
@@ -282,6 +291,21 @@ Page({
       priceDisplay,
       purchaseDateStr,
     };
+  },
+
+  // 后台异步下载缩略图，完成后更新列表对应 item
+  _fetchThumb(photoId, thumbUrl) {
+    downloadAndCache(photoId, thumbUrl).then(localPath => {
+      const items = this.data.items;
+      const idx = items.findIndex(i => i.id === photoId);
+      if (idx !== -1) {
+        const updated = [...items];
+        updated[idx] = { ...updated[idx], hasImage: true, imageUrl: localPath };
+        this.setData({ items: updated });
+      }
+    }).catch(err => {
+      console.warn('[cost] thumb download failed for', photoId, err);
+    });
   },
 
   // ---------- 交互 ----------
