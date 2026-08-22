@@ -111,6 +111,15 @@ App({
 
   ensureOpenId() {
     if (this.globalData.openidReady) return;
+    // 已有缓存的 openid，直接复用，跳过 wx.login
+    const cachedOpenid = StorageService.getSync('openid');
+    if (cachedOpenid && !cachedOpenid.startsWith('temp_')) {
+      console.log('[openid] 从缓存读取 openid:', cachedOpenid);
+      this.globalData.openid = cachedOpenid;
+      this.globalData.openidReady = Promise.resolve(cachedOpenid);
+      return;
+    }
+
     const promise = new Promise((resolve, reject) => {
       this.globalData.openidReady = { resolve, reject };
     });
@@ -136,6 +145,7 @@ App({
               if (data.openid) {
                 console.log('[openid] ✅ openid 获取成功:', data.openid);
                 this.globalData.openid = data.openid;
+                StorageService.setSync('openid', data.openid);  // 缓存到本地，下次启动直接用
                 this.globalData.openidReady?.resolve?.(data.openid);
               } else {
                 console.warn('[openid] ❌ 响应无 openid，回退 temp openid');
