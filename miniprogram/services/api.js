@@ -41,7 +41,7 @@ const ApiService = {
 
     return new Promise((resolve, reject) => {
       wx.request({
-        url: `${BASE_URL}${url}`,
+        url: `${BASE_URL}/api/yongdu${url}`,
         method,
         data,
         header,
@@ -66,7 +66,7 @@ const ApiService = {
    * @returns {Promise<{code: number, message: string}>}
    */
   async registerUser(openid) {
-    return this._request('/api/user/register', { openid }, 'POST');
+    return this._request('/user/register', { openid }, 'POST');
   },
 
   /**
@@ -78,7 +78,7 @@ const ApiService = {
    * @returns {Promise<object>}
    */
   async syncItems(payload) {
-    return this._request('/api/items/sync', payload, 'POST');
+    return this._request('/items/sync', payload, 'POST');
   },
 
   /**
@@ -87,7 +87,7 @@ const ApiService = {
    * @returns {Promise<{code: number, items: Array}>}
    */
   async getItems(openid) {
-    return this._request(`/api/items?openid=${encodeURIComponent(openid)}`, {}, 'GET');
+    return this._request(`/items?openid=${encodeURIComponent(openid)}`, {}, 'GET');
   },
 };
 
